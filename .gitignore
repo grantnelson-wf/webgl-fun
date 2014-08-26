@@ -1,0 +1,7 @@
+.grunt/
+.DS_Store
+*.sublime-*
+bower_components/
+node_modules/
+out/
+npm-debug.log
