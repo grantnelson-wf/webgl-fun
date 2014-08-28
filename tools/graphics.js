@@ -80,31 +80,7 @@ define(function(require) {
         }
         this.program = program;
         return true;
-    };
-    
-    /**
-     * Gets the handle for the uniform location in the shaders.
-     * @param  {String} name  The name of the uniform location.
-     * @returns  {Object}  The uniform location handle.
-     */
-    Graphics.prototype.getUniform = function(name) {
-        if (!this.program) {
-            console.log("Must set a program before getting an uniform.");
-        }
-        return this.gl.getUniformLocation(this.program, name);
-    };
-    
-    /**
-     * Gets the handle for the attribute location in the shaders.
-     * @param  {String} name  The name of the attribute location.
-     * @returns  {Object}  The attribute location handle.
-     */
-    Graphics.prototype.getAttrib = function(name) {
-        if (!this.program) {
-            console.log("Must set a program before getting an attribute.");
-        }
-        return this.gl.getAttribLocation(this.program, name);
-    };
+    }; 
 
     /**
      * Applies the given matrix to the attribute graphical object.
