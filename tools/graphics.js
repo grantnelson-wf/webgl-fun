@@ -17,6 +17,15 @@ define(function(require) {
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.depthFunc(this.gl.LESS);
     }
+
+    /**
+     * [useShader description]
+     * @param  {[type]} shader [description]
+     * @return {[type]}        [description]
+     */
+    Graphics.prototype.useShader = function(shader) {
+        this.gl.useProgram(shader.program);
+    };
     
     /**
      * Compiles a shader program.

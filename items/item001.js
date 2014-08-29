@@ -25,28 +25,31 @@ define(function(require) {
      */
     Item.prototype.start = function(gfx) {
         // Build and set the shader.
-        this.shader = new Fog();
-        if (!(this.shader.init(gfx) && this.shader.enable(gfx))) {
+        var shaderBuilder = new Fog();
+        this.shader = shaderBuilder.build(gfx);
+        if (!this.shader) {
             return false;
         }
+        this.shader.use();
+        this.shader.enablePosAttr();
         
         // Create shape to use.
-        var builder = new ToroidBuilder();
-        this.shape = builder.build(gfx, this.shader.requiredType);
+        var shapeBuilder = new ToroidBuilder();
+        this.shape = shapeBuilder.build(gfx, this.shader.requiredType);
 
         // Set light.
-        gfx.uniform3f(this.shader.objClr,   1.0, 1.0, 1.0);
-        gfx.uniform3f(this.shader.fogClr,   0.0, 0.0, 0.0);
-        gfx.uniform1f(this.shader.fogStart, 1.0);
-        gfx.uniform1f(this.shader.fogStop,  2.5);
+        this.shader.setObjClr(1.0, 1.0, 1.0);
+        this.shader.setFogClr(0.0, 0.0, 0.0);
+        this.shader.setFogStart(1.0);
+        this.shader.setFogStop(2.5);
         
         // Set view transformation.
         var viewMatrix = Matrix.translate(0.0, 0.0, 2.0);
-        gfx.setMatrix(this.shader.viewMat, viewMatrix);
+        this.shader.setViewMat(viewMatrix);
 
         // Set projection transformation.
         var projMatrix = Matrix.perspective(Math.PI/3.0, 1.0, 1.0, -1.0);
-        gfx.setMatrix(this.shader.projMat, projMatrix);
+        this.shader.setProjMat(projMatrix);
         
         // Initialize object rotation values.
         this.yaw   = 0.0;
@@ -77,10 +80,10 @@ define(function(require) {
                 Matrix.rotateX(this.yaw),
                 Matrix.rotateY(this.pitch)),
             Matrix.rotateZ(this.roll));
-        gfx.setMatrix(this.shader.objMat, objMatrix);
+        this.shader.setObjMat(objMatrix);
 
         // Draw shape.
-        this.shape.draw(gfx, this.shader.posAttr, null, this.shader.normAttr, null);
+        this.shape.draw(gfx, this.shader.posAttrLoc, null, this.shader.normAttrLoc, null);
 
         return true;
     };

@@ -1,12 +1,12 @@
 define(function(require) {
 
     var Const = require("tools/const");
-    var ShaderBuilder = require("tools/shader");
+    var ShaderBuilder = require("shaders/shader");
     
     /**
      * Creates a fog shader.
      */
-    function Fog() {
+    function FogBuilder() {
         // Do Nothing
     };
 
@@ -14,19 +14,19 @@ define(function(require) {
      * The name for this shader.
      * @type {String}
      */
-    Fog.prototype.name = "Fog";
+    FogBuilder.prototype.name = "Fog";
     
     /**
      * The required vertex information.
      * @type {Number}
      */
-    Fog.prototype.requiredTypes = Const.POS;
+    FogBuilder.prototype.requiredTypes = Const.POS;
     
     /**
      * The vertex shader program.
      * @type {String}
      */
-    Fog.prototype._vsSource = 
+    FogBuilder.prototype.vsSource = 
         "uniform mat4 objMat;                            \n"+
         "uniform mat4 viewMat;                           \n"+
         "uniform mat4 projMat;                           \n"+
@@ -46,7 +46,7 @@ define(function(require) {
      * The fragment shader program.
      * @type {String}
      */
-    Fog.prototype._fsSource =
+    FogBuilder.prototype.fsSource =
         "precision mediump float;                                   \n"+
         "                                                           \n"+
         "uniform vec3 objClr;                                       \n"+
@@ -67,12 +67,11 @@ define(function(require) {
      * @param  {Graphics} gfx  The graphical object.
      * @return  {Boolean}  True if successfully started, false otherwise.
      */
-    Fog.prototype.build = function(gfx) {
-        // Build and set the shader programs.
-        
-        shader = ShaderBuilder(this.vsSource, this.fsSource);
-        
+    FogBuilder.prototype.build = function(gfx) {
+        var shader = new ShaderBuilder(this.vsSource, this.fsSource,
+            this.name, this.requiredTypes);
+        return shader.build(gfx);
     };
     
-    return Fog;
+    return FogBuilder;
 });
