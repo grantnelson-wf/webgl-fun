@@ -1,6 +1,7 @@
 define(function(require) {
 
     var Const = require("tools/const");
+    var ShaderBuilder = require("tools/shader");
     
     /**
      * Creates a fog shader.
@@ -66,36 +67,12 @@ define(function(require) {
      * @param  {Graphics} gfx  The graphical object.
      * @return  {Boolean}  True if successfully started, false otherwise.
      */
-    Fog.prototype.init = function(gfx) {
-        // Build and set the shader program.
-        this.program = gfx.compileProgram(this._vsSource, this._fsSource)
-        if (!this.program) {
-            return false;
-        }
+    Fog.prototype.build = function(gfx) {
+        // Build and set the shader programs.
         
-        // Get attribute handles for the shader program.
-        var gl = gfx.gl;
-        this.objMat   = gl.getUniformLocation(this.program, "objMat");
-        this.viewMat  = gl.getUniformLocation(this.program, "viewMat");
-        this.projMat  = gl.getUniformLocation(this.program, "projMat");
-        this.posAttr  = gl.getAttribLocation(this.program, "posAttr"); 
+        shader = ShaderBuilder(this.vsSource, this.fsSource);
         
-        this.objClr   = gl.getUniformLocation(this.program, "objClr");
-        this.fogClr   = gl.getUniformLocation(this.program, "fogClr");
-        this.fogStart = gl.getUniformLocation(this.program, "fogStart");
-        this.fogStop  = gl.getUniformLocation(this.program, "fogStop");
-        
-        return true;
     };
-    
-    /**
-     * Sets this shader to the graphics.
-     * @param  {Graphics} gfx  The graphical object.
-     * @return  {Boolean}  True if successfully started, false otherwise.
-     */
-    Fog.prototype.enable = function(gfx) {
-        return gfx.setProgram(this.program);
-    }
     
     return Fog;
 });
