@@ -65,12 +65,13 @@ define(function(require) {
     /**
      * Initializes the shader.
      * @param  {Graphics} gfx  The graphical object.
-     * @return  {Boolean}  True if successfully started, false otherwise.
+     * @return  {Shader}  The builtfog shader.
      */
     FogBuilder.prototype.build = function(gfx) {
-        var shader = new ShaderBuilder(this.vsSource, this.fsSource,
+        var builder = new ShaderBuilder(
+            this.vsSource, this.fsSource,
             this.name, this.requiredTypes);
-        return shader.build(gfx);
+        return builder.build(gfx);
     };
     
     return FogBuilder;

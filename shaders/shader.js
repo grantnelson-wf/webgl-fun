@@ -51,6 +51,7 @@ define(function(require) {
      */
     Shader.prototype.use = function() {
         this.gfx.useShader(this);
+        this.enableAll();
     };
 
     /**
@@ -159,6 +160,7 @@ define(function(require) {
      * @param  {Shader} shader  The shader to setup.
      */
     ShaderBuilder.prototype._setupAttribs = function(gl, shader) {
+        var allAttrs = [];
         var count = gl.getProgramParameter(shader.program, gl.ACTIVE_ATTRIBUTES);
         for (var i = 0; i < count; i++) {
             var info = gl.getActiveAttrib(shader.program, i);
@@ -168,6 +170,7 @@ define(function(require) {
             var capName = info.name.charAt(0).toUpperCase() + info.name.slice(1);
 
             shader[info.name+"Loc"] = attr;
+            allAttrs.push(attr);
 
             shader["enable"+capName] = function() {
                 gl.enableVertexAttribArray(attr);
@@ -177,6 +180,18 @@ define(function(require) {
                 gl.disableVertexAttribArray(attr);
             };
         }
+        
+        shader.enableAll = function() {
+            for (var i = 0; i < allAttrs.length; i++) {
+                gl.enableVertexAttribArray(allAttrs[i]);
+            }
+        };
+
+        shader.disableAll = function() {
+            for (var i = 0; i < allAttrs.length; i++) {
+                gl.disableVertexAttribArray(allAttrs[i]);
+            }
+        };
     }
     
     /**
@@ -207,12 +222,12 @@ define(function(require) {
     }
 
     /**
-     * [_getUniformSetter description]
-     * @param  {[type]} gl   [description]
-     * @param  {[type]} type [description]
-     * @param  {[type]} attr [description]
-     * @param  {[type]} name [description]
-     * @return {[type]}      [description]
+     * Gets the funcation for setting a uniform value.
+     * @param  {Object} gl    The graphics object.
+     * @param  {Number} type  The type of the uniform value.
+     * @param  {Object} attr  The uniform value's attribute location.
+     * @param  {String} name  The name of the attribute.
+     * @return  {Function}  The function for setting that uniform value.
      */
     ShaderBuilder.prototype._getUniformSetter = function(gl, type, attr, name) {
         switch(type) {

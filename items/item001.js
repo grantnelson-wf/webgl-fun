@@ -3,7 +3,7 @@ define(function(require) {
     var Const = require("tools/const");
     var Matrix = require("tools/matrix");
     var Fog = require("shaders/fog");
-    var ToroidBuilder = require("shapes/toroid");
+    var Toroid = require("shapes/wlogo");
     
     /**
      * Creates an item for rendering.
@@ -31,10 +31,9 @@ define(function(require) {
             return false;
         }
         this.shader.use();
-        this.shader.enablePosAttr();
         
         // Create shape to use.
-        var shapeBuilder = new ToroidBuilder();
+        var shapeBuilder = new Toroid();
         this.shape = shapeBuilder.build(gfx, this.shader.requiredType);
 
         // Set light.

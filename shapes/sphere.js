@@ -105,9 +105,9 @@ define(function(require) {
     /**
      * Looks up or creates the mid point between the two given normals.
      * @param  {ShapeBuilder} shape  The shape build built.
-     * @param  {Number} vertexType  The type of vertex to create.
-     * @param  {Array} norm1   The first normal.
-     * @param  {Array} norm2   The second normal.
+     * @param  {Number} vertexType   The type of vertex to create.
+     * @param  {Array} norm1         The first normal.
+     * @param  {Array} norm2         The second normal.
      * @returns  {Number}  The index of the middle point.
      */
     SphereBuilder.prototype._posMid = function(shape, vertexType, norm1, norm2) {
@@ -119,12 +119,12 @@ define(function(require) {
 
     /**
      * This handles creating a face and sub-dividing the face for each iteration.
-     * @param  {ShapeBuilder} shape   The shape build built.
-     * @param  {Number} vertexType  The type of vertex to create.
-     * @param  {Number} i1  The first index into the triangle.
-     * @param  {Number} i2  The second index into the triangle.
-     * @param  {Number} i3  The third index into the triangle.
-     * @param  {Number} iteration  The number of iterations left.
+     * @param  {ShapeBuilder} shape  The shape build built.
+     * @param  {Number} vertexType   The type of vertex to create.
+     * @param  {Number} i1           The first index into the triangle.
+     * @param  {Number} i2           The second index into the triangle.
+     * @param  {Number} i3           The third index into the triangle.
+     * @param  {Number} iteration    The number of iterations left.
      */
     SphereBuilder.prototype._div = function(shape, vertexType, i1, i2, i3, iteration) {
         //         2                  2                             
@@ -137,7 +137,7 @@ define(function(require) {
         //   /___________\      /____\/_____\                 
         //  1             3    1      6      3
         if (iteration <= 0) {
-            shape.addTriIndex(i1, i2, i3);
+            shape.addTriIndices(i1, i2, i3);
         } else {
             var norm1 = shape.getNorm(i1);
             var norm2 = shape.getNorm(i2);
@@ -154,7 +154,7 @@ define(function(require) {
 
     /**
      * Creates a toroid.
-     * @param  {Graphics} gfx  The graphics object.
+     * @param  {Graphics} gfx       The graphics object.
      * @param  {Number} vertexType  The type of vertices the toroid should have.
      * @returns  {Shape}  The created toroid.
      */

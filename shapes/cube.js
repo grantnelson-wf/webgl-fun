@@ -61,9 +61,9 @@ define(function(require) {
     /**
      * Adds a position to the shape.
      * @param  {ShapeBuilder} shape  The shape being built.
-     * @param  {Number} sx  The x axis scalar.
-     * @param  {Number} sy  The y axis scalar.
-     * @param  {Number} sz  The z axis scalar.
+     * @param  {Number} sx           The x axis scalar.
+     * @param  {Number} sy           The y axis scalar.
+     * @param  {Number} sz           The z axis scalar.
      */
     CubeBuilder.prototype._addPos = function(shape, sx, sy, sz) {
         shape.addPos(this.width*sx*0.5 + this.x,
@@ -74,14 +74,14 @@ define(function(require) {
     /**
      * This adds a face of the cube to the shape builder.
      * @param  {ShapeBuilder} shape  The shape being built.
-     * @param  {Number} vertexType  The vertex type to build.
-     * @param  {Number} nx  The x normal component.
-     * @param  {Number} ny  The y normal component.
-     * @param  {Number} nz  The z normal component.
-     * @param  {Number} tu1  [description]
-     * @param  {Number} tv1  [description]
-     * @param  {Number} tu2  [description]
-     * @param  {Number} tv2  [description]
+     * @param  {Number} vertexType   The vertex type to build.
+     * @param  {Number} nx           The x normal component.
+     * @param  {Number} ny           The y normal component.
+     * @param  {Number} nz           The z normal component.
+     * @param  {Number} tu1          The first u texture coordinate.
+     * @param  {Number} tv1          The first v texture coordinate.
+     * @param  {Number} tu2          The second u texture coordinate.
+     * @param  {Number} tv2          The second v texture coordinate.
      */
     CubeBuilder.prototype._addFace = function(shape, vertexType, nx, ny, nz, tu1, tv1, tu2, tv2) {
         var index = shape.posCount();
@@ -120,15 +120,15 @@ define(function(require) {
         }
 
         if (nx+ny+nz > 0) {
-            shape.addQuadIndex(index, index+1, index+2, index+3);
+            shape.addQuadIndices(index, index+1, index+2, index+3);
         } else {
-            shape.addQuadIndex(index, index+2, index+1, index+3);
+            shape.addQuadIndices(index, index+2, index+1, index+3);
         }
     };
     
     /**
      * Builds a cube shape.
-     * @param  {Graphics} gfx  The graphical object.
+     * @param  {Graphics} gfx       The graphical object.
      * @param  {Number} vertexType  The vertex type to build.
      * @return  {Shape}  The created cube shape.
      */

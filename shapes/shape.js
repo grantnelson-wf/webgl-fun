@@ -6,31 +6,49 @@ define(function(require) {
      * A graphical shape object.
      * @param  {Number} vertexType  The vertex type.
      * @param  {Number} vertexSize  The vertex size.
-     * @param  {Number} indexCount  The number of indices.
-     * @param  {Object} vertexBuf  The vertex buffer.
-     * @param  {Object} indexBuf  The index buffer.
+     * @param  {Object} vertexBuf   The vertex buffer.
+     * @param  {Array} indexObjs    The index information.
      */
-    function Shape(vertexType, vertexSize, indexCount, vertexBuf, indexBuf) {
+    function Shape(vertexType, vertexSize, vertexBuf, indexObjs) {
+    
+        /**
+         * The vertex type.
+         * @type {Number}
+         */
         this.vertexType = vertexType;
-        this.vertexSize = vertexSize;
-        this.indexCount = indexCount;
-        this.vertexBuf  = vertexBuf;
-        this.indexBuf   = indexBuf;
+        
+        /**
+         * The vertex size.
+         * @type {Number}
+         */
+        this._vertexSize = vertexSize;
+        
+        /**
+         * The vertex buffer.
+         * @type {Object}
+         */
+        this._vertexBuf  = vertexBuf;
+        
+        /**
+         * The index information.
+         * @type {Array}
+         */
+        this._indexObjs  = indexObjs;
     }
 
     /**
      * Draws the shape to the graphical object.
-     * @param  {Graphics} gfx  The graphical object to render.
-     * @param  {Object} posAttr  The position attribute handle or null.
-     * @param  {Object} clrAttr  The color attribute handle or null.
+     * @param  {Graphics} gfx     The graphical object to render.
+     * @param  {Object} posAttr   The position attribute handle or null.
+     * @param  {Object} clrAttr   The color attribute handle or null.
      * @param  {Object} normAttr  The normal attribute handle or null.
-     * @param  {Object} txtAttr  The texture coordinate attribute handle or null.
+     * @param  {Object} txtAttr   The texture coordinate attribute handle or null.
      */
     Shape.prototype.draw = function(gfx, posAttr, clrAttr, normAttr, txtAttr) {
         var gl = gfx.gl;
         
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuf);
-        var stride = this.vertexSize*Float32Array.BYTES_PER_ELEMENT;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuf);
+        var stride = this._vertexSize*Float32Array.BYTES_PER_ELEMENT;
         var offset = 0;
 
         if ((posAttr !== null) && (this.vertexType&Const.POS)) {
@@ -56,8 +74,12 @@ define(function(require) {
             gl.vertexAttribPointer(txtAttr, 2, gl.FLOAT, false, stride, offset);
         }
 
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuf);
-        gl.drawElements(gl.TRIANGLES, this.indexCount, gl.UNSIGNED_SHORT, 0);
+        var objCount = this._indexObjs.length;
+        for (var i = 0; i < objCount; i++) {
+            var indexObj = this._indexObjs[i];
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexObj.buffer);
+            gl.drawElements(indexObj.type, indexObj.count, gl.UNSIGNED_SHORT, 0);
+        }
     };
 
     //======================================================================
@@ -90,18 +112,90 @@ define(function(require) {
          * @type {Array}
          */
         this._txt = [];
-
+        
         /**
-         * This list of indices to create triangles.
+         * The list of indices for points.
+         * Each index is a point.
          * @type {Array}
          */
-        this._indices = [];
+        this._indicesPoints = [];
+        
+        /**
+         * The list of index pairs for lines.
+         * Each pair is a line.
+         * @type {Array}
+         */
+        this._indicesLines = [];
+        
+        /**
+         * The current line strip indices being worked on.
+         * Each point is connected to the previous to create lines,
+         * with the exception of the first and last points.
+         * @type {Array}
+         */
+        this._curLineStrips = null;
+        
+        /**
+         * The list of line strip indices.
+         * @type {Array}
+         */
+        this._indicesLineStrips = [];
+        
+        /**
+         * The current line loop indices being worked on.
+         * Each point is connected to the previous to create lines,
+         * and the last point is connected to the first to make a loop.
+         * @type {Array}
+         */
+        this._curLineLoops = null;
+        
+        /**
+         * The list of line loop indices.
+         * @type {Array}
+         */
+        this._indicesLineLoops = [];
+
+        /**
+         * The list of triangle indices.
+         * @type {Array}
+         */
+        this._indicesTris = [];
+
+        /**
+         * The list of quadrilateral indices.
+         * @type {Array}
+         */
+        this._indicesQuads = [];
+        
+        /**
+         * The current triangle strip indices being worked on.
+         * @type {Array}
+         */
+        this._curTriStrips = null;
+        
+        /**
+         * The list of triangle strip indices.
+         * @type {Array}
+         */
+        this._indicesTriStrips = [];
+        
+        /**
+         * This current triangle fan indices being worked on.
+         * @type {Array}
+         */
+        this._curTriFans = null;
+        
+        /**
+         * The list of triangle fan indices.
+         * @type {Array}
+         */
+        this._indicesTriFans = [];
     }
 
     /**
      * This checks is the two values are equal.
-     * @param  {Number} a  The first value.
-     * @param  {Number} b  The second value.
+     * @param  {Number} a        The first value.
+     * @param  {Number} b        The second value.
      * @param  {Number} epsilon  The epsilon comparer.
      * @return  {Boolean}  True if they are equal, false otherwise.
      */
@@ -123,9 +217,9 @@ define(function(require) {
 
     /**
      * Finds the the position in the shape.
-     * @param  {Number} px  The x component of the position.
-     * @param  {Number} py  The y component of the position.
-     * @param  {Number} pz  The z component of the position.
+     * @param  {Number} px       The x component of the position.
+     * @param  {Number} py       The y component of the position.
+     * @param  {Number} pz       The z component of the position.
      * @param  {Number} epsilon  The epsilon comparison.
      * @return  {Number}  The index found or -1 if not found.
      */
@@ -143,9 +237,9 @@ define(function(require) {
     /**
      * Sets a position to the shape.
      * @param  {Number} index  The index to set.
-     * @param  {Number} px  The x component of the position.
-     * @param  {Number} py  The y component of the position.
-     * @param  {Number} pz  The z component of the position.
+     * @param  {Number} px     The x component of the position.
+     * @param  {Number} py     The y component of the position.
+     * @param  {Number} pz     The z component of the position.
      */
     ShapeBuilder.prototype.setPos = function(index, px, py, pz) {
         this._pos[index*3  ] = Number(px);
@@ -184,9 +278,9 @@ define(function(require) {
 
     /**
      * Finds the the color in the shape.
-     * @param  {Number} r  The red of the color.
-     * @param  {Number} g  The green of the color.
-     * @param  {Number} b  The blue of the color.
+     * @param  {Number} r        The red of the color.
+     * @param  {Number} g        The green of the color.
+     * @param  {Number} b        The blue of the color.
      * @param  {Number} epsilon  The epsilon comparison.
      * @return  {Number}  The index found or -1 if not found.
      */
@@ -204,9 +298,9 @@ define(function(require) {
     /**
      * Sets a color to the shape.
      * @param  {Number} index  The index to set.
-     * @param  {Number} r  The red of the color.
-     * @param  {Number} g  The green of the color.
-     * @param  {Number} b  The blue of the color.
+     * @param  {Number} r      The red of the color.
+     * @param  {Number} g      The green of the color.
+     * @param  {Number} b      The blue of the color.
      */
     ShapeBuilder.prototype.setClr = function(index, r, g, b) {
         this._clr[index*3  ] = Number(r);
@@ -245,9 +339,9 @@ define(function(require) {
 
     /**
      * Finds the the normal in the shape.
-     * @param  {Number} nx  The x component of the normal.
-     * @param  {Number} ny  The y component of the normal.
-     * @param  {Number} nz  The z component of the normal.
+     * @param  {Number} nx       The x component of the normal.
+     * @param  {Number} ny       The y component of the normal.
+     * @param  {Number} nz       The z component of the normal.
      * @param  {Number} epsilon  The epsilon comparison.
      * @return  {Number}  The index found or -1 if not found.
      */
@@ -265,9 +359,9 @@ define(function(require) {
     /**
      * Sets a normal to the shape.
      * @param  {Number} index  The index to set.
-     * @param  {Number} nx  The x component of the normal.
-     * @param  {Number} ny  The y component of the normal.
-     * @param  {Number} nz  The z component of the normal.
+     * @param  {Number} nx     The x component of the normal.
+     * @param  {Number} ny     The y component of the normal.
+     * @param  {Number} nz     The z component of the normal.
      */
     ShapeBuilder.prototype.setNorm = function(index, nx, ny, nz) {
         this._norm[index*3  ] = Number(nx);
@@ -305,8 +399,8 @@ define(function(require) {
 
     /**
      * Finds the the texture coordinate. in the shape.
-     * @param  {Number} tu  The u component of the texture coordinate.
-     * @param  {Number} tv  The v component of the texture coordinate.
+     * @param  {Number} tu       The u component of the texture coordinate.
+     * @param  {Number} tv       The v component of the texture coordinate.
      * @param  {Number} epsilon  The epsilon comparison.
      * @return  {Number}  The index found or -1 if not found.
      */
@@ -323,8 +417,8 @@ define(function(require) {
     /**
      * Sets a texture coordinate. to the shape.
      * @param  {Number} index  The index to set.
-     * @param  {Number} tu  The u component of the texture coordinate.
-     * @param  {Number} tv  The v component of the texture coordinate.
+     * @param  {Number} tu     The u component of the texture coordinate.
+     * @param  {Number} tv     The v component of the texture coordinate.
      */
     ShapeBuilder.prototype.setTxt = function(index, tu, tv) {
         this._txt[index*2  ] = Number(tu);
@@ -349,45 +443,181 @@ define(function(require) {
     };
 
     //======================================================================
-
+    
+    /**
+     * Adds a point index or point indices to the shape.
+     */
+    ShapeBuilder.prototype.addPointIndex = function() {
+        for (var i = 0; i < arguments.length; i++) {
+            this._indicesPoints.push(Number(arguments[i]));
+        }
+    };
+    
+    /**
+     * Adds line indices to the shape.
+     * @param  {Number} i  The first index to add.
+     * @param  {Number} j  The second index to add.
+     */
+    ShapeBuilder.prototype.addLineIndices = function(i, j) {
+        this._indicesLines.push(Number(i), Number(j));
+    };
+    
+    /**
+     * Adds triangle indices to the shape.
+     */
+    ShapeBuilder.prototype.startLineStrip = function() {
+        this._curLineStrips = [];
+        this._indicesLineStrips.push(this._curLineStrips);
+        for (var i = 0; i < arguments.length; i++) {
+            this._curLineStrips.push(Number(arguments[i]));
+        }
+    };
+    
     /**
      * Adds triangle indices to the shape.
      * @param  {Number} i1  The first index to add.
      * @param  {Number} i2  The second index to add.
      * @param  {Number} i3  The third index to add.
      */
-    ShapeBuilder.prototype.addTriIndex = function(i1, i2, i3) {
-        this._indices.push(Number(i1), Number(i2), Number(i3));
+    ShapeBuilder.prototype.addToLineStrip = function() {
+        for (var i = 0; i < arguments.length; i++) {
+            this._curLineStrips.push(Number(arguments[i]));
+        }
     };
-
+    
+    /**
+     * Adds triangle indices to the shape.
+     */
+    ShapeBuilder.prototype.startLineLoop = function() {
+        this._curLineLoops = [];
+        this._indicesLineLoops.push(this._curLineLoops);
+        for (var i = 0; i < arguments.length; i++) {
+            this._curLineLoops.push(Number(arguments[i]));
+        }
+    };
+    
     /**
      * Adds triangle indices to the shape.
      * @param  {Number} i1  The first index to add.
      * @param  {Number} i2  The second index to add.
      * @param  {Number} i3  The third index to add.
-     * @param  {Number} i4  The third index to add.
      */
-    ShapeBuilder.prototype.addQuadIndex = function(i1, i2, i3, i4) {
-        this._indices.push(Number(i1), Number(i2), Number(i3),
-                           Number(i2), Number(i4), Number(i3));
+    ShapeBuilder.prototype.addToLineLoop = function() {
+        for (var i = 0; i < arguments.length; i++) {
+            this._curLineLoops.push(Number(arguments[i]));
+        }
+    };
+    
+    /**
+     * Adds triangle indices to the shape.
+     * @param  {Number} i  The first index to add.
+     * @param  {Number} j  The second index to add.
+     * @param  {Number} k  The third index to add.
+     */
+    ShapeBuilder.prototype.addTriIndices = function(i, j, k) {
+        this._indicesTris.push(Number(i), Number(j), Number(k));
     };
 
     /**
-     * Gets the current number of indices in the shape builder.
-     * @returns  {Number}  The count of indices.
+     * Adds quadrilateral indices to the shape.
+     * @param  {Number} i  The first index to add.
+     * @param  {Number} j  The second index to add.
+     * @param  {Number} k  The third index to add.
+     * @param  {Number} l  The forth index to add.
      */
-    ShapeBuilder.prototype.indexCount = function() {
-        return this._indices.length;
+    ShapeBuilder.prototype.addQuadIndices = function(i, j, k, l) {
+        this._indicesQuads.push(Number(i), Number(j), Number(k), Number(l));
     };
 
+    /**
+     * Adds triangle indices to the shape.
+     */
+    ShapeBuilder.prototype.startTriStrip = function() {
+        this._curTriStrips = [];
+        this._indicesTriStrips.push(this._curTriStrips);
+        for (var i = 0; i < arguments.length; i++) {
+            this._curTriStrips.push(Number(arguments[i]));
+        }
+    };
+    
+    /**
+     * Adds triangle indices to the shape.
+     * @param  {Number} i1  The first index to add.
+     * @param  {Number} i2  The second index to add.
+     * @param  {Number} i3  The third index to add.
+     */
+    ShapeBuilder.prototype.addToTriStrip = function() {
+        for (var i = 0; i < arguments.length; i++) {
+            this._curTriStrips.push(Number(arguments[i]));
+        }
+    };
+    
+    /**
+     * Adds triangle indices to the shape.
+     */
+    ShapeBuilder.prototype.startTriFan = function() {
+        this._curTriFans = [];
+        this._indicesTriFans.push(this._curTriFans);
+        for (var i = 0; i < arguments.length; i++) {
+            this._curTriFans.push(Number(arguments[i]));
+        }
+    };
+    
+    /**
+     * Adds triangle indices to the shape.
+     * @param  {Number} i1  The first index to add.
+     * @param  {Number} i2  The second index to add.
+     * @param  {Number} i3  The third index to add.
+     */
+    ShapeBuilder.prototype.addToTriFan = function() {
+        for (var i = 0; i < arguments.length; i++) {
+            this._curTriFans.push(Number(arguments[i]));
+        }
+    };
+    
+    //======================================================================
+    
+    
+    
+    
+        /*
+        this._indicesPoints
+        this._indicesLines
+        this._indicesLineStrips
+        this._indicesLineLoops
+        this._indicesTris
+        this._indicesQuads
+        this._indicesTriStrips
+        this._indicesTriFans
+        */
+    
+    
+    
+    
+    //======================================================================
+    
     /**
      * Build a shape with the given data.
-     * @param  {Graphics} gfx  The graphical object to build the shape for.
+     * @param  {Graphics} gfx         The graphical object to build the shape for.
      * @param  {Number} [vertexType]  The vertex type to build.
      *                                If not provided, all the defined types are used.
      * @returns  {Shape}  The built shape for the graphical object.
      */
     ShapeBuilder.prototype.build = function(gfx, vertexType) {
+        var gl = gfx.gl;
+        var vertices = this._buildVertices(gl, vertexType);
+        var indexObjs = this._buildIndices(gl, vertices.length);
+        return new Shape(vertices.type, vertices.size, vertices.buffer, indexObjs);
+    };
+    
+    /**
+     * Build a shape with the given data.
+     * @param  {Graphics} gfx         The graphical object to build the shape for.
+     * @param  {Number} [vertexType]  The vertex type to build.
+     *                                If not provided, all the defined types are used.
+     * @returns  {Shape}  The built shape for the graphical object.
+     */
+    ShapeBuilder.prototype._buildVertices = function(gl, vertexType) {
         vertexType = vertexType || (Const.POS|Const.CLR|Const.NORM|Const.TXT);
 
         // Collect information about the vertex arrays.
@@ -453,29 +683,145 @@ define(function(require) {
                 vertices[k++] = this._txt[i*2+1];
             }
         };
-
-        // Copy the indices and check the indices range.
-        var indices = []
-        for (var i = this.indexCount() - 1; i >= 0; i--) {
-            index = this._indices[i];
-            if ((index < 0) || (index >= len)) {
-                throw "Error: The index, "+index+", at "+i+" was not in [0.."+len+")."
-            }
-            indices[i] = index;
-        };
-
-        // Create graphical buffers.
-        var gl = gfx.gl;
+        
+        // Create vertex buffer.
         var vertexBuf = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuf);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-        var indexBuf  = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuf);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-
-        // Create shape object.
-        return new Shape(newVertexType, vertexSize, this.indexCount(), vertexBuf, indexBuf);
+        
+        return {
+            buffer: vertexBuf,
+            type: newVertexType,
+            size: vertexSize,
+            length: len
+        };
+    };
+    
+    /**
+     * Build a shape with the given data.
+     * @param  {Graphics} gfx         The graphical object to build the shape for.
+     * @param  {Number} [vertexType]  The vertex type to build.
+     *                                If not provided, all the defined types are used.
+     * @returns  {Shape}  The built shape for the graphical object.
+     */
+    ShapeBuilder.prototype._buildIndices = function(gl, len) {
+        var indices = [];
+        var indexObjs = [];
+        var addIndexObj = function(type) {
+            var indexBuf  = gl.createBuffer();
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuf);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+            indexObjs.push({
+                type:   type,
+                count:  indices.length,
+                buffer: indexBuf
+            });
+            indices = [];
+        };
+        
+        // Copy the point indices and check the indices range.
+        if (this._indicesPoints.length > 0) {
+            for (var i = 0; i < this._indicesPoints.length; i++) {
+                index = this._indicesPoints[i];
+                if ((index < 0) || (index >= len)) {
+                    throw "Error: The point index, "+index+", at "+i+" was not in [0.."+len+")."
+                }
+                indices.push(index);
+            };
+            addIndexObj(gl.POINTS);
+        }
+        
+        // Copy the line indices and check the indices range.
+        if (this._indicesLines.length > 0) {
+            for (var i = 0; i < this._indicesLines.length; i++) {
+                index = this._indicesLines[i];
+                if ((index < 0) || (index >= len)) {
+                    throw "Error: The line index, "+index+", at "+i+" was not in [0.."+len+")."
+                }
+                indices.push(index);
+            };
+            addIndexObj(gl.LINES);
+        }
+        
+        // Copy the line strips indices and check the indices range.
+        for (var i = 0; i < this._indicesLineStrips.length; i++) {
+            var lineStrip = this._indicesLineStrips[i];
+            for (var j = 0; j < lineStrip.length; j++) {
+                index = lineStrip[j];
+                if ((index < 0) || (index >= len)) {
+                    throw "Error: The line strip index, "+index+", at "+j+" in "+i+" was not in [0.."+len+")."
+                }
+                indices.push(index);
+            };
+            addIndexObj(gl.LINE_STRIP);
+        };
+        
+        // Copy the line loops indices and check the indices range.
+        if (this._indicesLineLoops.length > 0) {
+            for (var i = 0; i < this._indicesLineLoops.length; i++) {
+                var lineLoop = this._indicesLineLoops[i];
+                for (var j = 0; j < lineLoop.length; j++) {
+                    index = lineLoop[j];
+                    if ((index < 0) || (index >= len)) {
+                        throw "Error: The line loop index, "+index+", at "+j+" in "+i+" was not in [0.."+len+")."
+                    }
+                    indices.push(index);
+                };
+                addIndexObj(gl.LINE_LOOP);
+            };
+        }
+        
+        // Copy the triangles and check the indices range.
+        if (this._indicesTris.length > 0) {
+            for (var i = 0; i < this._indicesTris.length; i++) {
+                index = this._indicesTris[i];
+                if ((index < 0) || (index >= len)) {
+                    throw "Error: The triangle index, "+index+", at "+i+" was not in [0.."+len+")."
+                }
+                indices.push(index);
+            };
+            addIndexObj(gl.TRIANGLES);
+        }
+        
+        // Copy the quads and check the indices range.
+        for (var i = 0; i < this._indicesQuads.length; i += 4) {
+            for (var j = 0; j < 4; j++) {
+                index = this._indicesQuads[i+j];
+                if ((index < 0) || (index >= len)) {
+                    throw "Error: The quads index, "+index+", at "+j+" in "+i+" was not in [0.."+len+")."
+                }
+                indices.push(index);
+            };
+            addIndexObj(gl.TRIANGLE_FAN);
+        };
+        
+        // Copy the triangle strips indices and check the indices range.
+        for (var i = 0; i < this._indicesTriStrips.length; i++) {
+            var triStrip = this._indicesTriStrips[i];
+            for (var j = 0; j < triStrip.length; j++) {
+                index = triStrip[j];
+                if ((index < 0) || (index >= len)) {
+                    throw "Error: The triangle strip index, "+index+", at "+j+" in "+i+" was not in [0.."+len+")."
+                }
+                indices.push(index);
+            };
+            addIndexObj(gl.TRIANGLE_STRIP);
+        };
+        
+        // Copy the triangle fan indices and check the indices range.
+        for (var i = 0; i < this._indicesTriFans.length; i++) {
+            var triFan = this._indicesTriFans[i];
+            for (var j = 0; j < triFan.length; j++) {
+                index = triFan[j];
+                if ((index < 0) || (index >= len)) {
+                    throw "Error: The triangle fan index, "+index+", at "+j+" in "+i+" was not in [0.."+len+")."
+                }
+                indices.push(index);
+            };
+            addIndexObj(gl.TRIANGLE_FAN);
+        };
+        
+        return indexObjs;
     };
 
     return ShapeBuilder;

@@ -100,12 +100,12 @@ define(function() {
 
         /**
          * Creates an orthographic projection matrix.
-         * @param  {Number} left  The left side of the projection.
-         * @param  {Number} right  The right side of the projection.
+         * @param  {Number} left    The left side of the projection.
+         * @param  {Number} right   The right side of the projection.
          * @param  {Number} bottom  The bottom side of the projection.
-         * @param  {Number} top  The top side of the projection.
-         * @param  {Number} near  The near side of the projection.
-         * @param  {Number} far  The far side of the projection.
+         * @param  {Number} top     The top side of the projection.
+         * @param  {Number} near    The near side of the projection.
+         * @param  {Number} far     The far side of the projection.
          * @return  {Array}  The created matrix.
          */
         orthographic: function(left, right, bottom, top, near, far) {
@@ -123,10 +123,10 @@ define(function() {
 
         /**
          * Creates an perspective projection matrix.
-         * @param  {Number} fov  The angle in radians for the vertical field of view.
+         * @param  {Number} fov     The angle in radians for the vertical field of view.
          * @param  {Number} aspect  The aspect ratio of horizontal over vertical.
-         * @param  {Number} near  The near side of the frustum.
-         * @param  {Number} far  The far side of the frustum.
+         * @param  {Number} near    The near side of the frustum.
+         * @param  {Number} far     The far side of the frustum.
          * @returns  {Array}  The created matrix.
          */
         perspective: function(fov, aspect, near, far) {
@@ -142,7 +142,7 @@ define(function() {
 
         /**
          * Converts the given matrix into a string.
-         * @param  {Array} mat  The matrix to convert to a string.
+         * @param  {Array} mat        The matrix to convert to a string.
          * @param  {String} [indent]  Optional indent to apply to new lines.
          * @returns  {String}  The string for the matrix.
          */

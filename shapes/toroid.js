@@ -65,7 +65,7 @@ define(function(require) {
     
     /**
      * Creates a toroid.
-     * @param  {Graphics} gfx  The graphics object.
+     * @param  {Graphics} gfx       The graphics object.
      * @param  {Number} vertexType  The type of vertices the toroid should have.
      * @returns  {Shape}  The created toroid.
      */
@@ -114,8 +114,8 @@ define(function(require) {
                 var i2 = k1 + j;
                 var i3 = k1 + k2;
                 var i4 = i*this.minorCount + k2;
-                shape.addTriIndex(i1, i3, i2);
-                shape.addTriIndex(i3, i1, i4);
+                shape.addTriIndices(i1, i3, i2);
+                shape.addTriIndices(i3, i1, i4);
             }
         }
 
