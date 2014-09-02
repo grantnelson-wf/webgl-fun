@@ -33,19 +33,19 @@ define(function(require) {
         this.minorCount = 20;
 
         /**
-         * The offset of the cube's center on the x axis.
+         * The offset of the toroid's center on the x axis.
          * @type {Number}
          */
         this.x = 0.0;
 
         /**
-         * The offset of the cube's center on the y axis.
+         * The offset of the toroid's center on the y axis.
          * @type {Number}
          */
         this.y = 0.0;
 
         /**
-         * The offset of the cube's center on the z axis.
+         * The offset of the toroid's center on the z axis.
          * @type {Number}
          */
         this.z = 0.0;
@@ -78,6 +78,11 @@ define(function(require) {
             var majorCos = Math.cos(majorAngle);
             var majorSin = Math.sin(majorAngle);
 
+            shape.startTriStrip();
+            var i1 = ((i+1)%this.majorCount)*this.minorCount;
+            var i2 = i*this.minorCount;
+            shape.addToTriStrip(i1+this.minorCount-1, i2+this.minorCount-1);
+            
             for(var j = 0; j < this.minorCount; ++j) {
                 var minorScale = j/this.minorCount;
                 var minorAngle = 2.0*Math.PI*minorScale;
@@ -107,15 +112,8 @@ define(function(require) {
                 if (vertexType&Const.TXT) {
                     shape.addTxt(majorScale, minorScale);
                 }
-                
-                var k1 = ((i+1)%this.majorCount)*this.minorCount;
-                var k2 = (j+1)%this.minorCount;
-                var i1 = i*this.minorCount + j;
-                var i2 = k1 + j;
-                var i3 = k1 + k2;
-                var i4 = i*this.minorCount + k2;
-                shape.addTriIndices(i1, i3, i2);
-                shape.addTriIndices(i3, i1, i4);
+
+                shape.addToTriStrip(i1+j, i2+j);
             }
         }
 

@@ -3,7 +3,7 @@ define(function(require) {
     var Const = require("tools/const");
     var Matrix = require("tools/matrix");
     var Fog = require("shaders/fog");
-    var Toroid = require("shapes/wlogo");
+    var Toroid = require("shapes/toroid");
     
     /**
      * Creates an item for rendering.

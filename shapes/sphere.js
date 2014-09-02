@@ -15,37 +15,37 @@ define(function(require) {
         this.iterations = 3;
         
         /**
-         * The major radius of the toroid.
+         * The major radius of the sphere.
          * @type {Number}
          */
         this.scalarX = 0.5;
  
         /**
-         * The minor radius of the toroid.
+         * The minor radius of the sphere.
          * @type {Number}
          */
         this.scalarY = 0.5;
 
         /**
-         * The major count of the toroid.
+         * The major count of the sphere.
          * @type {Number}
          */
         this.scalarZ = 0.5;
 
         /**
-         * The offset of the cube's center on the x axis.
+         * The offset of the sphere's center on the x axis.
          * @type {Number}
          */
         this.x = 0.0;
 
         /**
-         * The offset of the cube's center on the y axis.
+         * The offset of the sphere's center on the y axis.
          * @type {Number}
          */
         this.y = 0.0;
 
         /**
-         * The offset of the cube's center on the z axis.
+         * The offset of the sphere's center on the z axis.
          * @type {Number}
          */
         this.z = 0.0;
@@ -137,7 +137,7 @@ define(function(require) {
         //   /___________\      /____\/_____\                 
         //  1             3    1      6      3
         if (iteration <= 0) {
-            shape.addTriIndices(i1, i2, i3);
+            shape.addTriIndices(i1, i3, i2);
         } else {
             var norm1 = shape.getNorm(i1);
             var norm2 = shape.getNorm(i2);

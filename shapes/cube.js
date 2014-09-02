@@ -120,9 +120,9 @@ define(function(require) {
         }
 
         if (nx+ny+nz > 0) {
-            shape.addQuadIndices(index, index+1, index+2, index+3);
+            shape.addQuadIndices(index, index+1, index+3, index+2);
         } else {
-            shape.addQuadIndices(index, index+2, index+1, index+3);
+            shape.addQuadIndices(index, index+2, index+3, index+1);
         }
     };
     
