@@ -82,7 +82,10 @@ define(function(require) {
         this.shader.setObjMat(objMatrix);
 
         // Draw shape.
-        this.shape.draw(gfx, this.shader.posAttrLoc, null, this.shader.normAttrLoc, null);
+        this.shape.draw(gfx, this.shader.posAttrLoc,
+            this.shader.clrAttrLoc, null, null);
+            //this.shader.normAttrLoc,
+            //this.shader.txtAttrLoc);
 
         return true;
     };

@@ -96,10 +96,10 @@ define(function(require) {
                 shape.addPos(px, py, pz);
 
                 if (vertexType&Const.CLR) {
-                    var r = majorSin*minorCos;
-                    var g = minorSin;
-                    var b = majorCos*minorCos;
-                    shape.addPos(r, g, b);
+                    var r = majorSin*minorCos*0.5+0.5;
+                    var g = minorSin*0.5+0.5;
+                    var b = majorCos*minorCos*0.5+0.5;
+                    shape.addClr(r, g, b);
                 }
 
                 if (vertexType&Const.NORM) {

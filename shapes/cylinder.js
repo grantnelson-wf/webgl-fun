@@ -98,7 +98,7 @@ define(function(require) {
                 shape.addTxt(0, 1);
             }
             var index = shape.posCount();
-            shape.startTriFan(index-1, index+this.sideCount-2)
+            shape.startTriFan(index-1, index+this.sideCount-2);
             
             for (var i = 0; i < this.sideCount; i++) {
                 var angle = i*Math.PI*2.0/this.sideCount;
@@ -131,7 +131,7 @@ define(function(require) {
                 shape.addTxt(0, 0);
             }
             var index = shape.posCount();
-            shape.startTriFan(index-1, index)
+            shape.startTriFan(index-1, index);
             
             for (var i = 0; i < this.sideCount; i++) {
                 var angle = i*Math.PI*2.0/this.sideCount;
@@ -152,27 +152,10 @@ define(function(require) {
         }
         
         // Add sides.
-        for (var j = 0; j < this.sideCount; j++) {
-            var angle = j*Math.PI*2.0/this.sideCount;
-            var cos = Math.cos(angle);
-            var sin = Math.sin(angle);
-            shape.addPos(cos*this.bottomRadius + this.x,
-                this.y+this.bottomHeight, sin*this.bottomRadius + this.z);
-            if (vertexType&Const.NORM) {
-                shape.addNorm(cos, 0, sin);
-            }
-            if (vertexType&Const.CLR) {
-                shape.addClr(cos, 0, sin);
-            }
-            if (vertexType&Const.TXT) {
-                shape.addTxt(j/this.sideCount, 0);
-            }
-        };
-        for (var i = 1; i <= this.divCount; i++) {
+        var index = shape.posCount();
+        for (var i = 0; i <= this.divCount; i++) {
             var tu = i/this.divCount;
-            var height = this.y+tu*(this.topHeight-this.bottomHeight)+this.bottomHeight
-            var index = shape.posCount();
-            shape.startTriStrip(index+this.sideCount-1, index-1);
+            var height = this.y+tu*(this.topHeight-this.bottomHeight)+this.bottomHeight;
             for (var j = 0; j < this.sideCount; j++) {
                 var angle = j*Math.PI*2.0/this.sideCount;
                 var cos = Math.cos(angle);
@@ -188,6 +171,12 @@ define(function(require) {
                 if (vertexType&Const.TXT) {
                     shape.addTxt(j/this.sideCount, tu);
                 }
+            };
+        };
+        for (var i = 1; i <= this.divCount; i++) {
+            index += this.sideCount;
+            shape.startTriStrip(index+this.sideCount-1, index-1);
+            for (var j = 0; j < this.sideCount; j++) {
                 shape.addToTriStrip(index+j, index-this.sideCount+j);
             };
         };
