@@ -2,7 +2,7 @@ define(function(require) {
 
     var Const = require("tools/const");
     var Matrix = require("tools/matrix");
-    var Fog = require("shaders/fog");
+    var Directional = require("shaders/directional");
     var Toroid = require("shapes/toroid");
     
     /**
@@ -16,7 +16,7 @@ define(function(require) {
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = "Fog";
+    Item.prototype.name = "Directional Light";
     
     /**
      * Starts this item for rendering.
@@ -25,7 +25,7 @@ define(function(require) {
      */
     Item.prototype.start = function(gfx) {
         // Build and set the shader.
-        var shaderBuilder = new Fog();
+        var shaderBuilder = new Directional();
         this.shader = shaderBuilder.build(gfx);
         if (!this.shader) {
             return false;
@@ -37,6 +37,11 @@ define(function(require) {
         this.shape = shapeBuilder.build(gfx, this.shader.requiredType);
 
         // Set light.
+        // 
+        // 
+        // TODO:: Update for directional light variables.
+        // 
+        // 
         this.shader.setObjClr(1.0, 1.0, 1.0);
         this.shader.setFogClr(0.0, 0.0, 0.0);
         this.shader.setFogStart(1.0);
@@ -77,7 +82,7 @@ define(function(require) {
         this.shader.setObjMat(objMatrix);
 
         // Draw shape.
-        this.shape.draw(gfx, this.shader.posAttrLoc, null, null, null);
+        this.shape.draw(gfx, this.shader.posAttrLoc, null, this.shader.normAttrLoc, null);
         return true;
     };
     

@@ -2,7 +2,7 @@ define(function(require) {
 
     var Const = require("tools/const");
     var Matrix = require("tools/matrix");
-    var Fog = require("shaders/fog");
+    var Color = require("shaders/color");
     var Toroid = require("shapes/toroid");
     
     /**
@@ -16,7 +16,7 @@ define(function(require) {
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = "Fog";
+    Item.prototype.name = "Color";
     
     /**
      * Starts this item for rendering.
@@ -25,7 +25,7 @@ define(function(require) {
      */
     Item.prototype.start = function(gfx) {
         // Build and set the shader.
-        var shaderBuilder = new Fog();
+        var shaderBuilder = new Color();
         this.shader = shaderBuilder.build(gfx);
         if (!this.shader) {
             return false;
@@ -35,12 +35,6 @@ define(function(require) {
         // Create shape to use.
         var shapeBuilder = new Toroid();
         this.shape = shapeBuilder.build(gfx, this.shader.requiredType);
-
-        // Set light.
-        this.shader.setObjClr(1.0, 1.0, 1.0);
-        this.shader.setFogClr(0.0, 0.0, 0.0);
-        this.shader.setFogStart(1.0);
-        this.shader.setFogStop(2.5);
         
         // Set view transformation.
         var viewMatrix = Matrix.translate(0.0, 0.0, 2.0);
@@ -77,7 +71,8 @@ define(function(require) {
         this.shader.setObjMat(objMatrix);
 
         // Draw shape.
-        this.shape.draw(gfx, this.shader.posAttrLoc, null, null, null);
+        this.shape.draw(gfx, this.shader.posAttrLoc,
+            this.shader.clrAttrLoc, null, null);
         return true;
     };
     

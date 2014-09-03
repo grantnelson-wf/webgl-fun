@@ -99,6 +99,22 @@ define(function() {
         },
 
         /**
+         * Creates a rotation matrix with the given Euler angles.
+         * @note  The order of rotation is yaw, pitch, then roll.
+         * @param  {Number} yaw   The yaw Euler angle in radians.
+         * @param  {Number} pitch The pitch Euler angle in radians.
+         * @param  {Number} roll  The roll Euler angle in radians.
+         * @return  {Array}  The rotation matrix.
+         */
+        euler: function(yaw, pitch, roll) {
+            return this.mul(
+                    this.mul(
+                        this.rotateX(yaw),
+                        this.rotateY(pitch)),
+                    this.rotateZ(roll));
+        },
+
+        /**
          * Creates an orthographic projection matrix.
          * @param  {Number} left    The left side of the projection.
          * @param  {Number} right   The right side of the projection.

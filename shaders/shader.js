@@ -2,6 +2,19 @@ define(function(require) {
 
     /**
      * This is a compiled shader program.
+     * @note  This shader will be automatically extended by the builder to have getters and setters
+     *        for the uniform variables found in the shader program. For example if there is the variable
+     *        "uniform vec3 cat" then the shader will have "getCat()", "setCat(x, y, z)", "catLoc"
+     *        (where "catLoc" is set to the uniform handler number).
+     *        The shader will also be extended for any attribute variable. Each will be given an
+     *        enable and disable function. For example if there is the variable "attribute vec3 posAttr"
+     *        then the shader will have "enablePosAttr", "disablePosAttr", and "posAttrLoc". The shader
+     *        will also have "enableAll" and "disableAll" methods added to it which will enableAll attributes
+     *        or visa versa. When a shader is selected to be used "enableAll" will automatically be called.
+     *        The shader will be given two arrays, "attribs" and "uniforms", which will contain the names
+     *        of all the attributes and uniform variables found. Note that camelCase is kept when adding
+     *        methods, therefor no variables in the shader should ever differ by just the capitalization of
+     *        their first letter.
      * @param  {Graphics} gfx         The graphical object.
      * @param  {Object} program       The program of this shader.
      * @param  {String} name          The name of the shader.
