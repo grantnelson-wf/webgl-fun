@@ -2,8 +2,9 @@ define(function(require) {
 
     var Const = require("tools/const");
     var Matrix = require("tools/matrix");
-    var Directional = require("shaders/directional");
-    var Toroid = require("shapes/toroid");
+    var Texture = require("shaders/texture");
+    var Toroid = require("shapes/cube");
+    var Txt2D = require("tools/texture2d")
     
     /**
      * Creates an item for rendering.
@@ -16,7 +17,7 @@ define(function(require) {
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = "Directional Light";
+    Item.prototype.name = "Texture";
     
     /**
      * Starts this item for rendering.
@@ -25,7 +26,7 @@ define(function(require) {
      */
     Item.prototype.start = function(gfx) {
         // Build and set the shader.
-        var shaderBuilder = new Directional();
+        var shaderBuilder = new Texture();
         this.shader = shaderBuilder.build(gfx);
         if (!this.shader) {
             return false;
@@ -36,13 +37,9 @@ define(function(require) {
         var shapeBuilder = new Toroid();
         this.shape = shapeBuilder.build(gfx, this.shader.requiredType);
 
-        // Set light.
-        this.shader.setLightVec(-0.5, 0.5, -1.0);
-        this.shader.setAmbientClr(0.0, 0.0, 1.0);
-        this.shader.setDiffuseClr(1.0, 0.0, 0.0);
-        this.shader.setSpecularClr(1.0, 1.0, 1.0);
-        this.shader.setShininess(60.0);
-        this.shader.setCamPos(0.0, 0.0, -2.0);
+        // Create texture.
+        this.txt2D = new Txt2D(gfx.gl);
+        this.txt2D.load("./data/fire.jpg");
         
         // Set view transformation.
         var viewMatrix = Matrix.translate(0.0, 0.0, 2.0);
@@ -78,8 +75,11 @@ define(function(require) {
         var objMatrix = Matrix.euler(this.yaw, this.pitch, this.roll);
         this.shader.setObjMat(objMatrix);
 
+        // Bind texture.
+        this.txt2D.bind();
+
         // Draw shape.
-        this.shape.draw(gfx, this.shader.posAttrLoc, null, this.shader.normAttrLoc, null);
+        this.shape.draw(gfx, this.shader.posAttrLoc, null, null, this.shader.txtAttrLoc);
         return true;
     };
     

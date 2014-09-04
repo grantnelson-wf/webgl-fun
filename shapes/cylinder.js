@@ -98,7 +98,7 @@ define(function(require) {
                 shape.addTxt(0, 1);
             }
             var index = shape.posCount();
-            shape.startTriFan(index-1, index+this.sideCount-2);
+            shape.startTriFan(index-1, index+this.sideCount-1);
             
             for (var i = 0; i < this.sideCount; i++) {
                 var angle = i*Math.PI*2.0/this.sideCount;

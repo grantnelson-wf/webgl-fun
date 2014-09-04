@@ -51,7 +51,7 @@ define(function(require) {
      * The fragment shader program.
      * @type {String}
      */
-    ColorBuilder.prototype.fsSource =
+    DirectionalBuilder.prototype.fsSource =
         "precision mediump float;                                   \n"+
         "                                                           \n"+
         "uniform vec3 camPos;                                       \n"+
