@@ -16,12 +16,6 @@ define(function(require) {
          * [texture description]
          * @type {[type]}
          */
-        this.image = null;
-        
-        /**
-         * [texture description]
-         * @type {[type]}
-         */
         this.texture = null;
     }
     
@@ -30,22 +24,16 @@ define(function(require) {
      * @param  {[type]} path [description]
      */
     Texture2D.prototype.load = function(path) {
-        this.texture = null;
-        this.image = new Image();
-        this.image.onload = this._onLoad();
-        this.image.src = path;
-    };
-
-    /**
-     * [_onLoad description]
-     */
-    Texture2D.prototype._onLoad = function() {
-        this.texture = this.gl.createTexture();
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.image);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+        var self = this;
+        var image = new Image();
+        image.onload = function() { 
+            self.texture = self.gl.createTexture();
+            self.gl.bindTexture(self.gl.TEXTURE_2D, self.texture);
+            self.gl.texParameteri(self.gl.TEXTURE_2D, self.gl.TEXTURE_MIN_FILTER, self.gl.NEAREST);
+            self.gl.texImage2D(self.gl.TEXTURE_2D, 0, self.gl.RGBA, self.gl.RGBA, self.gl.UNSIGNED_BYTE, image);
+            self.gl.bindTexture(self.gl.TEXTURE_2D, null);
+        }
+        image.src = path;
     };
 
     /**
