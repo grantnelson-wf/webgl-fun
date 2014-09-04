@@ -1,7 +1,5 @@
 define(function(require) {
 
-    var Graphics = require("tools/graphics")
-
     /**
      * Creates the graphical driver.
      */
@@ -11,7 +9,7 @@ define(function(require) {
         this.canvas = null;
         
         /// The graphical object.
-        this.gfx = null;
+        this.gl = null;
         
         /// The item being run.
         this.item = null;
@@ -32,19 +30,24 @@ define(function(require) {
         }
 
         try {
-            var gl = this.canvas.getContext("webgl");
-            gl.viewportWidth = this.canvas.width;
-            gl.viewportHeight = this.canvas.height;
+            this.gl = this.canvas.getContext("webgl");
+            this.gl.viewportWidth = this.canvas.width;
+            this.gl.viewportHeight = this.canvas.height;
         }
         catch(ex) {
            console.log('Error getting WebGL context: '+err.message);
         }
 
-        if (!gl) {
+        if (!this.gl) {
            console.log('Failed to get the rendering context for WebGL.');
         }
 
-        this.gfx = new Graphics(gl);
+        // Initialize the graphics.
+        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        this.gl.clearDepth(1.0);
+        this.gl.enable(this.gl.CULL_FACE);
+        this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.depthFunc(this.gl.LESS);
     }
     
     /**
@@ -58,18 +61,18 @@ define(function(require) {
             this.timer = null;
         }
         if (this.item) {
-            this.item.stop(this.gfx);
+            this.item.stop(this.gl);
             this.item = null;
         }
         this.item = item;
         if (this.item) {
-            if (!this.item.start(this.gfx)) {
+            if (!this.item.start(this.gl)) {
                 return false;
             }
         
             var driver = this;
             this.timer = setInterval(function() {
-                    if (!driver.item.update(driver.gfx)) {
+                    if (!driver.item.update(driver.gl)) {
                         driver.run(null);
                     }
                 }, 10);

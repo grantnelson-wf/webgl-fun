@@ -75,11 +75,11 @@ define(function(require) {
     
     /**
      * Creates a grid.
-     * @param  {Graphics} gfx       The graphics object.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
      * @param  {Number} vertexType  The type of vertices the grid should have.
      * @returns  {Shape}  The created grid.
      */
-    GridBuilder.prototype.build = function(gfx, vertexType) {
+    GridBuilder.prototype.build = function(gl, vertexType) {
         var shape = new ShapeBuilder();
 
         for (var i = 0; i <= this.widthDiv; i++) {
@@ -109,7 +109,7 @@ define(function(require) {
             };        
         }; 
         
-        return shape.build(gfx);
+        return shape.build(gl);
     };
 
     return GridBuilder;

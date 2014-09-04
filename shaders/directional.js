@@ -89,14 +89,14 @@ define(function(require) {
     
     /**
      * Initializes the shader.
-     * @param  {Graphics} gfx  The graphical object.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
      * @return  {Shader}  The built directional light shader.
      */
-    DirectionalBuilder.prototype.build = function(gfx) {
+    DirectionalBuilder.prototype.build = function(gl) {
         var builder = new ShaderBuilder(
             this.vsSource, this.fsSource,
             this.name, this.requiredTypes);
-        return builder.build(gfx);
+        return builder.build(gl);
     };
     
     return DirectionalBuilder;

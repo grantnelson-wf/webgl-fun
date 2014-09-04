@@ -78,11 +78,11 @@ define(function(require) {
     
     /**
      * Creates a cylinder.
-     * @param  {Graphics} gfx       The graphics object.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
      * @param  {Number} vertexType  The type of vertices the cylinder should have.
      * @returns  {Shape}  The created cylinder.
      */
-    CylinderBuilder.prototype.build = function(gfx, vertexType) {
+    CylinderBuilder.prototype.build = function(gl, vertexType) {
         var shape = new ShapeBuilder();
 
         // Add top cap.
@@ -181,7 +181,7 @@ define(function(require) {
             };
         };
         
-        return shape.build(gfx);
+        return shape.build(gl);
     };
 
     return CylinderBuilder;

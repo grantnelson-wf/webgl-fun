@@ -65,11 +65,11 @@ define(function(require) {
     
     /**
      * Creates a toroid.
-     * @param  {Graphics} gfx       The graphics object.
+     * @param  {WebGLRenderingContext} gl  The graphics object.
      * @param  {Number} vertexType  The type of vertices the toroid should have.
      * @returns  {Shape}  The created toroid.
      */
-    ToroidBuilder.prototype.build = function(gfx, vertexType) {
+    ToroidBuilder.prototype.build = function(gl, vertexType) {
         var shape = new ShapeBuilder();
 
         for(var i = 0; i < this.majorCount; ++i) {
@@ -117,7 +117,7 @@ define(function(require) {
             }
         }
 
-        return shape.build(gfx);
+        return shape.build(gl);
     };
 
     return ToroidBuilder;

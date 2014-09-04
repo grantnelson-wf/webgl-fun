@@ -102,11 +102,11 @@ define(function(require) {
     
     /**
      * Creates the Workiva logo shape.
-     * @param  {Graphics} gfx       The graphical object.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
      * @param  {Number} vertexType  The type of the vertex to create.
      * @returns  {Shape}  The created shape.
      */
-    WLogoBuilder.prototype.build = function(gfx, vertexType) {
+    WLogoBuilder.prototype.build = function(gl, vertexType) {
         var shape = new ShapeBuilder();
         //                              I___J
         //                              |   |
@@ -125,7 +125,7 @@ define(function(require) {
         this._addPoly(shape, vertexType, [
             82, 83, 111, 0, 133, 0, 95, 115, // H, I, J, K
             72, 115, 48, 47, 70, 47 ]); // L, M, N
-        return shape.build(gfx)
+        return shape.build(gl);
     };
 
     return WLogoBuilder;

@@ -15,18 +15,18 @@ define(function(require) {
      *        of all the attributes and uniform variables found. Note that camelCase is kept when adding
      *        methods, therefor no variables in the shader should ever differ by just the capitalization of
      *        their first letter.
-     * @param  {Graphics} gfx         The graphical object.
-     * @param  {Object} program       The program of this shader.
-     * @param  {String} name          The name of the shader.
-     * @param  {Number} requiredType  The required vertex type.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Object} program            The program of this shader.
+     * @param  {String} name               The name of the shader.
+     * @param  {Number} requiredType       The required vertex type.
      */
-    function Shader(gfx, program, name, requiredType) {
+    function Shader(gl, program, name, requiredType) {
     
         /**
          * The graphical object.
-         * @type {Graphics}
+         * @type {WebGLRenderingContext}
          */
-        this.gfx = gfx;
+        this.gl = gl;
 
         /**
          * The program of this shader.
@@ -63,7 +63,7 @@ define(function(require) {
      * Sets this shader as the one to use.
      */
     Shader.prototype.use = function() {
-        this.gfx.useShader(this);
+        this.gl.useProgram(this.program);
         this.enableAll();
     };
 
@@ -103,16 +103,15 @@ define(function(require) {
     
     /**
      * Builds the shader.
-     * @param  {Graphics} gfx  The graphical object.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
      * @return  {Shader}  The compiled shader.
      */
-    ShaderBuilder.prototype.build = function(gfx) {
-        var gl = gfx.gl;
+    ShaderBuilder.prototype.build = function(gl) {
         var program = this._compileProgram(gl, this.vsSource, this.fsSource);
         if (!program) {
             return false;
         }
-        var shader = new Shader(gfx, program, this.name, this.requiredType);
+        var shader = new Shader(gl, program, this.name, this.requiredType);
         this._setupAttribs(gl, shader);
         this._setupUniform(gl, shader);
         return shader;
@@ -236,7 +235,7 @@ define(function(require) {
 
     /**
      * Gets the funcation for setting a uniform value.
-     * @param  {Object} gl    The graphics object.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
      * @param  {Number} type  The type of the uniform value.
      * @param  {Object} attr  The uniform value's attribute location.
      * @param  {String} name  The name of the attribute.

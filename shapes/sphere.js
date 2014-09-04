@@ -154,11 +154,11 @@ define(function(require) {
 
     /**
      * Creates a toroid.
-     * @param  {Graphics} gfx       The graphics object.
+     * @param  {WebGLRenderingContext} gl  The graphics object.
      * @param  {Number} vertexType  The type of vertices the toroid should have.
      * @returns  {Shape}  The created toroid.
      */
-    SphereBuilder.prototype.build = function(gfx, vertexType) {
+    SphereBuilder.prototype.build = function(gl, vertexType) {
         var shape = new ShapeBuilder();
 
         // cCeate 12 vertices of a icosahedron.
@@ -202,7 +202,7 @@ define(function(require) {
         this._div(shape, vertexType,  8,  6,  7, this.iterations);
         this._div(shape, vertexType,  9,  8,  1, this.iterations);
 
-        return shape.build(gfx, vertexType);
+        return shape.build(gl, vertexType);
     };
 
     return SphereBuilder;

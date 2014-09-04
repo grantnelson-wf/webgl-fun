@@ -10,8 +10,14 @@ define(function(require) {
      * @param  {Object} vertexBuf   The vertex buffer.
      * @param  {Array} indexObjs    The index information.
      */
-    function Shape(vertexType, vertexSize, vertexBuf, indexObjs) {
+    function Shape(gl, vertexType, vertexSize, vertexBuf, indexObjs) {
     
+        /**
+         * The graphical object.
+         * @type {Object}
+         */
+        this.gl = gl
+
         /**
          * The vertex type.
          * @type {Number}
@@ -39,47 +45,45 @@ define(function(require) {
 
     /**
      * Draws the shape to the graphical object.
-     * @param  {Graphics} gfx     The graphical object to render.
+     * @param  {WebGLRenderingContext} gl  The graphical object to render.
      * @param  {Object} posAttr   The position attribute handle or null.
      * @param  {Object} clrAttr   The color attribute handle or null.
      * @param  {Object} normAttr  The normal attribute handle or null.
      * @param  {Object} txtAttr   The texture coordinate attribute handle or null.
      */
-    Shape.prototype.draw = function(gfx, posAttr, clrAttr, normAttr, txtAttr) {
-        var gl = gfx.gl;
-        
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuf);
+    Shape.prototype.draw = function(posAttr, clrAttr, normAttr, txtAttr) {
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._vertexBuf);
         var stride = this._vertexSize*Float32Array.BYTES_PER_ELEMENT;
         var offset = 0;
 
         if ((posAttr !== null) && (this.vertexType&Const.POS)) {
-            gl.enableVertexAttribArray(posAttr);
-            gl.vertexAttribPointer(posAttr, 3, gl.FLOAT, false, stride, 0);
+            this.gl.enableVertexAttribArray(posAttr);
+            this.gl.vertexAttribPointer(posAttr, 3, this.gl.FLOAT, false, stride, 0);
             offset += 3*Float32Array.BYTES_PER_ELEMENT;
         }
 
         if ((clrAttr !== null) && (this.vertexType&Const.CLR)) {
-            gl.enableVertexAttribArray(clrAttr);
-            gl.vertexAttribPointer(clrAttr, 3, gl.FLOAT, false, stride, offset);
+            this.gl.enableVertexAttribArray(clrAttr);
+            this.gl.vertexAttribPointer(clrAttr, 3, this.gl.FLOAT, false, stride, offset);
             offset += 3*Float32Array.BYTES_PER_ELEMENT;
         }
 
         if ((normAttr !== null) && (this.vertexType&Const.NORM)) {
-            gl.enableVertexAttribArray(normAttr);
-            gl.vertexAttribPointer(normAttr, 3, gl.FLOAT, false, stride, offset);
+            this.gl.enableVertexAttribArray(normAttr);
+            this.gl.vertexAttribPointer(normAttr, 3, this.gl.FLOAT, false, stride, offset);
             offset += 3*Float32Array.BYTES_PER_ELEMENT;
         }
 
         if ((txtAttr !== null) && (this.vertexType&Const.TXT)) {
-            gl.enableVertexAttribArray(txtAttr);
-            gl.vertexAttribPointer(txtAttr, 2, gl.FLOAT, false, stride, offset);
+            this.gl.enableVertexAttribArray(txtAttr);
+            this.gl.vertexAttribPointer(txtAttr, 2, this.gl.FLOAT, false, stride, offset);
         }
 
         var objCount = this._indexObjs.length;
         for (var i = 0; i < objCount; i++) {
             var indexObj = this._indexObjs[i];
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexObj.buffer);
-            gl.drawElements(indexObj.type, indexObj.count, gl.UNSIGNED_SHORT, 0);
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexObj.buffer);
+            this.gl.drawElements(indexObj.type, indexObj.count, this.gl.UNSIGNED_SHORT, 0);
         }
     };
 
@@ -588,38 +592,22 @@ define(function(require) {
     
     //======================================================================
     
-    
-    
-    
-        /*
-        this._indicesTris
-        this._indicesQuads
-        this._indicesTriStrips
-        this._indicesTriFans
-        */
-    
-    
-    
-    
-    //======================================================================
-    
     /**
      * Build a shape with the set data.
-     * @param  {Graphics} gfx         The graphical object to build the shape for.
+     * @param  {WebGLRenderingContext} gl  The graphical object to build the shape for.
      * @param  {Number} [vertexType]  The vertex type to build.
      *                                If not provided, all the defined types are used.
      * @returns  {Shape}  The built shape for the graphical object.
      */
-    ShapeBuilder.prototype.build = function(gfx, vertexType) {
-        var gl = gfx.gl;
+    ShapeBuilder.prototype.build = function(gl, vertexType) {
         var vertices = this._buildVertices(gl, vertexType);
         var indexObjs = this._buildIndices(gl, vertices.length);
-        return new Shape(vertices.type, vertices.size, vertices.buffer, indexObjs);
+        return new Shape(gl, vertices.type, vertices.size, vertices.buffer, indexObjs);
     };
     
     /**
      * Builds the vertices for a shape.
-     * @param  {Graphics} gl          The graphical object to build the shape for.
+     * @param  {WebGLRenderingContext} gl  The graphical object to build the shape for.
      * @param  {Number} [vertexType]  The vertex type to build.
      *                                If not provided, all the defined types are used.
      * @returns  {Object} The buffer, buffer length, vertex type, and vertex size.
@@ -706,7 +694,7 @@ define(function(require) {
     
     /**
      * Build the indices for the shape.
-     * @param  {Graphics} gl          The graphical object to build the shape for.
+     * @param  {WebGLRenderingContext} gl  The graphical object to build the shape for.
      * @param  {Number} [vertexType]  The vertex type to build.
      *                                If not provided, all the defined types are used.
      * @returns  {Array}  The list of index objects.

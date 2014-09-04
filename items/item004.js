@@ -21,13 +21,13 @@ define(function(require) {
     
     /**
      * Starts this item for rendering.
-     * @param  {Graphics} gfx  The graphical object.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
      * @return  {Boolean}  True if successfully started, false otherwise.
      */
-    Item.prototype.start = function(gfx) {
+    Item.prototype.start = function(gl) {
         // Build and set the shader.
         var shaderBuilder = new Texture();
-        this.shader = shaderBuilder.build(gfx);
+        this.shader = shaderBuilder.build(gl);
         if (!this.shader) {
             return false;
         }
@@ -35,10 +35,10 @@ define(function(require) {
         
         // Create shape to use.
         var shapeBuilder = new Toroid();
-        this.shape = shapeBuilder.build(gfx, this.shader.requiredType);
+        this.shape = shapeBuilder.build(gl, this.shader.requiredType);
 
         // Create texture.
-        this.txt2D = new Txt2D(gfx.gl);
+        this.txt2D = new Txt2D(gl);
         this.txt2D.load("./data/fire.jpg");
         
         // Set view transformation.
@@ -58,13 +58,13 @@ define(function(require) {
     
     /**
      * Updates the graphical scene.
-     * @param  {Graphics} gfx  The graphical object
+     * @param  {WebGLRenderingContext} gl  The graphical object
      * @return  {Boolean}  True if updated correctly, false on error.
      */
-    Item.prototype.update = function(gfx) {
+    Item.prototype.update = function(gl) {
         
         // Clear color buffer.
-        gfx.clearBuffers();
+        gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
         // Update rotation.
         this.yaw   += 0.004;
@@ -79,15 +79,15 @@ define(function(require) {
         this.txt2D.bind();
 
         // Draw shape.
-        this.shape.draw(gfx, this.shader.posAttrLoc, null, null, this.shader.txtAttrLoc);
+        this.shape.draw(this.shader.posAttrLoc, null, null, this.shader.txtAttrLoc);
         return true;
     };
     
     /**
      * Stops this object and cleans up.
-     * @param  {Graphics} gfx  The graphical object.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
      */
-    Item.prototype.stop = function(gfx) {
+    Item.prototype.stop = function(gl) {
         // Do Nothing
     };
      
