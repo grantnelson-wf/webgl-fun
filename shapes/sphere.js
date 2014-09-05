@@ -61,7 +61,7 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    SphereBuilder.prototype.supportedTypes = Const.POS|Const.CLR|Const.NORM|Const.TXT;
+    SphereBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE;
     
     /**
      * This looks up the index at the coordinate or add the position for the coordinate.
@@ -80,26 +80,29 @@ define(function(require) {
         nx /= len;
         ny /= len;
         nz /= len;
-        var index = shape.findNorm(nx, ny, nz, 0.0001);
+        var index = shape.norm.find(nx, ny, nz, 0.0001);
         if (index >= 0) {
             return index;
         }
 
-        shape.addPos(this.scalarX*nx + this.x, this.scalarY*ny + this.y, this.scalarZ*nz + this.z);
-        shape.addNorm(nx, ny, nz);
-
-        if (vertexType&Const.CLR) {
-            shape.addClr(nx*0.5 + 0.5, ny*0.5 + 0.5, nz*0.5 + 0.5);
+        shape.pos.add(this.scalarX*nx + this.x, this.scalarY*ny + this.y, this.scalarZ*nz + this.z);
+        shape.norm.add(nx, ny, nz);
+        if (vertexType&Const.CLR3) {
+            shape.clr3.add(nx*0.5 + 0.5, ny*0.5 + 0.5, nz*0.5 + 0.5);
         }
-
+        if (vertexType&Const.CLR4) {
+            shape.clr4.add(nx*0.5 + 0.5, ny*0.5 + 0.5, nz*0.5 + 0.5);
+        }
         if (vertexType&Const.TXT) {
             var w = Math.sqrt(nx*nx + ny*ny);
             var tu = Math.atan2(ny, nx)/Math.PI+0.5;
             var tv = Math.atan2(w, nz)/Math.PI+0.5;
-            shape.addTXT(tu, tv);
+            shape.txt.add(tu, tv);
         }
-
-        return shape.normCount()-1;
+        if (vertexType&Const.CUBE) {
+            shape.cube.add(nx, ny, nz);
+        }
+        return shape.norm.count()-1;
     };
 
     /**
@@ -139,9 +142,9 @@ define(function(require) {
         if (iteration <= 0) {
             shape.addTriIndices(i1, i3, i2);
         } else {
-            var norm1 = shape.getNorm(i1);
-            var norm2 = shape.getNorm(i2);
-            var norm3 = shape.getNorm(i3);
+            var norm1 = shape.norm.get(i1);
+            var norm2 = shape.norm.get(i2);
+            var norm3 = shape.norm.get(i3);
             var i4 = this._posMid(shape, vertexType, norm1, norm2);
             var i5 = this._posMid(shape, vertexType, norm2, norm3);
             var i6 = this._posMid(shape, vertexType, norm3, norm1);

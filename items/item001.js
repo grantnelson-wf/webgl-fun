@@ -2,8 +2,8 @@ define(function(require) {
 
     var Const = require("tools/const");
     var Matrix = require("tools/matrix");
-    var Fog = require("shaders/fog");
-    var Toroid = require("shapes/toroid");
+    var ShaderBuilder = require("shaders/fog");
+    var ShapeBuilder = require("shapes/toroid");
     
     /**
      * Creates an item for rendering.
@@ -25,7 +25,7 @@ define(function(require) {
      */
     Item.prototype.start = function(gl) {
         // Build and set the shader.
-        var shaderBuilder = new Fog();
+        var shaderBuilder = new ShaderBuilder();
         this.shader = shaderBuilder.build(gl);
         if (!this.shader) {
             return false;
@@ -33,8 +33,9 @@ define(function(require) {
         this.shader.use();
         
         // Create shape to use.
-        var shapeBuilder = new Toroid();
+        var shapeBuilder = new ShapeBuilder();
         this.shape = shapeBuilder.build(gl, this.shader.requiredType);
+        this.shape.posAttr = this.shader.posAttrLoc;
 
         // Set light.
         this.shader.setObjClr(1.0, 1.0, 1.0);
@@ -65,7 +66,7 @@ define(function(require) {
     Item.prototype.update = function(gl) {
         
         // Clear color buffer.
-        gl.clear(this.gl.COLOR_BUFFER_BIT|this.gl.DEPTH_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
         // Update rotation.
         this.yaw   += 0.004;
@@ -77,7 +78,7 @@ define(function(require) {
         this.shader.setObjMat(objMatrix);
 
         // Draw shape.
-        this.shape.draw(this.shader.posAttrLoc, null, null, null);
+        this.shape.draw();
         return true;
     };
     

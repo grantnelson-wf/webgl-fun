@@ -61,7 +61,7 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    ToroidBuilder.prototype.supportedTypes = Const.POS|Const.CLR|Const.NORM|Const.TXT;
+    ToroidBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE;
     
     /**
      * Creates a toroid.
@@ -93,24 +93,38 @@ define(function(require) {
                 var px = majorSin*pr + this.x;
                 var py = minorSin*this.minorRadius + this.y;
                 var pz = majorCos*pr + this.z;
-                shape.addPos(px, py, pz);
+                shape.pos.add(px, py, pz);
 
-                if (vertexType&Const.CLR) {
+                if (vertexType&Const.CLR3) {
                     var r = majorSin*minorCos*0.5+0.5;
                     var g = minorSin*0.5+0.5;
                     var b = majorCos*minorCos*0.5+0.5;
-                    shape.addClr(r, g, b);
+                    shape.clr3.add(r, g, b);
+                }
+
+                if (vertexType&Const.CLR4) {
+                    var r = majorSin*minorCos*0.5+0.5;
+                    var g = minorSin*0.5+0.5;
+                    var b = majorCos*minorCos*0.5+0.5;
+                    shape.clr4.add(r, g, b, 1);
                 }
 
                 if (vertexType&Const.NORM) {
                     var nx = majorSin*minorCos;
                     var ny = minorSin;
                     var nz = majorCos*minorCos;
-                    shape.addNorm(nx, ny, nz);
+                    shape.norm.add(nx, ny, nz);
                 }
 
                 if (vertexType&Const.TXT) {
-                    shape.addTxt(majorScale, minorScale);
+                    shape.txt.add(majorScale, minorScale);
+                }
+
+                if (vertexType&Const.CUBE) {
+                    var tx = majorSin*minorCos;
+                    var ty = minorSin;
+                    var tz = majorCos*minorCos;
+                    shape.cube.add(tx, ty, tz);
                 }
 
                 shape.addToTriStrip(i1+j, i2+j);

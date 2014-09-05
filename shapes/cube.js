@@ -10,6 +10,11 @@ define(function(require) {
     function CubeBuilder() {
 
         /**
+         * @type {Boolean}
+         */
+        this.flatFace = true;
+
+        /**
          * The width of the cube in the x axis.
          * @type {Number}
          */
@@ -56,7 +61,7 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    CubeBuilder.prototype.supportedTypes = Const.POS|Const.CLR|Const.NORM|Const.TXT;
+    CubeBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE;
     
     /**
      * Adds a position to the shape.
@@ -66,9 +71,32 @@ define(function(require) {
      * @param  {Number} sz           The z axis scalar.
      */
     CubeBuilder.prototype._addPos = function(shape, sx, sy, sz) {
-        shape.addPos(this.width*sx*0.5 + this.x,
-                     this.height*sy*0.5 + this.y, 
-                     this.depth*sz*0.5 + this.z);
+        shape.pos.add(this.width *sx*0.5 + this.x,
+                      this.height*sy*0.5 + this.y, 
+                      this.depth *sz*0.5 + this.z);
+    };
+
+    /**
+     * Adds a color to the shape.
+     * @param  {Number} shape       The shape being built.
+     * @param  {Number} vertexType  The vertex type to build.
+     * @param  {Number} r           The red component of the color.
+     * @param  {Number} g           The green component of the color.
+     * @param  {Number} b           The blue component of the color.
+     */
+    CubeBuilder.prototype._addClr = function(shape, vertexType, r, g, b) {
+        if (vertexType&Const.CLR3) {
+            shape.clr3.add(r, g, b);
+            shape.clr3.add(r, g, b);
+            shape.clr3.add(r, g, b);
+            shape.clr3.add(r, g, b);
+        }
+        if (vertexType&Const.CLR4) {
+            shape.clr4.add(r, g, b, 1);
+            shape.clr4.add(r, g, b, 1);
+            shape.clr4.add(r, g, b, 1);
+            shape.clr4.add(r, g, b, 1);
+        }
     };
 
     /**
@@ -84,39 +112,38 @@ define(function(require) {
      * @param  {Number} tv2          The second v texture coordinate.
      */
     CubeBuilder.prototype._addFace = function(shape, vertexType, nx, ny, nz, tu1, tv1, tu2, tv2) {
-        var index = shape.posCount();
+        var index = shape.pos.count();
 
         this._addPos(shape, nx+ny+nz, ny+nz+nx, nz+nx+ny);
         this._addPos(shape, nx-ny+nz, ny-nz+nx, nz-nx+ny);
         this._addPos(shape, nx+ny-nz, ny+nz-nx, nz+nx-ny);
         this._addPos(shape, nx-ny-nz, ny-nz-nx, nz-nx-ny);
 
-        if (vertexType&Const.CLR) {
-            if (nx+ny+nz > 0) {
-                shape.addClr(nx, ny, nz);
-                shape.addClr(nx, ny, nz);
-                shape.addClr(nx, ny, nz);
-                shape.addClr(nx, ny, nz);
-            } else {
-                shape.addClr(1+nx, 1+ny, 1+nz);
-                shape.addClr(1+nx, 1+ny, 1+nz);
-                shape.addClr(1+nx, 1+ny, 1+nz);
-                shape.addClr(1+nx, 1+ny, 1+nz);
-            }
+        if (nx+ny+nz > 0) {
+            this._addClr(shape, vertexType, nx, ny, nz);
+        } else {
+            this._addClr(shape, vertexType, 1+nx, 1+ny, 1+nz);
         }
 
         if (vertexType&Const.NORM) {
-            shape.addNorm(nx, ny, nz);
-            shape.addNorm(nx, ny, nz);
-            shape.addNorm(nx, ny, nz);
-            shape.addNorm(nx, ny, nz);
+            shape.norm.add(nx, ny, nz);
+            shape.norm.add(nx, ny, nz);
+            shape.norm.add(nx, ny, nz);
+            shape.norm.add(nx, ny, nz);
         }
 
         if (vertexType&Const.TXT) {
-            shape.addTxt(tu1, tv1);
-            shape.addTxt(tu1, tv2);
-            shape.addTxt(tu2, tv1);
-            shape.addTxt(tu2, tv2);
+            shape.txt.add(tu1, tv1);
+            shape.txt.add(tu1, tv2);
+            shape.txt.add(tu2, tv1);
+            shape.txt.add(tu2, tv2);
+        }
+
+        if (vertexType&Const.CUBE) {
+            shape.cube.add((nx+ny+nz)*Math.SQRT2, (ny+nz+nx)*Math.SQRT2, (nz+nx+ny)*Math.SQRT2);
+            shape.cube.add((nx-ny+nz)*Math.SQRT2, (ny-nz+nx)*Math.SQRT2, (nz-nx+ny)*Math.SQRT2);
+            shape.cube.add((nx+ny-nz)*Math.SQRT2, (ny+nz-nx)*Math.SQRT2, (nz+nx-ny)*Math.SQRT2);
+            shape.cube.add((nx-ny-nz)*Math.SQRT2, (ny-nz-nx)*Math.SQRT2, (nz-nx-ny)*Math.SQRT2);
         }
 
         if (nx+ny+nz > 0) {

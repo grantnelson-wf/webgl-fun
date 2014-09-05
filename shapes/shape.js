@@ -1,7 +1,7 @@
 define(function(require) {
 
-    var Const = require("tools/const")
-    var Common = require("tools/common")
+    var Const = require("tools/const");
+    var Common = require("tools/common");
 
     /**
      * A graphical shape object.
@@ -14,77 +14,402 @@ define(function(require) {
     
         /**
          * The graphical object.
+         * @private
          * @type {Object}
          */
-        this.gl = gl
+        this._gl = gl
 
         /**
          * The vertex type.
+         * @private
          * @type {Number}
          */
-        this.vertexType = vertexType;
+        this._vertexType = vertexType;
         
         /**
          * The vertex size.
+         * @private
          * @type {Number}
          */
         this._vertexSize = vertexSize;
         
         /**
          * The vertex buffer.
+         * @private
          * @type {Object}
          */
         this._vertexBuf  = vertexBuf;
         
         /**
          * The index information.
+         * @private
          * @type {Array}
          */
         this._indexObjs  = indexObjs;
+
+        /**
+         * The position attribute handle or null.
+         * @type {Object}
+         */
+        this.posAttr = null;
+
+        /**
+         * The RGB color attribute handle or null.
+         * @type {Object}
+         */
+        this.clr3Attr = null;
+
+        /**
+         * The RGBA color attribute handle or null.
+         * @type {Object}
+         */
+        this.clr4Attr = null;
+        
+        /**
+         * The normal attribute handle or null.
+         * @type {Object}
+         */
+        this.normAttr = null;
+
+        /**
+         * The 2D texture coordinate attribute handle or null.
+         * @type {Object}
+         */
+        this.txtAttr = null;
+
+        /**
+         * The Cube texture coordinate attribute handle or null.
+         * @type {Object}
+         */
+        this.cubeAttr = null;
+    }
+
+    /**
+     * Gets the vertex type.
+     * @type {Number}
+     */
+    Shape.prototype.vertexType = function() {
+        return this._vertexType;
+    }
+        
+    /**
+     * Gets the vertex size.
+     * @type {Number}
+     */
+    Shape.prototype.vertexSize = function() {
+        return this._vertexSize;
+    }
+
+    /**
+     * Sets the attribute for the vertex before a draw.
+     * @private
+     * @param {Number} type   The type of vertex data to set the attribute for.
+     * @param {Number} size   The number of floats in the vertex type.
+     * @param {Object} attr   [description]
+     * @param {Number} offset [description]
+     */
+    Shape.prototype._setAttr = function(type, size, attr, offset) {
+        if (this._vertexType&type) {
+            if (attr !== null) {
+                var stride = this._vertexSize*Float32Array.BYTES_PER_ELEMENT;
+                this._gl.enableVertexAttribArray(attr);
+                this._gl.vertexAttribPointer(attr, size, this._gl.FLOAT, false, stride, 0);
+            }
+            offset += size*Float32Array.BYTES_PER_ELEMENT;
+        }
+        return offset;
     }
 
     /**
      * Draws the shape to the graphical object.
-     * @param  {WebGLRenderingContext} gl  The graphical object to render.
-     * @param  {Object} posAttr   The position attribute handle or null.
-     * @param  {Object} clrAttr   The color attribute handle or null.
-     * @param  {Object} normAttr  The normal attribute handle or null.
-     * @param  {Object} txtAttr   The texture coordinate attribute handle or null.
      */
-    Shape.prototype.draw = function(posAttr, clrAttr, normAttr, txtAttr) {
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._vertexBuf);
-        var stride = this._vertexSize*Float32Array.BYTES_PER_ELEMENT;
+    Shape.prototype.draw = function() {
+        this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._vertexBuf);
+
         var offset = 0;
-
-        if ((posAttr !== null) && (this.vertexType&Const.POS)) {
-            this.gl.enableVertexAttribArray(posAttr);
-            this.gl.vertexAttribPointer(posAttr, 3, this.gl.FLOAT, false, stride, 0);
-            offset += 3*Float32Array.BYTES_PER_ELEMENT;
-        }
-
-        if ((clrAttr !== null) && (this.vertexType&Const.CLR)) {
-            this.gl.enableVertexAttribArray(clrAttr);
-            this.gl.vertexAttribPointer(clrAttr, 3, this.gl.FLOAT, false, stride, offset);
-            offset += 3*Float32Array.BYTES_PER_ELEMENT;
-        }
-
-        if ((normAttr !== null) && (this.vertexType&Const.NORM)) {
-            this.gl.enableVertexAttribArray(normAttr);
-            this.gl.vertexAttribPointer(normAttr, 3, this.gl.FLOAT, false, stride, offset);
-            offset += 3*Float32Array.BYTES_PER_ELEMENT;
-        }
-
-        if ((txtAttr !== null) && (this.vertexType&Const.TXT)) {
-            this.gl.enableVertexAttribArray(txtAttr);
-            this.gl.vertexAttribPointer(txtAttr, 2, this.gl.FLOAT, false, stride, offset);
-        }
+        // TODO:: Need to base off of an object not specific list.
+        offset = this._setAttr(Const.POS,  3, this.posAttr,  offset);
+        offset = this._setAttr(Const.CLR3, 3, this.clr3Attr, offset);
+        offset = this._setAttr(Const.CLR4, 4, this.clr4Attr, offset);
+        offset = this._setAttr(Const.NORM, 3, this.normAttr, offset);
+        offset = this._setAttr(Const.TXT,  2, this.txtAttr,  offset);
+        offset = this._setAttr(Const.CUBE, 3, this.cubeAttr, offset);
 
         var objCount = this._indexObjs.length;
         for (var i = 0; i < objCount; i++) {
             var indexObj = this._indexObjs[i];
-            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexObj.buffer);
-            this.gl.drawElements(indexObj.type, indexObj.count, this.gl.UNSIGNED_SHORT, 0);
+            this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, indexObj.buffer);
+            this._gl.drawElements(indexObj.type, indexObj.count, this._gl.UNSIGNED_SHORT, 0);
         }
+
+        this._gl.bindBuffer(this._gl.ARRAY_BUFFER, null);
+    };
+
+    //======================================================================
+
+    /**
+     * A 2 value vertex buffer for building the shape.
+     * @param  {Number} type  The type of the buffer this is.
+     */
+    function Vertex2DataBuffer(type, name) {
+
+        /**
+         * The list of x, y in-line tuples for vertex data.
+         * @type {Array}
+         */
+        this.data = [];
+
+        /**
+         * The type of vertex this data is for.
+         * @type {Number}
+         */
+        this.type = type;
+    }
+
+    /**
+     * The size of the vertex buffer data in number of floats.
+     * @return  {Number}  The number of floats per vertex.
+     */
+    Vertex2DataBuffer.prototype.size = function() {
+        return 2;
+    };
+
+    /**
+     * Adds a vertex data to the shape.
+     * @param  {Number} x  The x component of this vertex data.
+     * @param  {Number} y  The y component of this vertex data.
+     */
+    Vertex2DataBuffer.prototype.add = function(x, y) {
+        this.data.push(Number(x), Number(y));
+    };
+
+    /**
+     * Finds the the vertex data in the shape.
+     * @param  {Number} x          The x component of this vertex data.
+     * @param  {Number} y          The y component of this vertex data.
+     * @param  {Number} [epsilon]  The epsilon comparison.
+     * @return  {Number}  The index found or -1 if not found.
+     */
+    Vertex2DataBuffer.prototype.find = function(x, y, epsilon) {
+        epsilon = epsilon || 0.000001
+        for (var i = 0; i < this.data.length; i += 2) {
+            if (Common.eq(this.data[i  ], x, epsilon) &&
+                Common.eq(this.data[i+1], y, epsilon)) {
+                return i/2;
+            }
+        }
+        return -1;
+    };
+
+    /**
+     * Sets vertex data to the shape.
+     * @param  {Number} index  The index to set.
+     * @param  {Number} x      The x component of this vertex data.
+     * @param  {Number} y      The y component of this vertex data.
+     */
+    Vertex2DataBuffer.prototype.set = function(index, x, y) {
+        this.data[index*2  ] = Number(x);
+        this.data[index*2+1] = Number(y);
+    };
+
+    /**
+     * Gets vertex data from the shape.
+     * @param  {Number} index  The index to get.
+     * @returns  {Array}  The data from the shape.
+     */
+    Vertex2DataBuffer.prototype.get = function(index) {
+        return [ this.data[index*2], this.data[index*2+1] ];
+    };
+
+    /**
+     * Gets the current number of datum.
+     * @returns  {Number}  The count of datum.
+     */
+    Vertex2DataBuffer.prototype.count = function() {
+        return this.data.length/2;
+    };
+
+    //======================================================================
+
+    /**
+     * A 3 value vertex buffer for building the shape.
+     * @param  {Number} type  The type of the buffer this is.
+     */
+    function Vertex3DataBuffer(type, name) {
+
+        /**
+         * The list of x, y, z in-line triplets for vertex data.
+         * @type {Array}
+         */
+        this.data = [];
+
+        /**
+         * The type of vertex this data is for.
+         * @type {Number}
+         */
+        this.type = type;
+    }
+
+    /**
+     * The size of the vertex buffer data in number of floats.
+     * @return  {Number}  The number of floats per vertex.
+     */
+    Vertex3DataBuffer.prototype.size = function() {
+        return 3;
+    };
+
+    /**
+     * Adds a vertex data to the shape.
+     * @param  {Number} x  The x component of this vertex data.
+     * @param  {Number} y  The y component of this vertex data.
+     * @param  {Number} z  The z component of this vertex data.
+     */
+    Vertex3DataBuffer.prototype.add = function(x, y, z) {
+        this.data.push(Number(x), Number(y), Number(z));
+    };
+
+    /**
+     * Finds the the vertex data in the shape.
+     * @param  {Number} x          The x component of this vertex data.
+     * @param  {Number} y          The y component of this vertex data.
+     * @param  {Number} z          The z component of this vertex data.
+     * @param  {Number} [epsilon]  The epsilon comparison.
+     * @return  {Number}  The index found or -1 if not found.
+     */
+    Vertex3DataBuffer.prototype.find = function(x, y, z, epsilon) {
+        epsilon = epsilon || 0.000001
+        for (var i = 0; i < this.data.length; i += 3) {
+            if (Common.eq(this.data[i  ], x, epsilon) &&
+                Common.eq(this.data[i+1], y, epsilon) &&
+                Common.eq(this.data[i+2], z, epsilon)) {
+                return i/3;
+            }
+        }
+        return -1;
+    };
+
+    /**
+     * Sets vertex data to the shape.
+     * @param  {Number} index  The index to set.
+     * @param  {Number} x      The x component of this vertex data.
+     * @param  {Number} y      The y component of this vertex data.
+     * @param  {Number} z      The z component of this vertex data.
+     */
+    Vertex3DataBuffer.prototype.set = function(index, x, y, z) {
+        this.data[index*3  ] = Number(x);
+        this.data[index*3+1] = Number(y);
+        this.data[index*3+2] = Number(z);
+    };
+
+    /**
+     * Gets vertex data from the shape.
+     * @param  {Number} index  The index to get.
+     * @returns  {Array}  The data from the shape.
+     */
+    Vertex3DataBuffer.prototype.get = function(index) {
+        return [ this.data[index*3], this.data[index*3+1], this.data[index*3+2] ];
+    };
+
+    /**
+     * Gets the current number of datum.
+     * @returns  {Number}  The count of datum.
+     */
+    Vertex3DataBuffer.prototype.count = function() {
+        return this.data.length/3;
+    };
+
+    //======================================================================
+
+    /**
+     * A 4 value vertex buffer for building the shape.
+     * @param  {Number} type  The type of the buffer this is.
+     */
+    function Vertex4DataBuffer(type, name) {
+
+        /**
+         * The list of x, y, z, w in-line tuple for vertex data.
+         * @type {Array}
+         */
+        this.data = [];
+
+        /**
+         * The type of vertex this data is for.
+         * @type {Number}
+         */
+        this.type = type;
+    }
+
+    /**
+     * The size of the vertex buffer data in number of floats.
+     * @return  {Number}  The number of floats per vertex.
+     */
+    Vertex4DataBuffer.prototype.size = function() {
+        return 4;
+    };
+
+    /**
+     * Adds a vertex data to the shape.
+     * @param  {Number} x  The x component of this vertex data.
+     * @param  {Number} y  The y component of this vertex data.
+     * @param  {Number} z  The z component of this vertex data.
+     * @param  {Number} w  The w component of this vertex data.
+     */
+    Vertex4DataBuffer.prototype.add = function(x, y, z, w) {
+        this.data.push(Number(x), Number(y), Number(z), Number(w));
+    };
+
+    /**
+     * Finds the the vertex data in the shape.
+     * @param  {Number} x          The x component of this vertex data.
+     * @param  {Number} y          The y component of this vertex data.
+     * @param  {Number} z          The z component of this vertex data.
+     * @param  {Number} w          The w component of this vertex data.
+     * @param  {Number} [epsilon]  The epsilon comparison.
+     * @return  {Number}  The index found or -1 if not found.
+     */
+    Vertex4DataBuffer.prototype.find = function(x, y, z, w, epsilon) {
+        epsilon = epsilon || 0.000001
+        for (var i = 0; i < this.data.length; i += 4) {
+            if (Common.eq(this.data[i  ], x, epsilon) &&
+                Common.eq(this.data[i+1], y, epsilon) &&
+                Common.eq(this.data[i+2], z, epsilon) &&
+                Common.eq(this.data[i+3], w, epsilon)) {
+                return i/4;
+            }
+        }
+        return -1;
+    };
+
+    /**
+     * Sets vertex data to the shape.
+     * @param  {Number} index  The index to set.
+     * @param  {Number} x      The x component of this vertex data.
+     * @param  {Number} y      The y component of this vertex data.
+     * @param  {Number} z      The z component of this vertex data.
+     * @param  {Number} w      The w component of this vertex data.
+     */
+    Vertex4DataBuffer.prototype.set = function(index, x, y, z, w) {
+        this.data[index*4  ] = Number(x);
+        this.data[index*4+1] = Number(y);
+        this.data[index*4+2] = Number(z);
+        this.data[index*4+3] = Number(z);
+    };
+
+    /**
+     * Gets vertex data from the shape.
+     * @param  {Number} index  The index to get.
+     * @returns  {Array}  The data from the shape.
+     */
+    Vertex4DataBuffer.prototype.get = function(index) {
+        return [ this.data[index*4], this.data[index*4+1], this.data[index*4+2], this.data[index*4+3] ];
+    };
+
+    /**
+     * Gets the current number of datum.
+     * @returns  {Number}  The count of datum.
+     */
+    Vertex4DataBuffer.prototype.count = function() {
+        return this.data.length/4;
     };
 
     //======================================================================
@@ -95,32 +420,51 @@ define(function(require) {
     function ShapeBuilder() {
 
         /**
-         * The list of x, y, z in-line triplets of vertex position data.
+         * The buffer of x, y, z in-line triplets of vertex position data.
          * @type {Array}
          */
-        this._pos = [];
+        this.pos = new Vertex3DataBuffer(Const.POS);
 
         /**
-         * The list of r, g, b in-line triplets of vertex color data.
+         * The buffer of r, g, b in-line triplets of vertex color data.
          * @type {Array}
          */
-        this._clr = [];
+        this.clr3 = new Vertex3DataBuffer(Const.CLR3);
 
         /**
-         * The list of x, y, z in-line triplets of vertex normal data.
+         * The buffer of r, g, b, a in-line triplets of vertex color data.
          * @type {Array}
          */
-        this._norm = [];
+        this.clr4 = new Vertex4DataBuffer(Const.CLR4);
 
         /**
-         * The list of u, v in-line tuple of vertex color data.
+         * The buffer of x, y, z in-line triplets of vertex normal data.
          * @type {Array}
          */
-        this._txt = [];
+        this.norm = new Vertex3DataBuffer(Const.NORM);
+
+        /**
+         * The buffer of u, v in-line tuple of vertex color data.
+         * @type {Array}
+         */
+        this.txt = new Vertex2DataBuffer(Const.TXT);
+
+        /**
+         * The buffer of u, v, w in-line tuple of vertex color data.
+         * @type {Array}
+         */
+        this.cube = new Vertex3DataBuffer(Const.CUBE);
+
+        /**
+         * The list of all vertex data buffers.
+         * @type {Array}
+         */
+        this.data = [ this.pos, this.clr3, this.clr4, this.norm, this.txt, this.cube ];
         
         /**
          * The list of indices for points.
          * Each index is a point.
+         * @private
          * @type {Array}
          */
         this._indicesPoints = [];
@@ -128,6 +472,7 @@ define(function(require) {
         /**
          * The list of index pairs for lines.
          * Each pair is a line.
+         * @private
          * @type {Array}
          */
         this._indicesLines = [];
@@ -136,6 +481,7 @@ define(function(require) {
          * The current line strip indices being worked on.
          * Each point is connected to the previous to create lines,
          * with the exception of the first and last points.
+         * @private
          * @type {Array}
          */
         this._curLineStrips = null;
@@ -150,291 +496,60 @@ define(function(require) {
          * The current line loop indices being worked on.
          * Each point is connected to the previous to create lines,
          * and the last point is connected to the first to make a loop.
+         * @private
          * @type {Array}
          */
         this._curLineLoops = null;
         
         /**
          * The list of line loop indices.
+         * @private
          * @type {Array}
          */
         this._indicesLineLoops = [];
 
         /**
          * The list of triangle indices.
+         * @private
          * @type {Array}
          */
         this._indicesTris = [];
 
         /**
          * The list of quadrilateral indices.
+         * @private
          * @type {Array}
          */
         this._indicesQuads = [];
         
         /**
          * The current triangle strip indices being worked on.
+         * @private
          * @type {Array}
          */
         this._curTriStrips = null;
         
         /**
          * The list of triangle strip indices.
+         * @private
          * @type {Array}
          */
         this._indicesTriStrips = [];
         
         /**
          * This current triangle fan indices being worked on.
+         * @private
          * @type {Array}
          */
         this._curTriFans = null;
         
         /**
          * The list of triangle fan indices.
+         * @private
          * @type {Array}
          */
         this._indicesTriFans = [];
     }
-
-    //======================================================================
-
-    /**
-     * Adds a position to the shape.
-     * @param  {Number} px  The x component of the position.
-     * @param  {Number} py  The y component of the position.
-     * @param  {Number} pz  The z component of the position.
-     */
-    ShapeBuilder.prototype.addPos = function(px, py, pz) {
-        this._pos.push(Number(px), Number(py), Number(pz));
-    };
-
-    /**
-     * Finds the the position in the shape.
-     * @param  {Number} px       The x component of the position.
-     * @param  {Number} py       The y component of the position.
-     * @param  {Number} pz       The z component of the position.
-     * @param  {Number} epsilon  The epsilon comparison.
-     * @return  {Number}  The index found or -1 if not found.
-     */
-    ShapeBuilder.prototype.findPos = function(px, py, pz, epsilon) {
-        for (var i = 0; i < this._pos.length; i += 3) {
-            if (Common.eq(this._pos[i  ], px, epsilon) &&
-                Common.eq(this._pos[i+1], py, epsilon) &&
-                Common.eq(this._pos[i+2], pz, epsilon)) {
-                return i/3;
-            }
-        }
-        return -1;
-    };
-
-    /**
-     * Sets a position to the shape.
-     * @param  {Number} index  The index to set.
-     * @param  {Number} px     The x component of the position.
-     * @param  {Number} py     The y component of the position.
-     * @param  {Number} pz     The z component of the position.
-     */
-    ShapeBuilder.prototype.setPos = function(index, px, py, pz) {
-        this._pos[index*3  ] = Number(px);
-        this._pos[index*3+1] = Number(py);
-        this._pos[index*3+2] = Number(pz);
-    };
-
-    /**
-     * Gets a position from the shape.
-     * @param  {Number} index  The index to get.
-     * @returns  {Array}  The position from the shape.
-     */
-    ShapeBuilder.prototype.getPos = function(index) {
-        return [ this._pos[index*3], this._pos[index*3+1], this._pos[index*3+2] ];
-    };
-
-    /**
-     * Gets the current number of positions are in the shape builder.
-     * @returns  {Number}  The count of positions.
-     */
-    ShapeBuilder.prototype.posCount = function() {
-        return this._pos.length/3;
-    };
-
-    //======================================================================
-
-    /**
-     * Adds a color to the shape.
-     * @param  {Number} r  The red component of the color.
-     * @param  {Number} g  The green component of the color.
-     * @param  {Number} b  The blue component of the color.
-     */
-    ShapeBuilder.prototype.addClr = function(r, g, b) {
-        this._clr.push(Number(r), Number(g), Number(b))
-    };
-
-    /**
-     * Finds the the color in the shape.
-     * @param  {Number} r        The red of the color.
-     * @param  {Number} g        The green of the color.
-     * @param  {Number} b        The blue of the color.
-     * @param  {Number} epsilon  The epsilon comparison.
-     * @return  {Number}  The index found or -1 if not found.
-     */
-    ShapeBuilder.prototype.findClr = function(r, g, b, epsilon) {
-        for (var i = 0; i < this._clr.length; i += 3) {
-            if (Common.eq(this._clr[i  ], px, epsilon) &&
-                Common.eq(this._clr[i+1], py, epsilon) &&
-                Common.eq(this._clr[i+2], pz, epsilon)) {
-                return i/3;
-            }
-        }
-        return -1;
-    };
-
-    /**
-     * Sets a color to the shape.
-     * @param  {Number} index  The index to set.
-     * @param  {Number} r      The red of the color.
-     * @param  {Number} g      The green of the color.
-     * @param  {Number} b      The blue of the color.
-     */
-    ShapeBuilder.prototype.setClr = function(index, r, g, b) {
-        this._clr[index*3  ] = Number(r);
-        this._clr[index*3+1] = Number(g);
-        this._clr[index*3+2] = Number(b);
-    };
-
-    /**
-     * Gets a color from the shape.
-     * @param  {Number} index  The index to get.
-     * @returns  {Array}  The color from the shape.
-     */
-    ShapeBuilder.prototype.getClr = function(index) {
-        return [ this._clr[index*3], this._clr[index*3+1], this._clr[index*3+2] ];
-    };
-
-    /**
-     * Gets the current number of colors are in the shape builder.
-     * @returns  {Number}  The count of colors.
-     */
-    ShapeBuilder.prototype.clrCount = function() {
-        return this._clr.length/3;
-    };
-
-    //======================================================================
-
-    /**
-     * Adds a normal to the shape.
-     * @param  {Number} nx  The x component of the normal.
-     * @param  {Number} ny  The y component of the normal.
-     * @param  {Number} nz  The z component of the normal.
-     */
-    ShapeBuilder.prototype.addNorm = function(nx, ny, nz) {
-        this._norm.push(Number(nx), Number(ny), Number(nz))
-    };
-
-    /**
-     * Finds the the normal in the shape.
-     * @param  {Number} nx       The x component of the normal.
-     * @param  {Number} ny       The y component of the normal.
-     * @param  {Number} nz       The z component of the normal.
-     * @param  {Number} epsilon  The epsilon comparison.
-     * @return  {Number}  The index found or -1 if not found.
-     */
-    ShapeBuilder.prototype.findNorm = function(nx, ny, nz, epsilon) {
-        for (var i = 0; i < this._norm.length; i += 3) {
-            if (Common.eq(this._norm[i  ], nx, epsilon) &&
-                Common.eq(this._norm[i+1], ny, epsilon) &&
-                Common.eq(this._norm[i+2], nz, epsilon)) {
-                return i/3;
-            }
-        }
-        return -1;
-    };
-
-    /**
-     * Sets a normal to the shape.
-     * @param  {Number} index  The index to set.
-     * @param  {Number} nx     The x component of the normal.
-     * @param  {Number} ny     The y component of the normal.
-     * @param  {Number} nz     The z component of the normal.
-     */
-    ShapeBuilder.prototype.setNorm = function(index, nx, ny, nz) {
-        this._norm[index*3  ] = Number(nx);
-        this._norm[index*3+1] = Number(ny);
-        this._norm[index*3+2] = Number(nz);
-    };
-
-    /**
-     * Gets a normal from the shape.
-     * @param  {Number} index  The index to get.
-     * @returns  {Array}  The normal from the shape.
-     */
-    ShapeBuilder.prototype.getNorm = function(index) {
-        return [ this._norm[index*3], this._norm[index*3+1], this._norm[index*3+2] ];
-    };
-
-    /**
-     * Gets the current number of normals are in the shape builder.
-     * @returns  {Number}  The count of normals.
-     */
-    ShapeBuilder.prototype.normCount = function() {
-        return this._norm.length/3;
-    };
-
-    //======================================================================
-
-    /**
-     * Adds a texture coordinate to the shape.
-     * @param  {Number} tu  The u component of the texture coordinate.
-     * @param  {Number} tv  The v component of the texture coordinate.
-     */
-    ShapeBuilder.prototype.addTxt = function(tu, tv) {
-        this._txt.push(Number(tu), Number(tv))
-    };
-
-    /**
-     * Finds the the texture coordinate. in the shape.
-     * @param  {Number} tu       The u component of the texture coordinate.
-     * @param  {Number} tv       The v component of the texture coordinate.
-     * @param  {Number} epsilon  The epsilon comparison.
-     * @return  {Number}  The index found or -1 if not found.
-     */
-    ShapeBuilder.prototype.findTxt = function(tu, tv, epsilon) {
-        for (var i = 0; i < this._txt.length; i += 2) {
-            if (Common.eq(this._txt[i  ], tu, epsilon) &&
-                Common.eq(this._txt[i+1], tv, epsilon)) {
-                return i/2;
-            }
-        }
-        return -1;
-    };
-
-    /**
-     * Sets a texture coordinate. to the shape.
-     * @param  {Number} index  The index to set.
-     * @param  {Number} tu     The u component of the texture coordinate.
-     * @param  {Number} tv     The v component of the texture coordinate.
-     */
-    ShapeBuilder.prototype.setTxt = function(index, tu, tv) {
-        this._txt[index*2  ] = Number(tu);
-        this._txt[index*2+1] = Number(tv);
-    };
-
-    /**
-     * Gets a texture coordinate. from the shape.
-     * @param  {Number} index  The index to get.
-     * @returns  {Array}  The texture coordinate. from the shape.
-     */
-    ShapeBuilder.prototype.getTxt = function(index) {
-        return [ this._txt[index*2], this._txt[index*2+1] ];
-    };
-
-    /**
-     * Gets the current number of texture coordinates are in the shape builder.
-     * @returns  {Number}  The count of texture coordinates.
-     */
-    ShapeBuilder.prototype.txtCount = function() {
-        return this._txt.length/2;
-    };
 
     //======================================================================
     
@@ -613,71 +728,48 @@ define(function(require) {
      * @returns  {Object} The buffer, buffer length, vertex type, and vertex size.
      */
     ShapeBuilder.prototype._buildVertices = function(gl, vertexType) {
-        vertexType = vertexType || (Const.POS|Const.CLR|Const.NORM|Const.TXT);
-
-        // Collect information about the vertex arrays.
-        var newVertexType = Const.POS;
-        var vertexSize = 3;
-        var hasClr = false;
-        var hasNorm = false;
-        var hasTxt = false;
-        var len = this.posCount();
+        vertexType = vertexType || (Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE);
         if (!(vertexType&Const.POS)) {
             throw "Error: Must have at least the positional vertex type.";
         }
+
+        // Collect information about the vertex arrays.
+        var newVertexType = Const.NONE;
+        var vertexSize = 0;
+        var len = this.pos.count();
         if (len <= 0) {
             throw "Error: Must have at least one vertex.";
         }
-        if ((vertexType&Const.CLR) && (this.clrCount() > 0)) {
-            if (this.clrCount() != len) {
-                throw "Error: The color count, "+this.clrCount()+", must match the vertex count, "+len+".";
+
+        // Determine prepared types.
+        var hasData = new Array(this.data.length);
+        for (var i = 0; i < this.data.length; i++) {
+            var datum = this.data[i];
+            hasData[i] = false;
+            if ((vertexType&datum.type) && (datum.count() > 0)) {
+                if (datum.count() !== len) {
+                    throw "Error: The "+Common.typeString(datum.type)+
+                    " count, "+datum.count()+", must match the vertex count, "+len+".";
+                }
+                newVertexType |= datum.type;
+                vertexSize += datum.size();
+                hasData[i] = true;
             }
-            newVertexType |= Const.CLR;
-            vertexSize += 3;
-            hasClr = true;
-        }
-        if ((vertexType&Const.NORM) && (this.normCount() > 0)) {
-            if (this.normCount() != len) {
-                throw "Error: The normal count, "+this.normCount()+", must match the vertex count, "+len+".";
-            }
-            newVertexType |= Const.NORM;
-            vertexSize += 3;
-            hasNorm = true;
-        }
-        if ((vertexType&Const.TXT) && (this.txtCount() > 0)) {
-            if (this.txtCount() != len) {
-                throw "Error: The texture coordinate count, "+this.txtCount()+", must match the vertex count, "+len+".";
-            }
-            newVertexType |= Const.TXT;
-            vertexSize += 2;
-            hasTxt = true;
         }
 
         // Pack the vertices.
-        var vertices = [];
-        for (var i = 0, k = 0; i < len; i++) {
-            var i3 = i*3
-            vertices[k++] = this._pos[i3];
-            vertices[k++] = this._pos[i3+1];
-            vertices[k++] = this._pos[i3+2];
-
-            if (hasClr) {
-                vertices[k++] = this._clr[i3];
-                vertices[k++] = this._clr[i3+1];
-                vertices[k++] = this._clr[i3+2];
+        var vertices = new Array(len*vertexSize);
+        for (var i = 0, j = 0; i < len; i++) {
+            for (var k = 0; k < this.data.length; k++) {
+                if (hasData[k]) {
+                    datum = this.data[k];
+                    vec = datum.get(i);
+                    for (var l = 0; l < datum.size(); l++) {
+                        vertices[j++] = vec[l];
+                    }
+                }
             }
-
-            if (hasNorm) {
-                vertices[k++] = this._norm[i3];
-                vertices[k++] = this._norm[i3+1];
-                vertices[k++] = this._norm[i3+2];
-            }
-
-            if (hasTxt) {
-                vertices[k++] = this._txt[i*2];
-                vertices[k++] = this._txt[i*2+1];
-            }
-        };
+        }
         
         // Create vertex buffer.
         var vertexBuf = gl.createBuffer();

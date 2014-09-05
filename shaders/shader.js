@@ -227,7 +227,7 @@ define(function(require) {
             };
 
             var func = this._getUniformSetter(gl, info.type, attr, info.name);
-            if (func != null) {
+            if (func !== null) {
                 shader["set"+capName] = func;
             }
         }

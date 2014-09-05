@@ -20,7 +20,7 @@ define(function(require) {
      * The required vertex information.
      * @type {Number}
      */
-    ColorBuilder.prototype.requiredTypes = Const.POS|Const.CLR;
+    ColorBuilder.prototype.requiredTypes = Const.POS|Const.CLR3;
     
     /**
      * The vertex shader program.
@@ -32,14 +32,14 @@ define(function(require) {
         "uniform mat4 projMat;                                      \n"+
         "                                                           \n"+
         "attribute vec3 posAttr;                                    \n"+
-        "attribute vec3 clrAttr;                                    \n"+
+        "attribute vec3 clr3Attr;                                   \n"+
         "                                                           \n"+
         "varying vec4 vColor;                                       \n"+
         "                                                           \n"+
         "void main()                                                \n"+
         "{                                                          \n"+
         "  gl_Position = projMat*viewMat*objMat*vec4(posAttr, 1.0); \n"+
-        "  vColor = vec4(clrAttr, 1.0);                             \n"+
+        "  vColor = vec4(clr3Attr, 1.0);                            \n"+
         "}                                                          \n";
 
     /**

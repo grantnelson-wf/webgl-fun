@@ -20,7 +20,7 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    WLogoBuilder.prototype.supportedTypes = Const.POS|Const.CLR|Const.NORM|Const.TXT;
+    WLogoBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE;
     
     /**
      * Adds a vertex to the shape.
@@ -35,18 +35,25 @@ define(function(require) {
      */
     WLogoBuilder.prototype._addVec = function(shape, vertexType, px, py, pz, nx, ny, nz) {
         var scalar = 1/133;
-        shape.addPos(px*scalar-0.5, py*scalar-0.5, pz*scalar);
-        
-        if (vertexType&Const.CLR) {
-            shape.addClr(0x70/0xFF, 0xC4/0xFF, 0x0A/0xFF);
+        px = px*scalar-0.5;
+        py = py*scalar-0.5;
+        pz = pz*scalar-0.5;
+        shape.pos.add(px, py, pz);
+        if (vertexType&Const.CLR3) {
+            shape.clr3.add(0x70/0xFF, 0xC4/0xFF, 0x0A/0xFF);
         }
-        
+        if (vertexType&Const.CLR4) {
+            shape.clr4.add(0x70/0xFF, 0xC4/0xFF, 0x0A/0xFF, 1);
+        }
         if (vertexType&Const.NORM) {
-            shape.addNorm(nx, ny, nz);
+            shape.norm.add(nx, ny, nz);
         }
-        
         if (vertexType&Const.TXT) {
-            shape.addTxt(px*scalar, py*scalar);
+            shape.txt.add(px+0.5, py+0.5);
+        }
+        if (vertexType&Const.CUBE) {
+            var len = Math.sqrt(px*px + py*py + pz*pz);
+            shape.cube.add(px/len, py/len, pz/len);
         }
     };
     
@@ -64,19 +71,19 @@ define(function(require) {
         }
 
         // Add front face (uses fan for triangles).
-        var index = shape.posCount();
-        this._addVec(shape, vertexType, poly[0], poly[1], 11, 0, 0, 1);
+        var index = shape.pos.count();
+        this._addVec(shape, vertexType, poly[0], poly[1], 77, 0, 0, 1);
         shape.startTriFan(index);
         for (var i = 1, j = count - 1; i < count; i++, j--) {
-            this._addVec(shape, vertexType, poly[j*2], poly[j*2+1], 11, 0, 0, 1);
+            this._addVec(shape, vertexType, poly[j*2], poly[j*2+1], 77, 0, 0, 1);
             shape.addToTriFan(index+i);
         }
 
         // Add back face (uses fan for triangles).
-        index = shape.posCount();
+        index = shape.pos.count();
         shape.startTriFan();
         for (var i = 0; i < count; i++) {
-            this._addVec(shape, vertexType, poly[i*2], poly[i*2+1], -11, 0, 0, -1);
+            this._addVec(shape, vertexType, poly[i*2], poly[i*2+1], 55, 0, 0, -1);
             shape.addToTriFan(index+i);
         }
 
@@ -88,11 +95,11 @@ define(function(require) {
             var len = Math.sqrt(dx*dx + dy*dy);
             var nx = dy/len, ny = -dx/len;
 
-            var index = shape.posCount();
-            this._addVec(shape, vertexType, x1, y1,  11, nx, ny, 0);
-            this._addVec(shape, vertexType, x2, y2,  11, nx, ny, 0);
-            this._addVec(shape, vertexType, x2, y2, -11, nx, ny, 0);
-            this._addVec(shape, vertexType, x1, y1, -11, nx, ny, 0);
+            var index = shape.pos.count();
+            this._addVec(shape, vertexType, x1, y1, 77, nx, ny, 0);
+            this._addVec(shape, vertexType, x2, y2, 77, nx, ny, 0);
+            this._addVec(shape, vertexType, x2, y2, 55, nx, ny, 0);
+            this._addVec(shape, vertexType, x1, y1, 55, nx, ny, 0);
             shape.addQuadIndices(index, index+1, index+2, index+3);
 
             x1 = x2;
