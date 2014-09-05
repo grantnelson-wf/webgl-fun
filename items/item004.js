@@ -2,8 +2,8 @@ define(function(require) {
 
     var Const = require("tools/const");
     var Matrix = require("tools/matrix");
-    var Texture = require("shaders/texture");
-    var Toroid = require("shapes/cube");
+    var ShaderBuilder = require("shaders/texture2d");
+    var ShapeBuilder = require("shapes/cube");
     var Txt2D = require("tools/texture2d")
     
     /**
@@ -17,7 +17,7 @@ define(function(require) {
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = "Texture";
+    Item.prototype.name = "Texture 2D";
     
     /**
      * Starts this item for rendering.
@@ -26,7 +26,7 @@ define(function(require) {
      */
     Item.prototype.start = function(gl) {
         // Build and set the shader.
-        var shaderBuilder = new Texture();
+        var shaderBuilder = new ShaderBuilder();
         this.shader = shaderBuilder.build(gl);
         if (!this.shader) {
             return false;
@@ -34,12 +34,12 @@ define(function(require) {
         this.shader.use();
         
         // Create shape to use.
-        var shapeBuilder = new Toroid();
+        var shapeBuilder = new ShapeBuilder();
         this.shape = shapeBuilder.build(gl, this.shader.requiredType);
 
         // Create texture.
         this.txt2D = new Txt2D(gl);
-        this.txt2D.load("./data/fire.jpg");
+        this.txt2D.loadFromFile("./data/fire.jpg");
         
         // Set view transformation.
         var viewMatrix = Matrix.translate(0.0, 0.0, 2.0);

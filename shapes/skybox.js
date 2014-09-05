@@ -4,43 +4,43 @@ define(function(require) {
     var ShapeBuilder = require("shapes/shape")
 
     /**
-     * Constructor for a cube builder.
-     * A cube builder will create a cube shape object.
+     * Constructor for a skybox.
+     * A skybox builder will create a skybox shape object.
      */
-    function CubeBuilder() {
+    function SkyboxBuilder() {
 
         /**
-         * The width of the cube in the x axis.
+         * The width of the skybox in the x axis.
          * @type {Number}
          */
         this.width = 1.0;
 
         /**
-         * The height of the cube in the y axis.
+         * The height of the skybox in the y axis.
          * @type {Number}
          */
         this.height = 1.0;
 
         /**
-         * The depth of the cube in the z axis.
+         * The depth of the skybox in the z axis.
          * @type {Number}
          */
         this.depth = 1.0;
 
         /**
-         * The offset of the cube's center on the x axis.
+         * The offset of the skybox's center on the x axis.
          * @type {Number}
          */
         this.x = 0.0;
 
         /**
-         * The offset of the cube's center on the y axis.
+         * The offset of the skybox's center on the y axis.
          * @type {Number}
          */
         this.y = 0.0;
 
         /**
-         * The offset of the cube's center on the z axis.
+         * The offset of the skybox's center on the z axis.
          * @type {Number}
          */
         this.z = 0.0;
@@ -50,13 +50,13 @@ define(function(require) {
      * The name of this shape.
      * @type {String}
      */
-    CubeBuilder.prototype.name = "Cube";
+    SkyboxBuilder.prototype.name = "Skybox";
     
     /**
      * The supported vertex types.
      * @type {Number}
      */
-    CubeBuilder.prototype.supportedTypes = Const.POS|Const.CLR|Const.NORM|Const.TXT;
+    SkyboxBuilder.prototype.supportedTypes = Const.POS|Const.CLR|Const.NORM|Const.TXT;
     
     /**
      * Adds a position to the shape.
@@ -65,14 +65,14 @@ define(function(require) {
      * @param  {Number} sy           The y axis scalar.
      * @param  {Number} sz           The z axis scalar.
      */
-    CubeBuilder.prototype._addPos = function(shape, sx, sy, sz) {
+    SkyboxBuilder.prototype._addPos = function(shape, sx, sy, sz) {
         shape.addPos(this.width*sx*0.5 + this.x,
                      this.height*sy*0.5 + this.y, 
                      this.depth*sz*0.5 + this.z);
     };
 
     /**
-     * This adds a face of the cube to the shape builder.
+     * This adds a face of the skybox to the shape builder.
      * @param  {ShapeBuilder} shape  The shape being built.
      * @param  {Number} vertexType   The vertex type to build.
      * @param  {Number} nx           The x normal component.
@@ -83,7 +83,7 @@ define(function(require) {
      * @param  {Number} tu2          The second u texture coordinate.
      * @param  {Number} tv2          The second v texture coordinate.
      */
-    CubeBuilder.prototype._addFace = function(shape, vertexType, nx, ny, nz, tu1, tv1, tu2, tv2) {
+    SkyboxBuilder.prototype._addFace = function(shape, vertexType, nx, ny, nz, tu1, tv1, tu2, tv2) {
         var index = shape.posCount();
 
         this._addPos(shape, nx+ny+nz, ny+nz+nx, nz+nx+ny);
@@ -127,12 +127,12 @@ define(function(require) {
     };
     
     /**
-     * Builds a cube shape.
+     * Builds a skybox shape.
      * @param  {WebGLRenderingContext} gl  The graphical object.
      * @param  {Number} vertexType  The vertex type to build.
-     * @return  {Shape}  The created cube shape.
+     * @return  {Shape}  The created skybox shape.
      */
-    CubeBuilder.prototype.build = function(gl, vertexType) {
+    SkyboxBuilder.prototype.build = function(gl, vertexType) {
         var shape = new ShapeBuilder();
         //                      +--   E-----A   --------+
         //      E--------A      |     |Z+   |           |
@@ -145,7 +145,7 @@ define(function(require) {
         //                      |     |     |           |
         //                      +--   F-----B   --------+
         //                      
-        //                               nx  ny  nz  tu1  tv1  tu2  tv2
+        //                              nx  ny  nz  tu1  tv1  tu2  tv2
         this._addFace(shape, vertexType,  1,  0,  0, 3/4, 1/3, 2/4, 2/3); // x+
         this._addFace(shape, vertexType, -1,  0,  0, 1/4, 2/3, 0/4, 1/3); // X-
         this._addFace(shape, vertexType,  0,  1,  0, 3/4, 1/3, 4/4, 2/3); // Y+
@@ -155,5 +155,5 @@ define(function(require) {
         return shape.build(gl)
     };
 
-    return CubeBuilder;
+    return SkyboxBuilder;
 });
