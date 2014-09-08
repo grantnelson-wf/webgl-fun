@@ -1,18 +1,8 @@
 module.exports = function(grunt) {
     var allFiles = ['**/*.js'];
 
-    grunt.registerTask('react', null, function() {
-        require('exec-sync')('jsx examples/demo/jsx examples/demo/compiled ');
-    });
-
-    require('wf-grunt').init(grunt, {
-
-        watch: {
-            react: {
-                files: ['examples/demo/jsx/*.js'],
-                tasks: ['react']
-            }
-        },
+    grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
 
         jshint: {
             examples: {
@@ -44,5 +34,9 @@ module.exports = function(grunt) {
             }
         }
     });
+
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+
+    grunt.registerTask('default', ['jshint']);
 };
 

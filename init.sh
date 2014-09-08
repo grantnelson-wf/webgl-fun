@@ -15,7 +15,6 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "$COLOR_GREEN"
-echo "\nWebGL is Ready\n"
-
+echo "\nWebGL-Fun is Ready\n"
 echo "$COLOR_RESET"
 exit 0
