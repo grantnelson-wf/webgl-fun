@@ -142,7 +142,7 @@ define(function(require) {
         gl.attachShader(program, fsShader);
         gl.linkProgram(program);
         if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-           console.log("Could not link shaders.");
+           console.log('Could not link shaders.');
            return null;
         }
         return program;
@@ -176,21 +176,10 @@ define(function(require) {
         var count = gl.getProgramParameter(shader.program, gl.ACTIVE_ATTRIBUTES);
         for (var i = 0; i < count; i++) {
             var info = gl.getActiveAttrib(shader.program, i);
+            var loc = gl.getAttribLocation(shader.program, info.name);
             shader.attribs[i] = info.name;
-
-            var attr = gl.getAttribLocation(shader.program, info.name);
-            var capName = info.name.charAt(0).toUpperCase() + info.name.slice(1);
-
-            shader[info.name+"Loc"] = attr;
-            allAttrs.push(attr);
-
-            shader["enable"+capName] = function() {
-                gl.enableVertexAttribArray(attr);
-            };
-
-            shader["disable"+capName] = function() {
-                gl.disableVertexAttribArray(attr);
-            };
+            allAttrs.push(loc);
+            this._addAttrib(gl, shader, info.name, loc);
         }
         
         shader.enableAll = function() {
@@ -204,8 +193,30 @@ define(function(require) {
                 gl.disableVertexAttribArray(allAttrs[i]);
             }
         };
-    }
-    
+    };
+
+     
+    /**
+     * This adds an attributes to a shader.
+     * @param  {Object} gl      The graphical object.
+     * @param  {Shader} shader  The shader to setup.
+     * @param  {String} name    The name for the attribute to add.
+     * @param  {Object} loc     The attribute location.
+     */
+    ShaderBuilder.prototype._addAttrib = function(gl, shader, name, loc) {
+        var capName = name.charAt(0).toUpperCase() + name.slice(1);
+
+        shader[name+'Loc'] = loc;
+
+        shader['enable'+capName] = function() {
+            gl.enableVertexAttribArray(loc);
+        };
+
+        shader['disable'+capName] = function() {
+            gl.disableVertexAttribArray(loc);
+        };
+    };
+
     /**
      * This sets up the uniform values for a shader.
      * @param  {Object} gl      The graphical object.
@@ -215,23 +226,33 @@ define(function(require) {
         var count = gl.getProgramParameter(shader.program, gl.ACTIVE_UNIFORMS);
         for (var i = 0; i < count; i++) {
             var info = gl.getActiveUniform(shader.program, i);
+            var loc = gl.getUniformLocation(shader.program, info.name);
             shader.uniforms[i] = info.name;
-
-            var attr = gl.getUniformLocation(shader.program, info.name);
-            var capName = info.name.charAt(0).toUpperCase() + info.name.slice(1);
-
-            shader[info.name+"Loc"] = attr;
-
-            shader["get"+capName] = function() {
-                return gl.getUniform(shader.program, attr);
-            };
-
-            var func = this._getUniformSetter(gl, info.type, attr, info.name);
-            if (func !== null) {
-                shader["set"+capName] = func;
-            }
+            this._addUniform(gl, shader, info.name, loc, info.type);
         }
-    }
+    };
+
+    /**
+     * This adds a uniform value to a shader.
+     * @param  {Object} gl      The graphical object.
+     * @param  {Shader} shader  The shader to setup.
+     * @param  {String} name    The name for the uniform to add.
+     * @param  {Object} loc     The uniform location.
+     */
+    ShaderBuilder.prototype._addUniform = function(gl, shader, name, loc, type) {
+        var capName = name.charAt(0).toUpperCase() + name.slice(1);
+
+        shader[name+'Loc'] = loc;
+
+        shader['get'+capName] = function() {
+            return gl.getUniform(shader.program, loc);
+        };
+
+        var func = this._getUniformSetter(gl, type, loc, name);
+        if (func !== null) {
+            shader['set'+capName] = func;
+        }
+    };
 
     /**
      * Gets the funcation for setting a uniform value.
@@ -309,20 +330,20 @@ define(function(require) {
                 };
 
             case gl.BOOL:
-                throw "BOOL uniform variables are unsupported by all browsers.\n"+
-                      "Please change the type of "+name+".";
+                throw 'BOOL uniform variables are unsupported by all browsers.\n'+
+                      'Please change the type of '+name+'.';
 
             case gl.BOOL_VEC2:
-                throw "BOOL_VEC2 uniform variables are unsupported by all browsers.\n"+
-                      "Please change the type of "+name+".";
+                throw 'BOOL_VEC2 uniform variables are unsupported by all browsers.\n'+
+                      'Please change the type of '+name+'.';
 
             case gl.BOOL_VEC3:
-                throw "BOOL_VEC3 uniform variables are unsupported by all browsers.\n"+
-                      "Please change the type of "+name+".";
+                throw 'BOOL_VEC3 uniform variables are unsupported by all browsers.\n'+
+                      'Please change the type of '+name+'.';
 
             case gl.BOOL_VEC4:
-                throw "BOOL_VEC4 uniform variables are unsupported by all browsers.\n"+
-                      "Please change the type of "+name+".";
+                throw 'BOOL_VEC4 uniform variables are unsupported by all browsers.\n'+
+                      'Please change the type of '+name+'.';
 
             case gl.FLOAT_MAT2:
                 return function(mat2) {
@@ -350,9 +371,9 @@ define(function(require) {
                 };
 
             default:
-                throw "Unknown uniform variable type "+type+" for "+name+".";
+                throw 'Unknown uniform variable type '+type+' for '+name+'.';
         }
-    }
+    };
     
     return ShaderBuilder;
 });

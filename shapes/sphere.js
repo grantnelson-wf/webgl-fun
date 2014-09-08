@@ -1,7 +1,7 @@
 define(function(require) {
 
-    var Const = require("tools/const")
-    var ShapeBuilder = require("shapes/shape")
+    var Const = require('tools/const');
+    var ShapeBuilder = require('shapes/shape');
 
     /**
      * Creates a toroid builder.
@@ -15,19 +15,19 @@ define(function(require) {
         this.iterations = 3;
         
         /**
-         * The major radius of the sphere.
+         * The scalar to apply to the x axis positions of the sphere.
          * @type {Number}
          */
         this.scalarX = 0.5;
  
         /**
-         * The minor radius of the sphere.
+         * The scalar to apply to the y axis positions of the sphere.
          * @type {Number}
          */
         this.scalarY = 0.5;
 
         /**
-         * The major count of the sphere.
+         * The scalar to apply to the z axis positions of the sphere.
          * @type {Number}
          */
         this.scalarZ = 0.5;
@@ -36,26 +36,26 @@ define(function(require) {
          * The offset of the sphere's center on the x axis.
          * @type {Number}
          */
-        this.x = 0.0;
+        this.x = 0;
 
         /**
          * The offset of the sphere's center on the y axis.
          * @type {Number}
          */
-        this.y = 0.0;
+        this.y = 0;
 
         /**
          * The offset of the sphere's center on the z axis.
          * @type {Number}
          */
-        this.z = 0.0;
+        this.z = 0;
     }
     
     /**
      * The name of this shape.
      * @type {String}
      */
-    SphereBuilder.prototype.name = "Sphere";
+    SphereBuilder.prototype.name = 'Sphere';
     
     /**
      * The supported vertex types.

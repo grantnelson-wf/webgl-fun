@@ -1,23 +1,23 @@
 define(function(require) {
 
-    var Const = require("tools/const");
-    var Matrix = require("tools/matrix");
-    var ShaderBuilder = require("shaders/textureCube");
-    var ShapeBuilder = require("shapes/cube");
-    var TxtCube = require("tools/textureCube")
+    var Const = require('tools/const');
+    var Matrix = require('tools/matrix');
+    var ShaderBuilder = require('shaders/textureCube');
+    var ShapeBuilder = require('shapes/cube');
+    var TxtCube = require('tools/textureCube');
     
     /**
      * Creates an item for rendering.
      */
     function Item() {
         // Do Nothing
-    };
+    }
 
     /**
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = "Texture Cube";
+    Item.prototype.name = 'Texture Cube';
     
     /**
      * Starts this item for rendering.
@@ -45,9 +45,9 @@ define(function(require) {
         // Create texture.
         this.txtCube = new TxtCube(gl);
         this.txtCube.loadFromFiles(
-            "./data/fire.jpg", "./data/grass.jpg",
-            "./data/metal.jpg", "./data/moon.jpg",
-            "./data/brick.jpg", "./data/wood.jpg");
+            './data/fire.jpg', './data/grass.jpg',
+            './data/metal.jpg', './data/moon.jpg',
+            './data/brick.jpg', './data/wood.jpg');
         
         // Set view transformation.
         var viewMatrix = Matrix.translate(0.0, 0.0, 2.0);

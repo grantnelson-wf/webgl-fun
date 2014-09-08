@@ -1,7 +1,7 @@
 define(function(require) {
 
-    var Const = require("tools/const")
-    var ShapeBuilder = require("shapes/shape")
+    var Const = require('tools/const');
+    var ShapeBuilder = require('shapes/shape');
 
     /**
      * Creates a grid builder.
@@ -65,7 +65,7 @@ define(function(require) {
      * The name of this shape.
      * @type {String}
      */
-    GridBuilder.prototype.name = "Grid";
+    GridBuilder.prototype.name = 'Grid';
     
     /**
      * The supported vertex types.
@@ -82,8 +82,9 @@ define(function(require) {
     GridBuilder.prototype.build = function(gl, vertexType) {
         var shape = new ShapeBuilder();
 
-        for (var i = 0; i <= this.widthDiv; i++) {
-            for (var j = 0; j <= this.depthDiv; j++) {
+        var i, j;
+        for (i = 0; i <= this.widthDiv; i++) {
+            for (j = 0; j <= this.depthDiv; j++) {
                 var u = i/this.widthDiv;
                 var v = j/this.depthDiv;
                 var x = this.x+(u-0.5)*this.width;
@@ -103,20 +104,20 @@ define(function(require) {
                     shape.txt.add(u, v);
                 }
                 if (vertexType&Const.CUBE) {
-                    var tx = u*2.0-1.0;
-                    var tz = v*2.0-1.0;
-                    var len = Math.sqrt(tx*tx + 1 + tz*tz)
+                    var tx = u*2-1;
+                    var tz = v*2-1;
+                    var len = Math.sqrt(tx*tx + 1 + tz*tz);
                     shape.cube.add(tx/len, 1/len, tz/len);
                 }
-            };        
-        };
+            }
+        }
         
-        for (var i = 0; i < this.widthDiv; i++) {
+        for (i = 0; i < this.widthDiv; i++) {
             shape.startTriStrip(i*(this.depthDiv+1), (i+1)*(this.depthDiv+1));
-            for (var j = 1; j <= this.depthDiv; j++) {
+            for (j = 1; j <= this.depthDiv; j++) {
                 shape.addToTriStrip(i*(this.depthDiv+1)+j, (i+1)*(this.depthDiv+1)+j);
-            };        
-        }; 
+            }     
+        }
         
         return shape.build(gl);
     };

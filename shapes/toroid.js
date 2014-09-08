@@ -1,7 +1,7 @@
 define(function(require) {
 
-    var Const = require("tools/const")
-    var ShapeBuilder = require("shapes/shape")
+    var Const = require('tools/const');
+    var ShapeBuilder = require('shapes/shape');
 
     /**
      * Creates a toroid builder.
@@ -36,26 +36,26 @@ define(function(require) {
          * The offset of the toroid's center on the x axis.
          * @type {Number}
          */
-        this.x = 0.0;
+        this.x = 0;
 
         /**
          * The offset of the toroid's center on the y axis.
          * @type {Number}
          */
-        this.y = 0.0;
+        this.y = 0;
 
         /**
          * The offset of the toroid's center on the z axis.
          * @type {Number}
          */
-        this.z = 0.0;
+        this.z = 0;
     }
     
     /**
      * The name of this shape.
      * @type {String}
      */
-    ToroidBuilder.prototype.name = "Toroid";
+    ToroidBuilder.prototype.name = 'Toroid';
     
     /**
      * The supported vertex types.
@@ -95,17 +95,13 @@ define(function(require) {
                 var pz = majorCos*pr + this.z;
                 shape.pos.add(px, py, pz);
 
+                var r = majorSin*minorCos*0.5+0.5;
+                var g = minorSin*0.5+0.5;
+                var b = majorCos*minorCos*0.5+0.5;
                 if (vertexType&Const.CLR3) {
-                    var r = majorSin*minorCos*0.5+0.5;
-                    var g = minorSin*0.5+0.5;
-                    var b = majorCos*minorCos*0.5+0.5;
                     shape.clr3.add(r, g, b);
                 }
-
                 if (vertexType&Const.CLR4) {
-                    var r = majorSin*minorCos*0.5+0.5;
-                    var g = minorSin*0.5+0.5;
-                    var b = majorCos*minorCos*0.5+0.5;
                     shape.clr4.add(r, g, b, 1);
                 }
 

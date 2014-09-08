@@ -1,6 +1,6 @@
 define(function(require) {
 
-    var Const = require("tools/const");
+    var Const = require('tools/const');
 
     /**
      * The set of common methods.
@@ -15,7 +15,7 @@ define(function(require) {
          * @return  {Boolean}  True if they are equal, false otherwise.
          */
         eq: function(a, b, epsilon) {
-            return Math.abs(a - b) <= epsilon
+            return Math.abs(a - b) <= epsilon;
         },
 
         /**
@@ -54,24 +54,24 @@ define(function(require) {
         typeString: function(type) {
             var names = [];
             if (type&Const.POS ) {
-                names.push("POS");
+                names.push('POS');
             }
             if (type&Const.CLR3) {
-                names.push("CLR3");
+                names.push('CLR3');
             }
             if (type&Const.CLR4) {
-                names.push("CLR4");
+                names.push('CLR4');
             }
             if (type&Const.NORM) {
-                names.push("NORM");
+                names.push('NORM');
             }
             if (type&Const.TXT ) {
-                names.push("TXT");
+                names.push('TXT');
             }
             if (type&Const.CUBE) {
-                names.push("CUBE");
+                names.push('CUBE');
             }
-            return names.join("|");
+            return names.join('|');
         }
 
     };

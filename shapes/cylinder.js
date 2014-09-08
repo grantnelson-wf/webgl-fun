@@ -1,8 +1,8 @@
 define(function(require) {
 
-    var Const = require("tools/const")
-    var Common = require("tools/common")
-    var ShapeBuilder = require("shapes/shape")
+    var Const = require('tools/const');
+    var Common = require('tools/common');
+    var ShapeBuilder = require('shapes/shape');
 
     /**
      * Creates a cylinder builder.
@@ -49,26 +49,26 @@ define(function(require) {
          * The offset of the cylinder's center on the x axis.
          * @type {Number}
          */
-        this.x = 0.0;
+        this.x = 0;
 
         /**
          * The offset of the cylinder's center on the y axis.
          * @type {Number}
          */
-        this.y = 0.0;
+        this.y = 0;
 
         /**
          * The offset of the cylinder's center on the z axis.
          * @type {Number}
          */
-        this.z = 0.0;
+        this.z = 0;
     }
     
     /**
      * The name of this shape.
      * @type {String}
      */
-    CylinderBuilder.prototype.name = "Cylinder";
+    CylinderBuilder.prototype.name = 'Cylinder';
     
     /**
      * The supported vertex types.
@@ -84,8 +84,21 @@ define(function(require) {
      */
     CylinderBuilder.prototype.build = function(gl, vertexType) {
         var shape = new ShapeBuilder();
+        this._buildTopCap(gl, shape, vertexType);
+        this._buildBottomCap(gl, shape, vertexType);
+        this._buildSizes(gl, shape, vertexType);
+        return shape.build(gl);
+    };
 
-        // Add top cap.
+
+    /**
+     * Creates a cylinder.
+     * TODO:: Comment
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Number} vertexType  The type of vertices the cylinder should have.
+     * @returns  {Shape}  The created cylinder.
+     */
+    CylinderBuilder.prototype._buildTopCap = function(gl, shape, vertexType) {
         if (!Common.eq(this.topRadius, 0, 0.00001)) {
             shape.pos.add(this.x, this.y+this.topHeight, this.z);
             if (vertexType&Const.NORM) {
@@ -128,10 +141,18 @@ define(function(require) {
                     shape.cube.add(cos*Math.SQRT2, Math.SQRT2, sin*Math.SQRT2);
                 }
                 shape.addToTriFan(index+i);
-            };
+            }
         }
+    };
         
-        // Add bottom cap.
+    /**
+     * Creates a cylinder.
+     * TODO:: Comment
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Number} vertexType  The type of vertices the cylinder should have.
+     * @returns  {Shape}  The created cylinder.
+     */
+    CylinderBuilder.prototype._buildBottomCap = function(gl, shape, vertexType) {
         if (!Common.eq(this.bottomRadius, 0, 0.00001)) {
             shape.pos.add(this.x, this.y+this.bottomHeight, this.z);
             if (vertexType&Const.NORM) {
@@ -174,15 +195,24 @@ define(function(require) {
                     shape.cube.add(cos*Math.SQRT2, -Math.SQRT2, sin*Math.SQRT2);
                 }
                 shape.addToTriFan(index+this.sideCount-1-i);
-            };
+            }
         }
+    };
         
-        // Add sides.
+    /**
+     * Creates a cylinder.
+     * TODO:: Comment
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Number} vertexType  The type of vertices the cylinder should have.
+     * @returns  {Shape}  The created cylinder.
+     */
+    CylinderBuilder.prototype._buildSides = function(gl, shape, vertexType) {
+        var i, j;
         var index = shape.pos.count();
-        for (var i = 0; i <= this.divCount; i++) {
+        for (i = 0; i <= this.divCount; i++) {
             var tu = i/this.divCount;
             var height = this.y+tu*(this.topHeight-this.bottomHeight)+this.bottomHeight;
-            for (var j = 0; j < this.sideCount; j++) {
+            for (j = 0; j < this.sideCount; j++) {
                 var angle = j*Math.PI*2.0/this.sideCount;
                 var cos = Math.cos(angle);
                 var sin = Math.sin(angle);
@@ -205,15 +235,15 @@ define(function(require) {
                     var len = Math.sqrt(1 + ty*ty);
                     shape.cube.add(cos/len, ty/len, sin/len);
                 }
-            };
-        };
-        for (var i = 1; i <= this.divCount; i++) {
+            }
+        }
+        for (i = 1; i <= this.divCount; i++) {
             index += this.sideCount;
             shape.startTriStrip(index+this.sideCount-1, index-1);
-            for (var j = 0; j < this.sideCount; j++) {
+            for (j = 0; j < this.sideCount; j++) {
                 shape.addToTriStrip(index+j, index-this.sideCount+j);
-            };
-        };
+            }
+        }
         
         return shape.build(gl);
     };

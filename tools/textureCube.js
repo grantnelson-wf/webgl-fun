@@ -72,9 +72,9 @@ define(function(require) {
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
             gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
             gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-        }
+        };
         image.src = path;
-    }
+    };
     
     /**
      * Binds the texture to the 

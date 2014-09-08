@@ -1,24 +1,24 @@
 define(function(require) {
 
-    var Const = require("tools/const");
-    var Vector = require("tools/vector");
-    var Matrix = require("tools/matrix");
-    var ObjMover = require("movers/tumble");
-    var ShaderBuilder = require("shaders/fog");
-    var ShapeBuilder = require("shapes/toroid");
+    var Const = require('tools/const');
+    var Vector = require('tools/vector');
+    var Matrix = require('tools/matrix');
+    var ObjMover = require('movers/tumble');
+    var ShaderBuilder = require('shaders/fog');
+    var ShapeBuilder = require('shapes/toroid');
     
     /**
      * Creates an item for rendering.
      */
     function Item() {
         // Do Nothing
-    };
+    }
 
     /**
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = "Fog";
+    Item.prototype.name = 'Fog';
     
     /**
      * Starts this item for rendering.

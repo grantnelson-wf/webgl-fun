@@ -30,7 +30,7 @@ define(function(require) {
         }
 
         try {
-            this.gl = this.canvas.getContext("webgl");
+            this.gl = this.canvas.getContext('webgl');
             this.gl.viewportWidth = this.canvas.width;
             this.gl.viewportHeight = this.canvas.height;
         }
@@ -48,7 +48,7 @@ define(function(require) {
         this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.depthFunc(this.gl.LESS);
-    }
+    };
     
     /**
      * This starts running an item. Any previous item is stopped.
@@ -71,6 +71,7 @@ define(function(require) {
             }
         
             var driver = this;
+            // TODO:: Need to improve event loop.
             this.timer = setInterval(function() {
                     if (!driver.item.update(driver.gl)) {
                         driver.run(null);

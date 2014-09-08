@@ -1,7 +1,7 @@
 define(function(require) {
 
-    var Const = require("tools/const");
-    var Common = require("tools/common");
+    var Const = require('tools/const');
+    var Common = require('tools/common');
 
     /**
      * A graphical shape object.
@@ -17,7 +17,7 @@ define(function(require) {
          * @private
          * @type {Object}
          */
-        this._gl = gl
+        this._gl = gl;
 
         /**
          * The vertex type.
@@ -90,7 +90,7 @@ define(function(require) {
      */
     Shape.prototype.vertexType = function() {
         return this._vertexType;
-    }
+    };
         
     /**
      * Gets the vertex size.
@@ -98,7 +98,7 @@ define(function(require) {
      */
     Shape.prototype.vertexSize = function() {
         return this._vertexSize;
-    }
+    };
 
     /**
      * Sets the attribute for the vertex before a draw.
@@ -118,7 +118,7 @@ define(function(require) {
             offset += size*Float32Array.BYTES_PER_ELEMENT;
         }
         return offset;
-    }
+    };
 
     /**
      * Draws the shape to the graphical object.
@@ -191,7 +191,7 @@ define(function(require) {
      * @return  {Number}  The index found or -1 if not found.
      */
     Vertex2DataBuffer.prototype.find = function(x, y, epsilon) {
-        epsilon = epsilon || 0.000001
+        epsilon = epsilon || 0.000001;
         for (var i = 0; i < this.data.length; i += 2) {
             if (Common.eq(this.data[i  ], x, epsilon) &&
                 Common.eq(this.data[i+1], y, epsilon)) {
@@ -277,7 +277,7 @@ define(function(require) {
      * @return  {Number}  The index found or -1 if not found.
      */
     Vertex3DataBuffer.prototype.find = function(x, y, z, epsilon) {
-        epsilon = epsilon || 0.000001
+        epsilon = epsilon || 0.000001;
         for (var i = 0; i < this.data.length; i += 3) {
             if (Common.eq(this.data[i  ], x, epsilon) &&
                 Common.eq(this.data[i+1], y, epsilon) &&
@@ -368,7 +368,7 @@ define(function(require) {
      * @return  {Number}  The index found or -1 if not found.
      */
     Vertex4DataBuffer.prototype.find = function(x, y, z, w, epsilon) {
-        epsilon = epsilon || 0.000001
+        epsilon = epsilon || 0.000001;
         for (var i = 0; i < this.data.length; i += 4) {
             if (Common.eq(this.data[i  ], x, epsilon) &&
                 Common.eq(this.data[i+1], y, epsilon) &&
@@ -593,7 +593,7 @@ define(function(require) {
      */
     ShapeBuilder.prototype.addToLineStrip = function() {
         if (this._curLineStrips === null) {
-            throw "Error: Must start a line strip before adding to it.";
+            throw 'Error: Must start a line strip before adding to it.';
         }
         for (var i = 0; i < arguments.length; i++) {
             this._curLineStrips.push(Number(arguments[i]));
@@ -621,7 +621,7 @@ define(function(require) {
      */
     ShapeBuilder.prototype.addToLineLoop = function() {
         if (this._curLineLoops === null) {
-            throw "Error: Must start a line loop before adding to it.";
+            throw 'Error: Must start a line loop before adding to it.';
         }
         for (var i = 0; i < arguments.length; i++) {
             this._curLineLoops.push(Number(arguments[i]));
@@ -670,7 +670,7 @@ define(function(require) {
      */
     ShapeBuilder.prototype.addToTriStrip = function() {
         if (this._curTriStrips === null) {
-            throw "Error: Must start a triangle strip before adding to it.";
+            throw 'Error: Must start a triangle strip before adding to it.';
         }
         for (var i = 0; i < arguments.length; i++) {
             this._curTriStrips.push(Number(arguments[i]));
@@ -698,7 +698,7 @@ define(function(require) {
      */
     ShapeBuilder.prototype.addToTriFan = function() {
         if (this._curTriFans === null) {
-            throw "Error: Must start a triangle fan before adding to it.";
+            throw 'Error: Must start a triangle fan before adding to it.';
         }
         for (var i = 0; i < arguments.length; i++) {
             this._curTriFans.push(Number(arguments[i]));
@@ -730,7 +730,7 @@ define(function(require) {
     ShapeBuilder.prototype._buildVertices = function(gl, vertexType) {
         vertexType = vertexType || (Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE);
         if (!(vertexType&Const.POS)) {
-            throw "Error: Must have at least the positional vertex type.";
+            throw 'Error: Must have at least the positional vertex type.';
         }
 
         // Collect information about the vertex arrays.
@@ -738,18 +738,19 @@ define(function(require) {
         var vertexSize = 0;
         var len = this.pos.count();
         if (len <= 0) {
-            throw "Error: Must have at least one vertex.";
+            throw 'Error: Must have at least one vertex.';
         }
 
         // Determine prepared types.
+        var i, datum;
         var hasData = new Array(this.data.length);
-        for (var i = 0; i < this.data.length; i++) {
-            var datum = this.data[i];
+        for (i = 0; i < this.data.length; i++) {
+            datum = this.data[i];
             hasData[i] = false;
             if ((vertexType&datum.type) && (datum.count() > 0)) {
                 if (datum.count() !== len) {
-                    throw "Error: The "+Common.typeString(datum.type)+
-                    " count, "+datum.count()+", must match the vertex count, "+len+".";
+                    throw 'Error: The '+Common.typeString(datum.type)+
+                    ' count, '+datum.count()+', must match the vertex count, '+len+'.';
                 }
                 newVertexType |= datum.type;
                 vertexSize += datum.size();
@@ -759,7 +760,7 @@ define(function(require) {
 
         // Pack the vertices.
         var vertices = new Array(len*vertexSize);
-        for (var i = 0, j = 0; i < len; i++) {
+        for (i = 0, j = 0; i < len; i++) {
             for (var k = 0; k < this.data.length; k++) {
                 if (hasData[k]) {
                     datum = this.data[k];
@@ -792,6 +793,7 @@ define(function(require) {
      * @returns  {Array}  The list of index objects.
      */
     ShapeBuilder.prototype._buildIndices = function(gl, len) {
+        var i, j;
         var indices = [];
         var indexObjs = [];
         var addIndexObj = function(type) {
@@ -808,131 +810,131 @@ define(function(require) {
         
         // Copy the point indices and check the indices range.
         if (this._indicesPoints.length > 0) {
-            for (var i = 0; i < this._indicesPoints.length; i++) {
+            for (i = 0; i < this._indicesPoints.length; i++) {
                 index = this._indicesPoints[i];
                 if ((index < 0) || (index >= len)) {
-                    throw "Error: The point index, "+index+", at "+i+" was not in [0.."+len+").";
+                    throw 'Error: The point index, '+index+', at '+i+' was not in [0..'+len+').';
                 }
                 indices.push(index);
-            };
+            }
             addIndexObj(gl.POINTS);
         }
         
         // Copy the line indices and check the indices range.
         if (this._indicesLines.length > 0) {
             if (lineStrip.length%2 !== 0) {
-                throw "Error: The lines must be in groups of two, it has "+lineStrip.length+".";
+                throw 'Error: The lines must be in groups of two, it has '+lineStrip.length+'.';
             }
-            for (var i = 0; i < this._indicesLines.length; i++) {
+            for (i = 0; i < this._indicesLines.length; i++) {
                 index = this._indicesLines[i];
                 if ((index < 0) || (index >= len)) {
-                    throw "Error: The line index, "+index+", at "+i+" was not in [0.."+len+").";
+                    throw 'Error: The line index, '+index+', at '+i+' was not in [0..'+len+').';
                 }
                 indices.push(index);
-            };
+            }
             addIndexObj(gl.LINES);
         }
         
         // Copy the line strips indices and check the indices range.
-        for (var i = 0; i < this._indicesLineStrips.length; i++) {
+        for (i = 0; i < this._indicesLineStrips.length; i++) {
             var lineStrip = this._indicesLineStrips[i];
             if (lineStrip.length < 2) {
-                throw "Error: The line loop at "+i+" must have at least two indices.";
+                throw 'Error: The line loop at '+i+' must have at least two indices.';
             }
-            for (var j = 0; j < lineStrip.length; j++) {
+            for (j = 0; j < lineStrip.length; j++) {
                 index = lineStrip[j];
                 if ((index < 0) || (index >= len)) {
-                    throw "Error: The line strip index, "+index+", at "+j+" in "+i+" was not in [0.."+len+").";
+                    throw 'Error: The line strip index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
                 }
                 indices.push(index);
-            };
+            }
             addIndexObj(gl.LINE_STRIP);
-        };
+        }
         
         // Copy the line loops indices and check the indices range.
         if (this._indicesLineLoops.length > 0) {
-            for (var i = 0; i < this._indicesLineLoops.length; i++) {
+            for (i = 0; i < this._indicesLineLoops.length; i++) {
                 var lineLoop = this._indicesLineLoops[i];
                 if (lineLoop.length < 3) {
-                    throw "Error: The line loop at "+i+" must have at least three indices.";
+                    throw 'Error: The line loop at '+i+' must have at least three indices.';
                 }
-                for (var j = 0; j < lineLoop.length; j++) {
+                for (j = 0; j < lineLoop.length; j++) {
                     index = lineLoop[j];
                     if ((index < 0) || (index >= len)) {
-                        throw "Error: The line loop index, "+index+", at "+j+" in "+i+" was not in [0.."+len+").";
+                        throw 'Error: The line loop index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
                     }
                     indices.push(index);
-                };
+                }
                 addIndexObj(gl.LINE_LOOP);
-            };
+            }
         }
         
         // Copy the triangles and check the indices range.
         if (this._indicesTris.length > 0) {
             if (this._indicesTris.length%3 !== 0) {
-                throw "Error: The triangles must be in groups of three, it has "+this._indicesTris.length+".";
+                throw 'Error: The triangles must be in groups of three, it has '+this._indicesTris.length+'.';
             }
-            for (var i = 0; i < this._indicesTris.length; i++) {
+            for (i = 0; i < this._indicesTris.length; i++) {
                 index = this._indicesTris[i];
                 if ((index < 0) || (index >= len)) {
-                    throw "Error: The triangle index, "+index+", at "+i+" was not in [0.."+len+").";
+                    throw 'Error: The triangle index, '+index+', at '+i+' was not in [0..'+len+').';
                 }
                 indices.push(index);
-            };
+            }
             addIndexObj(gl.TRIANGLES);
         }
         
         // Copy the quads and check the indices range.
         if (this._indicesQuads.length > 0) {
             if (this._indicesQuads.length%4 !== 0) {
-                throw "Error: The quadrilaterals must be in groups of four, it has "+this._indicesQuads.length+".";
+                throw 'Error: The quadrilaterals must be in groups of four, it has '+this._indicesQuads.length+'.';
             }
-            for (var i = 0; i < this._indicesQuads.length; i += 4) {
-                for (var j = 0; j < 4; j++) {
+            for (i = 0; i < this._indicesQuads.length; i += 4) {
+                for (j = 0; j < 4; j++) {
                     index = this._indicesQuads[i+j];
                     if ((index < 0) || (index >= len)) {
-                        throw "Error: The quads index, "+index+", at "+j+" in "+i+" was not in [0.."+len+").";
+                        throw 'Error: The quads index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
                     }
                     indices.push(index);
-                };
+                }
                 addIndexObj(gl.TRIANGLE_FAN);
-            };
+            }
         }
         
         // Copy the triangle strips indices and check the indices range.
-        for (var i = 0; i < this._indicesTriStrips.length; i++) {
+        for (i = 0; i < this._indicesTriStrips.length; i++) {
             var triStrip = this._indicesTriStrips[i];
             if (triStrip.length < 3) {
-                throw "Error: The triangle strip at "+i+" must have at least three indices.";
+                throw 'Error: The triangle strip at '+i+' must have at least three indices.';
             }
-            for (var j = 0; j < triStrip.length; j++) {
+            for (j = 0; j < triStrip.length; j++) {
                 index = triStrip[j];
                 if ((index < 0) || (index >= len)) {
-                    throw "Error: The triangle strip index, "+index+", at "+j+" in "+i+" was not in [0.."+len+").";
+                    throw 'Error: The triangle strip index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
                 }
                 indices.push(index);
-            };
+            }
             addIndexObj(gl.TRIANGLE_STRIP);
-        };
+        }
         
         // Copy the triangle fan indices and check the indices range.
-        for (var i = 0; i < this._indicesTriFans.length; i++) {
+        for (i = 0; i < this._indicesTriFans.length; i++) {
             var triFan = this._indicesTriFans[i];
             if (triFan.length < 3) {
-                throw "Error: The triangle fan at "+i+" must have at least three indices.";
+                throw 'Error: The triangle fan at '+i+' must have at least three indices.';
             }
-            for (var j = 0; j < triFan.length; j++) {
+            for (j = 0; j < triFan.length; j++) {
                 index = triFan[j];
                 if ((index < 0) || (index >= len)) {
-                    throw "Error: The triangle fan index, "+index+", at "+j+" in "+i+" was not in [0.."+len+").";
+                    throw 'Error: The triangle fan index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
                 }
                 indices.push(index);
-            };
+            }
             addIndexObj(gl.TRIANGLE_FAN);
-        };
+        }
         
         if (indexObjs.length < 1) {
-            throw "Error: Must have at least one index object.";
+            throw 'Error: Must have at least one index object.';
         }
         return indexObjs;
     };

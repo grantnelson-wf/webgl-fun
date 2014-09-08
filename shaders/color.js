@@ -1,20 +1,20 @@
 define(function(require) {
 
-    var Const = require("tools/const");
-    var ShaderBuilder = require("shaders/shader");
+    var Const = require('tools/const');
+    var ShaderBuilder = require('shaders/shader');
     
     /**
      * Creates a color shader.
      */
     function ColorBuilder() {
         // Do Nothing
-    };
+    }
 
     /**
      * The name for this shader.
      * @type {String}
      */
-    ColorBuilder.prototype.name = "Color";
+    ColorBuilder.prototype.name = 'Color';
     
     /**
      * The required vertex information.
@@ -27,34 +27,34 @@ define(function(require) {
      * @type {String}
      */
     ColorBuilder.prototype.vsSource =
-        "uniform mat4 objMat;                                       \n"+
-        "uniform mat4 viewMat;                                      \n"+
-        "uniform mat4 projMat;                                      \n"+
-        "                                                           \n"+
-        "attribute vec3 posAttr;                                    \n"+
-        "attribute vec3 clr3Attr;                                   \n"+
-        "                                                           \n"+
-        "varying vec4 vColor;                                       \n"+
-        "                                                           \n"+
-        "void main()                                                \n"+
-        "{                                                          \n"+
-        "  gl_Position = projMat*viewMat*objMat*vec4(posAttr, 1.0); \n"+
-        "  vColor = vec4(clr3Attr, 1.0);                            \n"+
-        "}                                                          \n";
+        'uniform mat4 objMat;                                       \n'+
+        'uniform mat4 viewMat;                                      \n'+
+        'uniform mat4 projMat;                                      \n'+
+        '                                                           \n'+
+        'attribute vec3 posAttr;                                    \n'+
+        'attribute vec3 clr3Attr;                                   \n'+
+        '                                                           \n'+
+        'varying vec4 vColor;                                       \n'+
+        '                                                           \n'+
+        'void main()                                                \n'+
+        '{                                                          \n'+
+        '  gl_Position = projMat*viewMat*objMat*vec4(posAttr, 1.0); \n'+
+        '  vColor = vec4(clr3Attr, 1.0);                            \n'+
+        '}                                                          \n';
 
     /**
      * The fragment shader program.
      * @type {String}
      */
     ColorBuilder.prototype.fsSource =
-        "precision mediump float;  \n"+
-        "                          \n"+
-        "varying vec4 vColor;      \n"+
-        "                          \n"+
-        "void main()               \n"+
-        "{                         \n"+
-        "   gl_FragColor = vColor; \n"+
-        "}                         \n";
+        'precision mediump float;  \n'+
+        '                          \n'+
+        'varying vec4 vColor;      \n'+
+        '                          \n'+
+        'void main()               \n'+
+        '{                         \n'+
+        '   gl_FragColor = vColor; \n'+
+        '}                         \n';
     
     /**
      * Initializes the shader.

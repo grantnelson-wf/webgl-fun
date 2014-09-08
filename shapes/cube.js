@@ -1,7 +1,7 @@
 define(function(require) {
 
-    var Const = require("tools/const")
-    var ShapeBuilder = require("shapes/shape")
+    var Const = require('tools/const');
+    var ShapeBuilder = require('shapes/shape');
 
     /**
      * Constructor for a cube builder.
@@ -18,44 +18,44 @@ define(function(require) {
          * The width of the cube in the x axis.
          * @type {Number}
          */
-        this.width = 1.0;
+        this.width = 1;
 
         /**
          * The height of the cube in the y axis.
          * @type {Number}
          */
-        this.height = 1.0;
+        this.height = 1;
 
         /**
          * The depth of the cube in the z axis.
          * @type {Number}
          */
-        this.depth = 1.0;
+        this.depth = 1;
 
         /**
          * The offset of the cube's center on the x axis.
          * @type {Number}
          */
-        this.x = 0.0;
+        this.x = 0;
 
         /**
          * The offset of the cube's center on the y axis.
          * @type {Number}
          */
-        this.y = 0.0;
+        this.y = 0;
 
         /**
          * The offset of the cube's center on the z axis.
          * @type {Number}
          */
-        this.z = 0.0;
+        this.z = 0;
     }
     
     /**
      * The name of this shape.
      * @type {String}
      */
-    CubeBuilder.prototype.name = "Cube";
+    CubeBuilder.prototype.name = 'Cube';
     
     /**
      * The supported vertex types.
@@ -179,7 +179,7 @@ define(function(require) {
         this._addFace(shape, vertexType,  0, -1,  0, 1/4, 2/3, 2/4, 1/3); // Y-
         this._addFace(shape, vertexType,  0,  0,  1, 2/4, 0/3, 1/4, 1/3); // Z+
         this._addFace(shape, vertexType,  0,  0, -1, 1/4, 2/3, 2/4, 3/3); // Z-
-        return shape.build(gl)
+        return shape.build(gl);
     };
 
     return CubeBuilder;

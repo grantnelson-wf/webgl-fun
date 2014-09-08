@@ -14,7 +14,7 @@
   "homepage": "https://github.com/grantnelson-wf/webgl-fun/index.html",
   "readmeFilename": "README.md",
   "devDependencies": {
-      "grunt": ">0.4.1",
-      "grunt-contrib-jshint": ">0.10.0"
+      "grunt": "~0.4.1",
+      "grunt-contrib-jshint": "~0.10.0"
   }
 }

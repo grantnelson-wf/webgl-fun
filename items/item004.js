@@ -1,23 +1,23 @@
 define(function(require) {
 
-    var Const = require("tools/const");
-    var Matrix = require("tools/matrix");
-    var ShaderBuilder = require("shaders/texture2d");
-    var ShapeBuilder = require("shapes/cube");
-    var Txt2D = require("tools/texture2d")
+    var Const = require('tools/const');
+    var Matrix = require('tools/matrix');
+    var ShaderBuilder = require('shaders/texture2d');
+    var ShapeBuilder = require('shapes/cube');
+    var Txt2D = require('tools/texture2d');
     
     /**
      * Creates an item for rendering.
      */
     function Item() {
         // Do Nothing
-    };
+    }
 
     /**
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = "Texture 2D";
+    Item.prototype.name = 'Texture 2D';
     
     /**
      * Starts this item for rendering.
@@ -41,7 +41,7 @@ define(function(require) {
 
         // Create texture.
         this.txt2D = new Txt2D(gl);
-        this.txt2D.loadFromFile("./data/fire.jpg");
+        this.txt2D.loadFromFile('./data/fire.jpg');
         
         // Set view transformation.
         var viewMatrix = Matrix.translate(0.0, 0.0, 2.0);

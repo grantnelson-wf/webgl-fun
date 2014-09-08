@@ -1,22 +1,22 @@
 define(function(require) {
 
-    var Const = require("tools/const");
-    var Matrix = require("tools/matrix");
-    var ShaderBuilder = require("shaders/directional");
-    var ShapeBuilder = require("shapes/toroid");
+    var Const = require('tools/const');
+    var Matrix = require('tools/matrix');
+    var ShaderBuilder = require('shaders/directional');
+    var ShapeBuilder = require('shapes/toroid');
     
     /**
      * Creates an item for rendering.
      */
     function Item() {
         // Do Nothing
-    };
+    }
 
     /**
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = "Directional Light";
+    Item.prototype.name = 'Directional Light';
     
     /**
      * Starts this item for rendering.

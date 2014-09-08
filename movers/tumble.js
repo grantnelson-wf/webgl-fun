@@ -1,6 +1,6 @@
 define(function() {
 
-    var Matrix = require("tools/matrix");
+    var Matrix = require('tools/matrix');
 
     /**
      * TODO:: Comment
@@ -61,7 +61,7 @@ define(function() {
          * TODO:: Comment
          */
         this._mat = Matrix.identity();
-    };
+    }
     
     /**
      * TODO:: Comment

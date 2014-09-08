@@ -1,7 +1,7 @@
 define(function(require) {
 
-    var Const = require("tools/const")
-    var ShapeBuilder = require("shapes/shape")
+    var Const = require('tools/const');
+    var ShapeBuilder = require('shapes/shape');
 
     /**
      * Creates the Workiva logo.
@@ -14,7 +14,7 @@ define(function(require) {
      * The name of this shape.
      * @type {String}
      */
-    WLogoBuilder.prototype.name = "Workiva";
+    WLogoBuilder.prototype.name = 'Workiva';
     
     /**
      * The supported vertex types.
@@ -65,16 +65,17 @@ define(function(require) {
      * @param  {Array} poly          The x, y tuples for the polygon to add and extend.
      */
     WLogoBuilder.prototype._addPoly = function(shape, vertexType, poly) {
+        var i, index;
         var count = poly.length/2;
         if (count < 3) {
-            throw "Error: Must have at least 3 vertices in the polygon.";
+            throw 'Error: Must have at least 3 vertices in the polygon.';
         }
 
         // Add front face (uses fan for triangles).
-        var index = shape.pos.count();
+        index = shape.pos.count();
         this._addVec(shape, vertexType, poly[0], poly[1], 77, 0, 0, 1);
         shape.startTriFan(index);
-        for (var i = 1, j = count - 1; i < count; i++, j--) {
+        for (i = 1, j = count - 1; i < count; i++, j--) {
             this._addVec(shape, vertexType, poly[j*2], poly[j*2+1], 77, 0, 0, 1);
             shape.addToTriFan(index+i);
         }
@@ -82,20 +83,20 @@ define(function(require) {
         // Add back face (uses fan for triangles).
         index = shape.pos.count();
         shape.startTriFan();
-        for (var i = 0; i < count; i++) {
+        for (i = 0; i < count; i++) {
             this._addVec(shape, vertexType, poly[i*2], poly[i*2+1], 55, 0, 0, -1);
             shape.addToTriFan(index+i);
         }
 
         // Add joining faces.
         var x1 = poly[count*2-2], y1 = poly[count*2-1];
-        for (var i = 0; i < count; i++) {
+        for (i = 0; i < count; i++) {
             var x2 = poly[i*2],   y2 = poly[i*2+1];
             var dx = x2-x1,       dy = y2-y1;
             var len = Math.sqrt(dx*dx + dy*dy);
             var nx = dy/len, ny = -dx/len;
 
-            var index = shape.pos.count();
+            index = shape.pos.count();
             this._addVec(shape, vertexType, x1, y1, 77, nx, ny, 0);
             this._addVec(shape, vertexType, x2, y2, 77, nx, ny, 0);
             this._addVec(shape, vertexType, x2, y2, 55, nx, ny, 0);
@@ -105,7 +106,7 @@ define(function(require) {
             x1 = x2;
             y1 = y2;
         }
-    }
+    };
     
     /**
      * Creates the Workiva logo shape.

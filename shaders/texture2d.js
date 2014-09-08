@@ -1,20 +1,20 @@
 define(function(require) {
 
-    var Const = require("tools/const");
-    var ShaderBuilder = require("shaders/shader");
+    var Const = require('tools/const');
+    var ShaderBuilder = require('shaders/shader');
     
     /**
      * Creates a texture shader.
      */
     function TextureBuilder() {
         // Do Nothing
-    };
+    }
 
     /**
      * The name for this shader.
      * @type {String}
      */
-    TextureBuilder.prototype.name = "Texture";
+    TextureBuilder.prototype.name = 'Texture';
     
     /**
      * The required vertex information.
@@ -27,36 +27,36 @@ define(function(require) {
      * @type {String}
      */
     TextureBuilder.prototype.vsSource =
-        "uniform mat4 objMat;                                       \n"+
-        "uniform mat4 viewMat;                                      \n"+
-        "uniform mat4 projMat;                                      \n"+
-        "                                                           \n"+
-        "attribute vec3 posAttr;                                    \n"+
-        "attribute vec2 txtAttr;                                    \n"+
-        "                                                           \n"+
-        "varying vec2 vTxt;                                         \n"+
-        "                                                           \n"+
-        "void main()                                                \n"+
-        "{                                                          \n"+
-        "  gl_Position = projMat*viewMat*objMat*vec4(posAttr, 1.0); \n"+
-        "  vTxt = txtAttr;                                          \n"+
-        "}                                                          \n";
+        'uniform mat4 objMat;                                       \n'+
+        'uniform mat4 viewMat;                                      \n'+
+        'uniform mat4 projMat;                                      \n'+
+        '                                                           \n'+
+        'attribute vec3 posAttr;                                    \n'+
+        'attribute vec2 txtAttr;                                    \n'+
+        '                                                           \n'+
+        'varying vec2 vTxt;                                         \n'+
+        '                                                           \n'+
+        'void main()                                                \n'+
+        '{                                                          \n'+
+        '  gl_Position = projMat*viewMat*objMat*vec4(posAttr, 1.0); \n'+
+        '  vTxt = txtAttr;                                          \n'+
+        '}                                                          \n';
 
     /**
      * The fragment shader program.
      * @type {String}
      */
     TextureBuilder.prototype.fsSource =
-        "precision mediump float;                       \n"+
-        "                                               \n"+
-        "varying vec2 vTxt;                             \n"+
-        "                                               \n"+
-        "uniform sampler2D txtSampler;                  \n"+
-        "                                               \n"+
-        "void main()                                    \n"+
-        "{                                              \n"+
-        "   gl_FragColor = texture2D(txtSampler, vTxt); \n"+
-        "}                                              \n";
+        'precision mediump float;                       \n'+
+        '                                               \n'+
+        'varying vec2 vTxt;                             \n'+
+        '                                               \n'+
+        'uniform sampler2D txtSampler;                  \n'+
+        '                                               \n'+
+        'void main()                                    \n'+
+        '{                                              \n'+
+        '   gl_FragColor = texture2D(txtSampler, vTxt); \n'+
+        '}                                              \n';
     
     /**
      * Initializes the shader.

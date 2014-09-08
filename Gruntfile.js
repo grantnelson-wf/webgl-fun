@@ -1,5 +1,5 @@
 module.exports = function(grunt) {
-    var allFiles = ['**/*.js'];
+    var allFiles = ['**/*.js', '!bower_components/**/*.js', '!node_modules/**/*.js'];
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
