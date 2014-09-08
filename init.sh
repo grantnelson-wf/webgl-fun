@@ -10,12 +10,12 @@ bower install
 
 if [ $? -ne 0 ]; then
   echo "$COLOR_RED"
-  echo "\nINIT FAILED!\n"
+  echo "\nINIT FAILED\n"
   exit 1
 fi
 
 echo "$COLOR_GREEN"
-echo "\nWebGL is Fun!!\n"
+echo "\nWebGL is Ready\n"
 
 echo "$COLOR_RESET"
 exit 0
