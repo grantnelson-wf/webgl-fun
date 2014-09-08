@@ -2,6 +2,8 @@ define(function(require) {
 
     var Const = require('tools/const');
     var Matrix = require('tools/matrix');
+    var ObjMover = require('movers/tumble');
+    var ViewMover = require('movers/userFocus');
     var ShaderBuilder = require('shaders/textureCube');
     var ShapeBuilder = require('shapes/cube');
     var TxtCube = require('tools/textureCube');
@@ -57,20 +59,13 @@ define(function(require) {
         var projMatrix = Matrix.perspective(Math.PI/3.0, 1.0, 1.0, -1.0);
         this.shader.setProjMat(projMatrix);
         
-        var objMatrix = Matrix.identity();
-        this.shader.setObjMat(objMatrix);
+        // Initialize view movement.
+        this.viewMover = new ViewMover();
+        this.viewMover.start(gl);
         
-        // Initialize view rotation values.
-        this.viewYaw   = 0;
-        this.viewPitch = 0;
-        
-        
-        // TODO:: Control view with mouse
-        
-        canvas.onmousedown   = this.handleMouseDown;
-        document.onmouseup   = this.handleMouseUp;
-        document.onmousemove = this.handleMouseMove;
-        
+        // Initialize object movement.
+        this.objMover = new ObjMover();
+        this.objMover.start(gl);
         return true;
     };
     
@@ -84,15 +79,24 @@ define(function(require) {
         // Clear color buffer.
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
-        // Set view transformation.
-        //var objMatrix = Matrix.euler(this.yaw, this.pitch, 0);
-        //this.shader.setObjMat(objMatrix);
+        // Set view transformations
+        this.viewMover.update();
+        this.shader.setViewMat(this.viewMover.matrix());
 
-        // Bind texture.
+        // Sky box object should be stable to the world.
+        var objMatrix = Matrix.identity();
+        this.shader.setObjMat(objMatrix);
+
+        // Draw skybox.
         this.txtCube.bind();
-
-        // Draw shape.
         this.shape.draw();
+
+        // Set object transformation
+        //this.objMover.update();
+        //this.shader.setObjMat(this.objMover.matrix());
+
+        // Draw object shape.
+        //this.shape.draw();
         return true;
     };
     
@@ -101,7 +105,8 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object.
      */
     Item.prototype.stop = function(gl) {
-        // Do Nothing
+        this.viewMover.stop(gl);
+        this.objMover.stop(gl);
     };
      
     return Item;

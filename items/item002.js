@@ -48,8 +48,8 @@ define(function(require) {
         this.shader.setProjMat(projMatrix);
         
         // Initialize object movement.
-        this.mover = new ObjMover();
-        this.mover.start(gl);
+        this.objMover = new ObjMover();
+        this.objMover.start(gl);
         return true;
     };
     
@@ -64,8 +64,8 @@ define(function(require) {
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
         // Set toroid transformation.
-        this.mover.update();
-        this.shader.setObjMat(this.mover.matrix());
+        this.objMover.update();
+        this.shader.setObjMat(this.objMover.matrix());
 
         // Draw shape.
         this.shape.draw();
@@ -77,7 +77,7 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object.
      */
     Item.prototype.stop = function(gl) {
-        this.mover.stop(gl);
+        this.objMover.stop(gl);
     };
      
     return Item;

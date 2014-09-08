@@ -72,6 +72,30 @@ define(function(require) {
                 names.push('CUBE');
             }
             return names.join('|');
+        },
+
+        /**
+         * TODO:: Comment
+         * @param  {[type]} image     [description]
+         * @param  {[type]} maxWidth  [description]
+         * @param  {[type]} maxHeight [description]
+         * @return {[type]}           [description]
+         */
+        resizeImage: function(image, maxSize) {
+            // TODO:: Check that image sizes are power of 2.
+            if ((image.width <= maxSize) || (image.height <= maxSize)) {
+                return image;
+            } else {
+                var canvas = document.createElement('canvas');
+                
+                // TODO:: Properly set sizes proportional and power of 2.
+                canvas.width = maxSize;
+                canvas.height = maxSize;
+
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                return ctx.getImageData(0, 0, canvas.width, canvas.height);
+            }
         }
 
     };

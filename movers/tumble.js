@@ -66,7 +66,7 @@ define(function(require) {
     /**
      * TODO:: Comment
      */
-    Tumble.prototype.start = function() {
+    Tumble.prototype.start = function(gl) {
         // Do Nothing
     };
 
@@ -92,7 +92,7 @@ define(function(require) {
     /**
      * TODO:: Comment
      */
-    Tumble.prototype.stop = function() {
+    Tumble.prototype.stop = function(gl) {
         // Do Nothing
     };
 

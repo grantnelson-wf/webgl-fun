@@ -1,4 +1,6 @@
 define(function(require) {
+
+    var Common = require('tools/common');
     
     /**
      * Creates a texture 2D object.
@@ -45,6 +47,9 @@ define(function(require) {
         
         var image = new Image();
         image.onload = function() {
+            var maxSize  = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+            image = Common.resizeImage(image, maxSize);
+
             gl.bindTexture(gl.TEXTURE_2D, self.texture);
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);

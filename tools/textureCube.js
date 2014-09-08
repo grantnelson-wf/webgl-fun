@@ -1,4 +1,6 @@
 define(function(require) {
+
+    var Common = require('tools/common');
     
     /**
      * Creates a texture cube object.
@@ -68,6 +70,9 @@ define(function(require) {
         var gl = self.gl;
         var image = new Image();
         image.onload = function() {
+            var maxSize  = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+            image = Common.resizeImage(image, maxSize);
+
             gl.bindTexture(gl.TEXTURE_CUBE_MAP, self.texture);
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
             gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
