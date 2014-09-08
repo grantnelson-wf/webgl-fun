@@ -1,5 +1,7 @@
 define(function() {
 
+    var Vector = require("tools/vector");
+
     /**
      * Tools for creating and manipulating 4x4 matrices.
      */
@@ -135,6 +137,25 @@ define(function() {
                       0, yy,  0, wy,
                       0,  0, zz, wz,
                       0,  0,  0,  1 ];
+        },
+        
+        /**
+         * TODO:: Comment
+         */
+        lookat: function(targetX, targetY, targetZ, upX, upY, upZ, posX, posY, posZ) {
+            var target = Vector.create(targetX, targetY, targetZ);
+            var up = Vector.create(upX, upY, upZ);
+            var pos = Vector.create(posX, posY, posZ);
+            var zaxis = Vector.normal(Vector.sub(target, pos));
+            var xaxis = Vector.normal(Vector.cross(up, zaxis));
+            var yaxis = Vector.cross(zaxis, xaxis);
+            var tx = -Vector.dot(xaxis, pos);
+            var ty = -Vector.dot(yaxis, pos);
+            var tz = -Vector.dot(zaxis, pos);
+            return [ xaxis[0], yaxis[0], zaxis[0], 0,
+                     xaxis[1], yaxis[1], zaxis[1], 0,
+                     xaxis[2], yaxis[2], zaxis[2], 0,
+                     tx,       ty,       tz,       1 ];
         },
 
         /**

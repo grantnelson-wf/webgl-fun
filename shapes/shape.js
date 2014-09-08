@@ -113,7 +113,7 @@ define(function(require) {
             if (attr !== null) {
                 var stride = this._vertexSize*Float32Array.BYTES_PER_ELEMENT;
                 this._gl.enableVertexAttribArray(attr);
-                this._gl.vertexAttribPointer(attr, size, this._gl.FLOAT, false, stride, 0);
+                this._gl.vertexAttribPointer(attr, size, this._gl.FLOAT, false, stride, offset);
             }
             offset += size*Float32Array.BYTES_PER_ELEMENT;
         }

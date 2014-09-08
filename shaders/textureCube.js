@@ -20,7 +20,7 @@ define(function(require) {
      * The required vertex information.
      * @type {Number}
      */
-    TextureBuilder.prototype.requiredTypes = Const.POS|Const.NORM;
+    TextureBuilder.prototype.requiredTypes = Const.POS|Const.CUBE;
     
     /**
      * The vertex shader program.
@@ -32,14 +32,14 @@ define(function(require) {
         "uniform mat4 projMat;                                      \n"+
         "                                                           \n"+
         "attribute vec3 posAttr;                                    \n"+
-        "attribute vec3 normAttr;                                   \n"+
+        "attribute vec3 cubeAttr;                                   \n"+
         "                                                           \n"+
-        "varying vec3 vNorm;                                        \n"+
+        "varying vec3 vCube;                                        \n"+
         "                                                           \n"+
         "void main()                                                \n"+
         "{                                                          \n"+
         "  gl_Position = projMat*viewMat*objMat*vec4(posAttr, 1.0); \n"+
-        "  vNorm = normAttr;                                        \n"+
+        "  vCube = cubeAttr;                                        \n"+
         "}                                                          \n";
 
     /**
@@ -49,13 +49,13 @@ define(function(require) {
     TextureBuilder.prototype.fsSource =
         "precision mediump float;                          \n"+
         "                                                  \n"+
-        "varying vec3 vNorm;                               \n"+
+        "varying vec3 vCube;                               \n"+
         "                                                  \n"+
         "uniform samplerCube txtSampler;                   \n"+
         "                                                  \n"+
         "void main()                                       \n"+
         "{                                                 \n"+
-        "   gl_FragColor = textureCube(txtSampler, vNorm); \n"+
+        "   gl_FragColor = textureCube(txtSampler, vCube); \n"+
         "}                                                 \n";
     
     /**

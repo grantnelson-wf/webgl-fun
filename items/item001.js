@@ -1,7 +1,9 @@
 define(function(require) {
 
     var Const = require("tools/const");
+    var Vector = require("tools/vector");
     var Matrix = require("tools/matrix");
+    var ObjMover = require("movers/tumble");
     var ShaderBuilder = require("shaders/fog");
     var ShapeBuilder = require("shapes/toroid");
     
@@ -52,9 +54,7 @@ define(function(require) {
         this.shader.setProjMat(projMatrix);
         
         // Initialize object rotation values.
-        this.yaw   = 0.0;
-        this.pitch = 0.0;
-        this.roll  = 0.0;
+        this.mover = new ObjMover();
         return true;
     };
     
@@ -68,14 +68,9 @@ define(function(require) {
         // Clear color buffer.
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
-        // Update rotation.
-        this.yaw   += 0.004;
-        this.pitch += 0.005;
-        this.roll  += 0.006;
-
         // Set toroid transformation.
-        var objMatrix = Matrix.euler(this.yaw, this.pitch, this.roll);
-        this.shader.setObjMat(objMatrix);
+        this.mover.update();
+        this.shader.setObjMat(this.mover.matrix());
 
         // Draw shape.
         this.shape.draw();

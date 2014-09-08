@@ -36,6 +36,8 @@ define(function(require) {
         // Create shape to use.
         var shapeBuilder = new ShapeBuilder();
         this.shape = shapeBuilder.build(gl, this.shader.requiredType);
+        this.shape.posAttr = this.shader.posAttrLoc;
+        this.shape.txtAttr = this.shader.txtAttrLoc;
 
         // Create texture.
         this.txt2D = new Txt2D(gl);
@@ -79,7 +81,7 @@ define(function(require) {
         this.txt2D.bind();
 
         // Draw shape.
-        this.shape.draw(this.shader.posAttrLoc, null, null, this.shader.txtAttrLoc);
+        this.shape.draw();
         return true;
     };
     
