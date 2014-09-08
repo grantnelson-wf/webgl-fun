@@ -10,12 +10,12 @@ define(function(require) {
         /**
          * TODO:: Comment
          */
-        this.mouseXScalar = 0.01;
+        this.mouseXScalar = 0.005;
 
         /**
          * TODO:: Comment
          */
-        this.mouseYScalar = 0.01;
+        this.mouseYScalar = 0.005;
 
         /**
          * TODO:: Comment
@@ -126,6 +126,18 @@ define(function(require) {
         if (this._mouseDown) {
             this._yaw   = this._lastYaw   + (event.clientX - this._lastMouseX)*this.mouseXScalar;
             this._pitch = this._lastPitch + (event.clientY - this._lastMouseY)*this.mouseYScalar;
+
+            this._yaw = this._yaw % (Math.PI * 2);
+            if (this._yaw < 0) this._yaw = this._yaw + Math.PI * 2;
+
+            var halfPi =  Math.PI * 0.5;
+            if (this._pitch > halfPi) {
+                this._pitch = halfPi;
+            }
+            else if (this._pitch < -halfPi) {
+                this._pitch = -halfPi;
+            }
+
         }
     };
 
