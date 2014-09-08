@@ -1,7 +1,6 @@
 define(function(require) {
 
     var Const = require('tools/const');
-    var Vector = require('tools/vector');
     var Matrix = require('tools/matrix');
     var ObjMover = require('movers/tumble');
     var ShaderBuilder = require('shaders/fog');
@@ -53,7 +52,7 @@ define(function(require) {
         var projMatrix = Matrix.perspective(Math.PI/3.0, 1.0, 1.0, -1.0);
         this.shader.setProjMat(projMatrix);
         
-        // Initialize object rotation values.
+        // Initialize object movement.
         this.mover = new ObjMover();
         this.mover.start(gl);
         return true;
