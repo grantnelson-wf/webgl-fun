@@ -1,0 +1,16 @@
+{
+    "name": "webgl-fun",
+    "version": "0.0.1",
+    "private": false,
+    "ignore": [
+        "bower_components",
+        "node_modules",
+        "Gruntfile.js",
+        "index.html",
+        "init.sh",
+        "package.json"
+    ],
+    "dependencies": {
+        "requirejs": "2.1.8",
+    }
+}

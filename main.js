@@ -2,7 +2,8 @@ require.config({
     paths: {
         shapes: 'shapes',
         items: 'items',
-        tools: 'tools'
+        tools: 'tools',
+        movers: 'movers',
     }
 });
 

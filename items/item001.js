@@ -55,6 +55,7 @@ define(function(require) {
         
         // Initialize object rotation values.
         this.mover = new ObjMover();
+        this.mover.start(gl);
         return true;
     };
     
@@ -82,7 +83,7 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object.
      */
     Item.prototype.stop = function(gl) {
-        // Do Nothing
+        this.mover.stop(gl);
     };
      
     return Item;

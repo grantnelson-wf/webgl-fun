@@ -1,0 +1,19 @@
+{
+  "name": "webgl-fun",
+  "version": "0.0.1",
+  "description": "Project for doing WebGL research and experiments.",
+  "private": false,
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/grantnelson-wf/webgl-fun"
+  },
+  "author": "Grant Nelson",
+  "bugs": {
+      "url": "https://github.com/grantnelson-wf/webgl-fun/issues"
+  },
+  "homepage": "https://github.com/grantnelson-wf/webgl-fun/index.html",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+      "grunt": "~0.4.1",
+  }
+}
