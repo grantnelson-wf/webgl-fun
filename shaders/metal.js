@@ -42,8 +42,8 @@ define(function(require) {
         '{                                                     \n'+
         '  vec4 eyeCoords = viewMat*objMat*vec4(posAttr, 1.0); \n'+
         '  gl_Position = projMat*eyeCoords;                    \n'+
-        '  vView = eyeCoords.xyz;                              \n'+
-        '  vNorm = normAttr;                                   \n'+
+        '  vView = -vec3(eyeCoords);                           \n'+
+        '  vNorm = vec3(viewMat*objMat*vec4(normAttr, 0.0));   \n'+
         '}                                                     \n';
 
     /**
@@ -51,20 +51,20 @@ define(function(require) {
      * @type {String}
      */
     TextureBuilder.prototype.fsSource =
-        'precision mediump float;                          \n'+
-        '                                                  \n'+
-        'varying vec3 vNorm;                               \n'+
-        'varying vec3 vView;                               \n'+
-        '                                                  \n'+
-        'uniform samplerCube txtSampler;                   \n'+
-        'uniform mat4 normMat;                             \n'+
-        '                                                  \n'+
-        'void main()                                       \n'+
-        '{                                                 \n'+
-        '   vec3 norm = (normMat*vec4(vNorm, 0.0)).xyz;    \n'+
-        '   vec3 refl = -reflect(-vView, norm);            \n'+
-        '   gl_FragColor = textureCube(txtSampler, refl);  \n'+
-        '}                                                 \n';
+        'precision mediump float;                                    \n'+
+        '                                                            \n'+
+        'uniform mat4 invViewMat;                                    \n'+
+        'uniform samplerCube txtSampler;                             \n'+
+        '                                                            \n'+
+        'varying vec3 vNorm;                                         \n'+
+        'varying vec3 vView;                                         \n'+
+        '                                                            \n'+
+        'void main()                                                 \n'+
+        '{                                                           \n'+
+        '   vec3 refl = reflect(normalize(vView), normalize(vNorm)); \n'+
+        '   refl = vec3(invViewMat*vec4(refl, 0.0));                 \n'+
+        '   gl_FragColor = textureCube(txtSampler, refl);            \n'+
+        '}                                                           \n';
     
     /**
      * Initializes the shader.

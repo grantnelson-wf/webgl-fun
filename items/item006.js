@@ -33,9 +33,9 @@ define(function(require) {
         this.txtCube = new TxtCube(gl);
         this.txtCube.index = 0;
         this.txtCube.loadFromFiles(
-            './data/fire.jpg',  './data/grass.jpg',
-            './data/metal.jpg', './data/moon.jpg',
-            './data/brick.jpg', './data/wood.jpg');
+            './data/glacier/posx.jpg',  './data/glacier/posy.jpg',
+            './data/glacier/posz.jpg', './data/glacier/negx.jpg',
+            './data/glacier/negy.jpg', './data/glacier/negz.jpg');
 
         // Define projection.
         var projMatrix = Matrix.perspective(Math.PI/3.0, 1.0, 1.0, -1.0);
@@ -120,11 +120,8 @@ define(function(require) {
         this.objShader.use();
         this.objShader.setViewMat(this.viewMover.matrix());
         this.objShader.setObjMat(this.objMover.matrix());
-        var normMat =
-            Matrix.transpose(Matrix.inverse(
-                Matrix.mul(this.viewMover.matrix(), this.objMover.matrix())
-            ));
-        this.objShader.setNormMat(normMat);
+        var invViewMat = Matrix.inverse(this.viewMover.matrix());
+        this.objShader.setInvViewMat(invViewMat);
         this.txtCube.bind();
         this.objShape.draw();
         return true;

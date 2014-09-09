@@ -81,7 +81,7 @@ define(function(require) {
     UserFocus.prototype.update = function() {
         var mat = Matrix.rotateY(-this._yaw);
         mat = Matrix.mul(mat, Matrix.rotateX(-this._pitch));
-        mat = Matrix.mul(mat, Matrix.lookat(0, 0, 0, 0, 1, 0, 0, 0, -2));
+        mat = Matrix.mul(mat, Matrix.lookat(0, 0, 0, 0, -1, 0, 0, 0, -2));
         this._mat = mat;
     };
     
@@ -125,7 +125,7 @@ define(function(require) {
     UserFocus.prototype._handleMouseMove = function(event) {
         if (this._mouseDown) {
             this._yaw   = this._lastYaw   + (event.clientX - this._lastMouseX)*this.mouseXScalar;
-            this._pitch = this._lastPitch + (event.clientY - this._lastMouseY)*this.mouseYScalar;
+            this._pitch = this._lastPitch - (event.clientY - this._lastMouseY)*this.mouseYScalar;
 
             this._yaw = this._yaw % (Math.PI * 2);
             if (this._yaw < 0) this._yaw = this._yaw + Math.PI * 2;
