@@ -60,7 +60,7 @@ define(function(require) {
         '                                                  \n'+
         'void main()                                       \n'+
         '{                                                 \n'+
-        '   vec3 refl = reflect(normalize(vView), normalize(vNorm));     \n'+
+        '   vec3 refl = reflect(vView, vNorm);             \n'+
         '   gl_FragColor = textureCube(txtSampler, refl);  \n'+
         '}                                                 \n';
     

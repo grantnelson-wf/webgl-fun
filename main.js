@@ -7,7 +7,7 @@ require.config({
     }
 });
 
-require(['tools/driver', 'items/item001'],
+require(['tools/driver', 'items/item006'],
     function(Driver, Item) {
 
         // Configure this item and driver.

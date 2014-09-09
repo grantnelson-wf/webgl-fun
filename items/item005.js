@@ -45,10 +45,12 @@ define(function(require) {
 
         // Create texture.
         this.txtCube = new TxtCube(gl);
+        this.txtCube.index = 0;
         this.txtCube.loadFromFiles(
             './data/fire.jpg', './data/grass.jpg',
             './data/metal.jpg', './data/moon.jpg',
             './data/brick.jpg', './data/wood.jpg');
+        this.skyboxShader.setTxtSampler(this.txtCube.index);
 
         // Set projection transformation.
         var projMatrix = Matrix.perspective(Math.PI/3.0, 1.0, 1.0, -1.0);

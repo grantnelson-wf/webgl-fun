@@ -29,6 +29,15 @@ define(function(require) {
      * @return  {Boolean}  True if successfully started, false otherwise.
      */
     Item.prototype.start = function(gl) {
+        // Create cube texture.
+        this.txtCube = new TxtCube(gl);
+        this.txtCube.index = 0;
+        this.txtCube.loadFromFiles(
+            './data/fire.jpg', './data/grass.jpg',
+            './data/metal.jpg', './data/moon.jpg',
+            './data/brick.jpg', './data/wood.jpg');
+
+        // Define projection.
         var projMatrix = Matrix.perspective(Math.PI/3.0, 1.0, 1.0, -1.0);
 
         //=================================================
@@ -52,6 +61,7 @@ define(function(require) {
 
         // Set projection transformation for skybox.
         this.skyboxShader.setProjMat(projMatrix);
+        this.skyboxShader.setTxtSampler(this.txtCube.index);
 
         //=================================================
 
@@ -67,19 +77,13 @@ define(function(require) {
         var objShapeBuilder = new ObjShapeBuilder();
         this.objShape = objShapeBuilder.build(gl, this.objShader.requiredType);
         this.objShape.posAttr = this.objShader.posAttrLoc;
-        this.objShape.normAttr = this.objShader.normAttr;
+        this.objShape.normAttr = this.objShader.normAttrLoc;
 
         // Set projection transformation for object.
         this.objShader.setProjMat(projMatrix);
+        this.objShader.setTxtSampler(this.txtCube.index);
 
         //=================================================
-
-        // Create cube texture.
-        this.txtCube = new TxtCube(gl);
-        this.txtCube.loadFromFiles(
-            './data/fire.jpg', './data/grass.jpg',
-            './data/metal.jpg', './data/moon.jpg',
-            './data/brick.jpg', './data/wood.jpg');
 
         // Initialize view movement.
         this.viewMover = new ViewMover();
@@ -99,7 +103,7 @@ define(function(require) {
     Item.prototype.update = function(gl) {
         // Update movers.
         this.viewMover.update();
-        this.objMover.update();
+        //this.objMover.update();
         
         // Clear color buffer.
         // (Because of the skybox the color buffer doesn't have to be cleared.)
@@ -115,7 +119,7 @@ define(function(require) {
         // Setup and draw object.
         this.objShader.use();
         this.objShader.setViewMat(this.viewMover.matrix());
-        this.objShader.setObjMat(Matrix.identity());
+        this.objShader.setObjMat(this.objMover.matrix());
         this.txtCube.bind();
         this.objShape.draw();
         return true;

@@ -42,7 +42,9 @@ define(function(require) {
 
         // Create texture.
         this.txt2D = new Txt2D(gl);
+        this.txt2D.index = 0;
         this.txt2D.loadFromFile('./data/fire.jpg');
+        this.shader.setTxtSampler(this.txt2D.index);
         
         // Set view transformation.
         var viewMatrix = Matrix.translate(0.0, 0.0, 2.0);

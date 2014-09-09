@@ -66,13 +66,13 @@ define(function(require) {
         var self = this;
         gl.canvas.onmousedown = function(event) {
             self._handleMouseDown(event);
-        }
+        };
         document.onmouseup = function(event) {
             self._handleMouseUp(event);
-        }
+        };
         document.onmousemove = function(event) {
             self._handleMouseMove(event);
-        }
+        };
     };
 
     /**
