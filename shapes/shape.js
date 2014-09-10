@@ -107,17 +107,34 @@ define(function(require) {
      * @param {Number} size   The number of floats in the vertex type.
      * @param {Object} attr   [description]
      * @param {Number} offset [description]
+     * TODO: Comment
      */
     Shape.prototype._setAttr = function(type, size, attr, offset) {
         if (this._vertexType&type) {
-            if (attr !== null) {
+            if ((attr === null) || (attr === undefined)) {
+                throw 'Must set the attribute for '+Common.typeString(type)+' before calling draw.'; 
+            } else {
                 var stride = this._vertexSize*Float32Array.BYTES_PER_ELEMENT;
                 this._gl.enableVertexAttribArray(attr);
                 this._gl.vertexAttribPointer(attr, size, this._gl.FLOAT, false, stride, offset);
             }
             offset += size*Float32Array.BYTES_PER_ELEMENT;
+        } else if ((attr !== null) && (attr !== undefined)) {
+            throw 'The attribute for '+Common.typeString(type)+' is set for a shape which does not have that type.';
         }
         return offset;
+    };
+
+    /**
+     * Sets the attribute for the vertex before a draw.
+     * @private
+     * @param {Object} attr   [description]
+     * TODO: Comment
+     */
+    Shape.prototype._unsetAttr = function(attr) {
+        if ((attr !== null) && (attr !== undefined)) {
+            this._gl.disableVertexAttribArray(attr);
+        }
     };
 
     /**
@@ -142,6 +159,12 @@ define(function(require) {
             this._gl.drawElements(indexObj.type, indexObj.count, this._gl.UNSIGNED_SHORT, 0);
         }
 
+        this._unsetAttr(this.posAttr);
+        this._unsetAttr(this.clr3Attr);
+        this._unsetAttr(this.clr4Attr);
+        this._unsetAttr(this.normAttr);
+        this._unsetAttr(this.txtAttr);
+        this._unsetAttr(this.cubeAttr);
         this._gl.bindBuffer(this._gl.ARRAY_BUFFER, null);
     };
 
