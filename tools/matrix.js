@@ -61,7 +61,7 @@ define(function(require) {
         },
 
         /**
-         * Multiplies the two given matrices.
+        *multiplies the two given matrices.
          * @param  {Array} a  The left matrix in the multiplication.
          * @param  {Array} b  The right matrix in the multiplication.
          * @returns  {Array}  The created matrix.
@@ -98,6 +98,66 @@ define(function(require) {
                       0,  1,  0,  0,
                       0,  0,  1,  0,
                       x,  y,  z,  1 ];
+        },
+
+        /**
+         * TODO:: Comment
+         * @param  {[type]} m      [description]
+         * @param  {[type]} scalar [description]
+         * @return {[type]}        [description]
+         */
+        scale: function(m, scalar) {
+            return [  m[ 0]*scalar, m[ 1]*scalar, m[ 2]*scalar, m[ 3]*scalar,
+                      m[ 4]*scalar, m[ 5]*scalar, m[ 6]*scalar, m[ 7]*scalar,
+                      m[ 8]*scalar, m[ 9]*scalar, m[10]*scalar, m[11]*scalar,
+                      m[12]*scalar, m[13]*scalar, m[14]*scalar, m[15]*scalar ];
+        },
+
+        /**
+         * TODO:: Comment
+         * @param  {[type]} m      [description]
+         * @return {[type]}        [description]
+         */
+        transpose: function(m, scalar) {
+            return [  m[ 0], m[ 4], m[ 8], m[12],
+                      m[ 1], m[ 5], m[ 9], m[13],
+                      m[ 2], m[ 6], m[10], m[14],
+                      m[ 3], m[ 7], m[11], m[15] ];
+        },
+
+        /**
+         * TODO:: Comment
+         * @param  {[type]} m [description]
+         * @return {[type]}   [description]
+         */
+        inverse: function(m) {
+            inv = [
+                m[ 5]*m[10]*m[15] - m[ 5]*m[11]*m[14] - m[ 6]*m[ 9]*m[15] + m[ 6]*m[11]*m[13] + m[ 7]*m[ 9]*m[14] - m[ 7]*m[10]*m[13],
+               -m[ 1]*m[10]*m[15] + m[ 1]*m[11]*m[14] + m[ 2]*m[ 9]*m[15] - m[ 2]*m[11]*m[13] - m[ 3]*m[ 9]*m[14] + m[ 3]*m[10]*m[13],
+                m[ 1]*m[ 6]*m[15] - m[ 1]*m[ 7]*m[14] - m[ 2]*m[ 5]*m[15] + m[ 2]*m[ 7]*m[13] + m[ 3]*m[ 5]*m[14] - m[ 3]*m[ 6]*m[13],
+               -m[ 1]*m[ 6]*m[11] + m[ 1]*m[ 7]*m[10] + m[ 2]*m[ 5]*m[11] - m[ 2]*m[ 7]*m[ 9] - m[ 3]*m[ 5]*m[10] + m[ 3]*m[ 6]*m[ 9],
+               -m[ 4]*m[10]*m[15] + m[ 4]*m[11]*m[14] + m[ 6]*m[ 8]*m[15] - m[ 6]*m[11]*m[12] - m[ 7]*m[ 8]*m[14] + m[ 7]*m[10]*m[12],
+                m[ 0]*m[10]*m[15] - m[ 0]*m[11]*m[14] - m[ 2]*m[ 8]*m[15] + m[ 2]*m[11]*m[12] + m[ 3]*m[ 8]*m[14] - m[ 3]*m[10]*m[12],
+               -m[ 0]*m[ 6]*m[15] + m[ 0]*m[ 7]*m[14] + m[ 2]*m[ 4]*m[15] - m[ 2]*m[ 7]*m[12] - m[ 3]*m[ 4]*m[14] + m[ 3]*m[ 6]*m[12],
+                m[ 0]*m[ 6]*m[11] - m[ 0]*m[ 7]*m[10] - m[ 2]*m[ 4]*m[11] + m[ 3]*m[ 4]*m[10] + m[ 2]*m[ 7]*m[ 8] - m[ 3]*m[ 6]*m[ 8],
+
+                // TODO:: Continue to simplify.
+
+                m[ 4]*m[ 9]*m[15] - m[ 4]*m[11]*m[13] - m[ 8]*m[ 5]*m[15] + m[ 8]*m[ 7]*m[13] + m[12]*m[ 5]*m[11] - m[12]*m[ 7]*m[ 9],
+               -m[ 0]*m[ 9]*m[15] + m[ 0]*m[11]*m[13] + m[ 8]*m[ 1]*m[15] - m[ 8]*m[ 3]*m[13] - m[12]*m[ 1]*m[11] + m[12]*m[ 3]*m[ 9],
+                m[ 0]*m[ 5]*m[15] - m[ 0]*m[ 7]*m[13] - m[ 4]*m[ 1]*m[15] + m[ 4]*m[ 3]*m[13] + m[12]*m[ 1]*m[ 7] - m[12]*m[ 3]*m[ 5],
+               -m[ 0]*m[ 5]*m[11] + m[ 0]*m[ 7]*m[ 9] + m[ 4]*m[ 1]*m[11] - m[ 4]*m[ 3]*m[ 9] - m[ 8]*m[ 1]*m[ 7] + m[ 8]*m[ 3]*m[ 5],
+               -m[ 4]*m[ 9]*m[14] + m[ 4]*m[10]*m[13] + m[ 8]*m[ 5]*m[14] - m[ 8]*m[ 6]*m[13] - m[12]*m[ 5]*m[10] + m[12]*m[ 6]*m[ 9],
+                m[ 0]*m[ 9]*m[14] - m[ 0]*m[10]*m[13] - m[ 8]*m[ 1]*m[14] + m[ 8]*m[ 2]*m[13] + m[12]*m[ 1]*m[10] - m[12]*m[ 2]*m[ 9],
+               -m[ 0]*m[ 5]*m[14] + m[ 0]*m[ 6]*m[13] + m[ 4]*m[ 1]*m[14] - m[ 4]*m[ 2]*m[13] - m[12]*m[ 1]*m[ 6] + m[12]*m[ 2]*m[ 5],
+                m[ 0]*m[ 5]*m[10] - m[ 0]*m[ 6]*m[ 9] - m[ 4]*m[ 1]*m[10] + m[ 4]*m[ 2]*m[ 9] + m[ 8]*m[ 1]*m[ 6] - m[ 8]*m[ 2]*m[ 5]
+            ];
+
+            det = m[0]*inv[0] + m[1]*inv[4] + m[2]*inv[8] + m[3]*inv[12];
+            if (det === 0) {
+                return Matrix.identity();
+            }
+            return Matrix.scale(inv, 1/det);
         },
 
         /**

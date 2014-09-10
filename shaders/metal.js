@@ -42,8 +42,8 @@ define(function(require) {
         '{                                                     \n'+
         '  vec4 eyeCoords = viewMat*objMat*vec4(posAttr, 1.0); \n'+
         '  gl_Position = projMat*eyeCoords;                    \n'+
-        '  vView = -eyeCoords.xyz;                             \n'+
-        '  vNorm = (objMat*vec4(normAttr, 0.0)).xyz;           \n'+
+        '  vView = eyeCoords.xyz;                              \n'+
+        '  vNorm = normAttr;                                   \n'+
         '}                                                     \n';
 
     /**
@@ -57,10 +57,12 @@ define(function(require) {
         'varying vec3 vView;                               \n'+
         '                                                  \n'+
         'uniform samplerCube txtSampler;                   \n'+
+        'uniform mat4 normMat;                             \n'+
         '                                                  \n'+
         'void main()                                       \n'+
         '{                                                 \n'+
-        '   vec3 refl = reflect(vView, vNorm);             \n'+
+        '   vec3 norm = (normMat*vec4(vNorm, 0.0)).xyz;    \n'+
+        '   vec3 refl = -reflect(-vView, norm);            \n'+
         '   gl_FragColor = textureCube(txtSampler, refl);  \n'+
         '}                                                 \n';
     

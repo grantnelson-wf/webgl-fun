@@ -33,7 +33,7 @@ define(function(require) {
         this.txtCube = new TxtCube(gl);
         this.txtCube.index = 0;
         this.txtCube.loadFromFiles(
-            './data/fire.jpg', './data/grass.jpg',
+            './data/fire.jpg',  './data/grass.jpg',
             './data/metal.jpg', './data/moon.jpg',
             './data/brick.jpg', './data/wood.jpg');
 
@@ -103,7 +103,7 @@ define(function(require) {
     Item.prototype.update = function(gl) {
         // Update movers.
         this.viewMover.update();
-        //this.objMover.update();
+        this.objMover.update();
         
         // Clear color buffer.
         // (Because of the skybox the color buffer doesn't have to be cleared.)
@@ -120,6 +120,11 @@ define(function(require) {
         this.objShader.use();
         this.objShader.setViewMat(this.viewMover.matrix());
         this.objShader.setObjMat(this.objMover.matrix());
+        var normMat =
+            Matrix.transpose(Matrix.inverse(
+                Matrix.mul(this.viewMover.matrix(), this.objMover.matrix())
+            ));
+        this.objShader.setNormMat(normMat);
         this.txtCube.bind();
         this.objShape.draw();
         return true;
