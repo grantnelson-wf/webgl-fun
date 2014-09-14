@@ -3,94 +3,73 @@ define(function(require) {
     var Matrix = require('tools/matrix');
 
     /**
-     * TODO:: Comment
+     * The tumble mover rotates at a regular rate.
      */
     function Tumble() {
-
-        /**
-         * TODO:: Comment
-         */
-        this.initYaw = 0;
         
         /**
-         * TODO:: Comment
-         */
-        this.initPitch = 0;
-        
-        /**
-         * TODO:: Comment
-         */
-        this.initRoll = 0; 
-        
-        /**
-         * TODO:: Comment
+         * The yaw radians to rotate in one second.
+         * @type {Number}
          */
         this.deltaYaw = 0.4;
         
         /**
-         * TODO:: Comment
+         * The pitch radians to rotate in one second.
+         * @type {Number}
          */
         this.deltaPitch = 0.5;
         
         /**
-         * TODO:: Comment
+         * The roll radians to rotate in one second.
+         * @type {Number}
          */
         this.deltaRoll = 0.6;
         
         /**
-         * TODO:: Comment
+         * The start time in milliseconds.
+         * @type {Number}
          */
         this.startTime = (new Date()).getTime();
-
-        /**
-         * TODO:: Comment
-         */
-        this._yaw = 0;
         
         /**
-         * TODO:: Comment
-         */
-        this._pitch = 0;
-        
-        /**
-         * TODO:: Comment
-         */
-        this._roll = 0; 
-        
-        /**
-         * TODO:: Comment
+         * The matrix for this mover's rotation.
+         * @type {Array}
          */
         this._mat = Matrix.identity();
     }
     
     /**
-     * TODO:: Comment
+     * This starts the mover.
+     * @param  {WebGLRenderingContext} gl  The graphical object to start with.
      */
     Tumble.prototype.start = function(gl) {
         // Do Nothing
     };
 
     /**
-     * TODO:: Comment
+     * Updates the mover.
      */
     Tumble.prototype.update = function() {
         var curTime = (new Date()).getTime();
         var dt = (curTime - this.startTime)/1000;
-        this._yaw   = this.initYaw   + dt*this.deltaYaw;
-        this._pitch = this.initPitch + dt*this.deltaPitch;
-        this._roll  = this.initRoll  + dt*this.deltaRoll;
-        this._mat = Matrix.euler(this._yaw, this._pitch, this._roll);
+        var yaw   = dt*this.deltaYaw;
+        var pitch = dt*this.deltaPitch;
+        var roll  = dt*this.deltaRoll;
+        this._mat = Matrix.euler(yaw, pitch, roll);
     };
     
     /**
-     * TODO:: Comment
+     * Gets the matrix describing the mover's position.
+     * @note  The mover must be updated before this is valid.
+     * @return  {Array}  The matrix for this mover.
      */
     Tumble.prototype.matrix = function() {
         return this._mat;
     };
 
     /**
-     * TODO:: Comment
+     * This stops the mover.
+     * @param  {WebGLRenderingContext} gl  The graphical object to stop with.
      */
     Tumble.prototype.stop = function(gl) {
         // Do Nothing

@@ -4,8 +4,8 @@ define(function(require) {
     var ShaderBuilder = require('shaders/shader');
     
     /**
-     * Creates a texture cube shader.
-     * TODO:: Update
+     * Creates a reflection shader.
+     * Makes things look like shiny metal.
      */
     function TextureBuilder() {
         // Do Nothing

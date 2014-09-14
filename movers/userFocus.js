@@ -3,63 +3,76 @@ define(function(require) {
     var Matrix = require('tools/matrix');
 
     /**
-     * TODO:: Comment
+     * The user focus mover will rotate around the origin
+     * using the user's mouse movements.
      */
     function UserFocus() {
 
         /**
-         * TODO:: Comment
+         * The scalar to apply to the mouse movements in the x axis.
+         * @type {Number}
          */
         this.mouseXScalar = 0.005;
 
         /**
-         * TODO:: Comment
+         * The scalar to apply to the mouse movements in the y axis.
+         * @type {Number}
          */
         this.mouseYScalar = 0.005;
 
         /**
-         * TODO:: Comment
+         * The yaw rotation in radians.
+         * @type {Number}
          */
         this._yaw = 0;
         
         /**
-         * TODO:: Comment
+         * The pitch rotation in radians.
+         * @type {Number}
          */
         this._pitch = 0;
         
         /**
-         * TODO:: Comment
+         * Indicates a mouse button is pressed.
+         * @type {Boolean}
          */
         this._mouseDown = false;
         
         /**
-         * TODO:: Comment
+         * The mouse x location when the button was pressed.
+         * @type {Number}
          */
         this._lastMouseX = 0;
         
         /**
-         * TODO:: Comment
+         * The mouse y location when the button was pressed.
+         * @type {Number}
          */
         this._lastMouseY = 0;
         
         /**
-         * TODO:: Comment
+         * The yaw rotation in radians when the button was pressed.
+         * @type {Number}
          */
         this._lastYaw = 0;
         
         /**
-         * TODO:: Comment
+         * The pitch rotation in radians when the button was pressed.
+         * @type {Number}
          */
         this._lastPitch = 0;
         
         /**
-         * TODO:: Comment
+         * The matrix describing the mover's position.
+         * @type {Array}
          */
         this._mat = Matrix.identity();
     }
     
     /**
-     * TODO:: Comment
+     * This starts the mover.
+     * @note  This sets the on mouse down and up events used by the mover.
+     * @param  {WebGLRenderingContext} gl  The graphical object to start with.
      */
     UserFocus.prototype.start = function(gl) {
         this._mouseDown = false;
@@ -76,7 +89,7 @@ define(function(require) {
     };
 
     /**
-     * TODO:: Comment
+     * Updates the mover.
      */
     UserFocus.prototype.update = function() {
         var mat = Matrix.rotateY(-this._yaw);
@@ -86,14 +99,17 @@ define(function(require) {
     };
     
     /**
-     * TODO:: Comment
+     * Gets the matrix describing the mover's position.
+     * @note  The mover must be updated before this is valid.
+     * @return  {Array}  The matrix for this mover.
      */
     UserFocus.prototype.matrix = function() {
         return this._mat;
     };
 
     /**
-     * TODO:: Comment
+     * This stops the mover.
+     * @param  {WebGLRenderingContext} gl  The graphical object to stop with.
      */
     UserFocus.prototype.stop = function(gl) {
         gl.canvas.onmousedown = null;
@@ -102,7 +118,8 @@ define(function(require) {
     };
     
     /**
-     * TODO:: Comment
+     * This handles the mouse button being pressed.
+     * @param  {Object} event  The mouse button event.
      */
     UserFocus.prototype._handleMouseDown = function(event) {
         this._mouseDown  = true;
@@ -113,14 +130,16 @@ define(function(require) {
     };
     
     /**
-     * TODO:: Comment
+     * This handles the mouse button being released.
+     * @param  {Object} event  The mouse button event.
      */
     UserFocus.prototype._handleMouseUp = function(event) {
         this._mouseDown = false;
     };
     
     /**
-     * TODO:: Comment
+     * This handles the mouse button being moved.
+     * @param  {Object} event  The mouse button event.
      */
     UserFocus.prototype._handleMouseMove = function(event) {
         if (this._mouseDown) {
