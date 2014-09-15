@@ -42,10 +42,16 @@ define(function(require) {
         TXT: 0x0010,
 
         /**
-         * Indicates that a shape vertex contains a Cube texture coordinate.
+         * Indicates that a shape vertex contains a cube texture coordinate.
          * @type {Number}
          */
-        CUBE: 0x0020
+        CUBE: 0x0020,
+
+        /**
+         * Indicates that a shape vertex contains a binormal coordinate.
+         * @type {Number}
+         */
+        BINM: 0x0040
     };
 
     return Const;

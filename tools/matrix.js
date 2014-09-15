@@ -61,7 +61,7 @@ define(function(require) {
         },
 
         /**
-        *multiplies the two given matrices.
+         * Multiplies the two given matrices.
          * @param  {Array} a  The left matrix in the multiplication.
          * @param  {Array} b  The right matrix in the multiplication.
          * @returns  {Array}  The created matrix.
@@ -101,10 +101,10 @@ define(function(require) {
         },
 
         /**
-         * TODO:: Comment
-         * @param  {[type]} m      [description]
-         * @param  {[type]} scalar [description]
-         * @return {[type]}        [description]
+         * Scales the given matrix by the given scalar.
+         * @param  {Array} m        The matrix to scale.
+         * @param  {Number} scalar  The value to scale by.
+         * @return  {Array}  The scaled matrix.
          */
         scale: function(m, scalar) {
             return [  m[ 0]*scalar, m[ 1]*scalar, m[ 2]*scalar, m[ 3]*scalar,
@@ -114,11 +114,11 @@ define(function(require) {
         },
 
         /**
-         * TODO:: Comment
-         * @param  {[type]} m      [description]
-         * @return {[type]}        [description]
+         * Transposes the given matrix.
+         * @param  {Array} m  The matrix to transpose.
+         * @return  {Array}  The transposed matrix.
          */
-        transpose: function(m, scalar) {
+        transpose: function(m) {
             return [  m[ 0], m[ 4], m[ 8], m[12],
                       m[ 1], m[ 5], m[ 9], m[13],
                       m[ 2], m[ 6], m[10], m[14],
@@ -126,31 +126,28 @@ define(function(require) {
         },
 
         /**
-         * TODO:: Comment
-         * @param  {[type]} m [description]
-         * @return {[type]}   [description]
+         * Inverts the given matrix.
+         * @param  {Array} m  The matrix to inverse.
+         * @return  {Array}  The inverted matrix.
          */
         inverse: function(m) {
             inv = [
-                m[ 5]*m[10]*m[15] - m[ 5]*m[11]*m[14] - m[ 6]*m[ 9]*m[15] + m[ 6]*m[11]*m[13] + m[ 7]*m[ 9]*m[14] - m[ 7]*m[10]*m[13],
-               -m[ 1]*m[10]*m[15] + m[ 1]*m[11]*m[14] + m[ 2]*m[ 9]*m[15] - m[ 2]*m[11]*m[13] - m[ 3]*m[ 9]*m[14] + m[ 3]*m[10]*m[13],
-                m[ 1]*m[ 6]*m[15] - m[ 1]*m[ 7]*m[14] - m[ 2]*m[ 5]*m[15] + m[ 2]*m[ 7]*m[13] + m[ 3]*m[ 5]*m[14] - m[ 3]*m[ 6]*m[13],
-               -m[ 1]*m[ 6]*m[11] + m[ 1]*m[ 7]*m[10] + m[ 2]*m[ 5]*m[11] - m[ 2]*m[ 7]*m[ 9] - m[ 3]*m[ 5]*m[10] + m[ 3]*m[ 6]*m[ 9],
-               -m[ 4]*m[10]*m[15] + m[ 4]*m[11]*m[14] + m[ 6]*m[ 8]*m[15] - m[ 6]*m[11]*m[12] - m[ 7]*m[ 8]*m[14] + m[ 7]*m[10]*m[12],
-                m[ 0]*m[10]*m[15] - m[ 0]*m[11]*m[14] - m[ 2]*m[ 8]*m[15] + m[ 2]*m[11]*m[12] + m[ 3]*m[ 8]*m[14] - m[ 3]*m[10]*m[12],
-               -m[ 0]*m[ 6]*m[15] + m[ 0]*m[ 7]*m[14] + m[ 2]*m[ 4]*m[15] - m[ 2]*m[ 7]*m[12] - m[ 3]*m[ 4]*m[14] + m[ 3]*m[ 6]*m[12],
-                m[ 0]*m[ 6]*m[11] - m[ 0]*m[ 7]*m[10] - m[ 2]*m[ 4]*m[11] + m[ 2]*m[ 7]*m[ 8] + m[ 3]*m[ 4]*m[10] - m[ 3]*m[ 6]*m[ 8],
-
-                // TODO:: Continue to simplify.
-
-                m[ 4]*m[ 9]*m[15] - m[ 4]*m[11]*m[13] - m[ 5]*m[ 8]*m[15] + m[ 7]*m[ 8]*m[13] + m[12]*m[ 5]*m[11] - m[12]*m[ 7]*m[ 9],
-               -m[ 0]*m[ 9]*m[15] + m[ 0]*m[11]*m[13] + m[ 1]*m[ 8]*m[15] - m[ 3]*m[ 8]*m[13] - m[12]*m[ 1]*m[11] + m[12]*m[ 3]*m[ 9],
-                m[ 0]*m[ 5]*m[15] - m[ 0]*m[ 7]*m[13] - m[ 1]*m[ 4]*m[15] + m[ 3]*m[ 4]*m[13] + m[12]*m[ 1]*m[ 7] - m[12]*m[ 3]*m[ 5],
-               -m[ 0]*m[ 5]*m[11] + m[ 0]*m[ 7]*m[ 9] + m[ 1]*m[ 4]*m[11] - m[ 3]*m[ 4]*m[ 9] - m[ 8]*m[ 1]*m[ 7] + m[ 8]*m[ 3]*m[ 5],
-               -m[ 4]*m[ 9]*m[14] + m[ 4]*m[10]*m[13] + m[ 5]*m[ 8]*m[14] - m[ 6]*m[ 8]*m[13] - m[12]*m[ 5]*m[10] + m[12]*m[ 6]*m[ 9],
-                m[ 0]*m[ 9]*m[14] - m[ 0]*m[10]*m[13] - m[ 1]*m[ 8]*m[14] + m[ 2]*m[ 8]*m[13] + m[12]*m[ 1]*m[10] - m[12]*m[ 2]*m[ 9],
-               -m[ 0]*m[ 5]*m[14] + m[ 0]*m[ 6]*m[13] + m[ 1]*m[ 4]*m[14] - m[ 2]*m[ 4]*m[13] - m[12]*m[ 1]*m[ 6] + m[12]*m[ 2]*m[ 5],
-                m[ 0]*m[ 5]*m[10] - m[ 0]*m[ 6]*m[ 9] - m[ 1]*m[ 4]*m[10] + m[ 2]*m[ 4]*m[ 9] + m[ 8]*m[ 1]*m[ 6] - m[ 8]*m[ 2]*m[ 5]
+                m[ 5]*(m[10]*m[15] - m[11]*m[14]) - m[ 6]*(m[ 9]*m[15] + m[11]*m[13]) + m[ 7]*(m[ 9]*m[14] - m[10]*m[13]),
+               -m[ 1]*(m[10]*m[15] + m[11]*m[14]) + m[ 2]*(m[ 9]*m[15] - m[11]*m[13]) - m[ 3]*(m[ 9]*m[14] + m[10]*m[13]),
+                m[ 1]*(m[ 6]*m[15] - m[ 7]*m[14]) - m[ 2]*(m[ 5]*m[15] + m[ 7]*m[13]) + m[ 3]*(m[ 5]*m[14] - m[ 6]*m[13]),
+               -m[ 1]*(m[ 6]*m[11] + m[ 7]*m[10]) + m[ 2]*(m[ 5]*m[11] - m[ 7]*m[ 9]) - m[ 3]*(m[ 5]*m[10] + m[ 6]*m[ 9]),
+               -m[ 4]*(m[10]*m[15] + m[11]*m[14]) + m[ 6]*(m[ 8]*m[15] - m[11]*m[12]) - m[ 7]*(m[ 8]*m[14] + m[10]*m[12]),
+                m[ 0]*(m[10]*m[15] - m[11]*m[14]) - m[ 2]*(m[ 8]*m[15] + m[11]*m[12]) + m[ 3]*(m[ 8]*m[14] - m[10]*m[12]),
+               -m[ 0]*(m[ 6]*m[15] + m[ 7]*m[14]) + m[ 2]*(m[ 4]*m[15] - m[ 7]*m[12]) - m[ 3]*(m[ 4]*m[14] + m[ 6]*m[12]),
+                m[ 0]*(m[ 6]*m[11] - m[ 7]*m[10]) - m[ 2]*(m[ 4]*m[11] + m[ 7]*m[ 8]) + m[ 3]*(m[ 4]*m[10] - m[ 6]*m[ 8]),
+                m[ 4]*(m[ 9]*m[15] - m[11]*m[13]) - m[ 5]*(m[ 8]*m[15] + m[11]*m[12]) + m[ 7]*(m[ 8]*m[13] - m[ 9]*m[12]),
+               -m[ 0]*(m[ 9]*m[15] + m[11]*m[13]) + m[ 1]*(m[ 8]*m[15] - m[11]*m[12]) - m[ 3]*(m[ 8]*m[13] + m[ 9]*m[12]),
+                m[ 0]*(m[ 5]*m[15] - m[ 7]*m[13]) - m[ 1]*(m[ 4]*m[15] + m[ 7]*m[12]) + m[ 3]*(m[ 4]*m[13] - m[ 5]*m[12]),
+               -m[ 0]*(m[ 5]*m[11] + m[ 7]*m[ 9]) + m[ 1]*(m[ 4]*m[11] - m[ 7]*m[ 8]) - m[ 3]*(m[ 4]*m[ 9] + m[ 5]*m[ 8]),
+               -m[ 4]*(m[ 9]*m[14] + m[10]*m[13]) + m[ 5]*(m[ 8]*m[14] - m[10]*m[12]) - m[ 6]*(m[ 8]*m[13] + m[ 9]*m[12]),
+                m[ 0]*(m[ 9]*m[14] - m[10]*m[13]) - m[ 1]*(m[ 8]*m[14] + m[10]*m[12]) + m[ 2]*(m[ 8]*m[13] - m[ 9]*m[12]),
+               -m[ 0]*(m[ 5]*m[14] + m[ 6]*m[13]) + m[ 1]*(m[ 4]*m[14] - m[ 6]*m[12]) - m[ 2]*(m[ 4]*m[13] + m[ 5]*m[12]),
+                m[ 0]*(m[ 5]*m[10] - m[ 6]*m[ 9]) - m[ 1]*(m[ 4]*m[10] + m[ 6]*m[ 8]) + m[ 2]*(m[ 4]*m[ 9] - m[ 5]*m[ 8])
             ];
 
             det = m[0]*inv[0] + m[1]*inv[4] + m[2]*inv[8] + m[3]*inv[12];
@@ -200,17 +197,17 @@ define(function(require) {
         },
         
         /**
-         * TODO: [lookat description]
-         * @param  {Number} targetX
-         * @param  {Number} targetY
-         * @param  {Number} targetZ
-         * @param  {Number} upX
-         * @param  {Number} upY
-         * @param  {Number} upZ
-         * @param  {Number} posX
-         * @param  {Number} posY
-         * @param  {Number} posZ
-         * @return  {Array}
+         * Creates a focused camera matrix.
+         * @param  {Number} targetX  The x component the camera targets.
+         * @param  {Number} targetY  The y component the camera targets.
+         * @param  {Number} targetZ  The z component the camera targets.
+         * @param  {Number} upX      The x component of the upward direction for the camera.
+         * @param  {Number} upY      The y component of the upward direction for the camera.
+         * @param  {Number} upZ      The z component of the upward direction for the camera.
+         * @param  {Number} posX     The x component of the camera.
+         * @param  {Number} posY     The y component of the camera.
+         * @param  {Number} posZ     The z component of the camera.
+         * @return  {Array}  The created focused camera matrix.
          */
         lookat: function(targetX, targetY, targetZ, upX, upY, upZ, posX, posY, posZ) {
             var target = Vector.create(targetX, targetY, targetZ);

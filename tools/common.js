@@ -43,6 +43,9 @@ define(function(require) {
             if (type&Const.CUBE) {
                 size += 3;
             }
+            if (type&Const.BINM) {
+                size += 3;
+            }
             return size;
         },
 
@@ -71,26 +74,31 @@ define(function(require) {
             if (type&Const.CUBE) {
                 names.push('CUBE');
             }
+            if (type&Const.BINM) {
+                names.push('BINM');
+            }
             return names.join('|');
         },
 
         /**
-         * TODO:: Comment
-         * @param  {[type]} image     [description]
-         * @param  {[type]} maxWidth  [description]
-         * @param  {[type]} maxHeight [description]
-         * @return {[type]}           [description]
+         * This resizes the given image.
+         * @param  {Image} image      The image to resize.
+         * @param  {Number} maxSize   The maximum width and height that an image can be.
+         * @return  {Image}  The resized image.
          */
         resizeImage: function(image, maxSize) {
-            // TODO:: Check that image sizes are power of 2.
-            if ((image.width <= maxSize) || (image.height <= maxSize)) {
+            maxSize = Math.pow(2, Math.floor(Math.log2(maxSize)))
+            size = Math.max(image.width, image.height)
+            size = Math.pow(2, Math.floor(Math.log2(size)))
+            size = Math.min(size, maxSize)
+            if ((image.width === size) || (image.height === size)) {
                 return image;
             } else {
                 var canvas = document.createElement('canvas');
                 
                 // TODO:: Properly set sizes proportional and power of 2.
-                canvas.width = maxSize;
-                canvas.height = maxSize;
+                canvas.width = size;
+                canvas.height = size;
 
                 var ctx = canvas.getContext('2d');
                 ctx.drawImage(image, 0, 0, canvas.width, canvas.height);

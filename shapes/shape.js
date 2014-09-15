@@ -78,10 +78,16 @@ define(function(require) {
         this.txtAttr = null;
 
         /**
-         * The Cube texture coordinate attribute handle or null.
+         * The cube texture coordinate attribute handle or null.
          * @type {Object}
          */
         this.cubeAttr = null;
+
+        /**
+         * The binormal texture coordinate attribute handle or null.
+         * @type {Object}
+         */
+        this.binmAttr = null;
     }
 
     /**
@@ -103,11 +109,11 @@ define(function(require) {
     /**
      * Sets the attribute for the vertex before a draw.
      * @private
-     * @param {Number} type   The type of vertex data to set the attribute for.
-     * @param {Number} size   The number of floats in the vertex type.
-     * @param {Object} attr   [description]
-     * @param {Number} offset [description]
-     * TODO: Comment
+     * @param {Number} type    The type of vertex data to set the attribute for.
+     * @param {Number} size    The number of floats in the vertex type.
+     * @param {Object} attr    The attribute for the vertex to draw.
+     * @param {Number} offset  The offset into the vertex to read from.
+     * @return  {Number}  The adjusted offset.
      */
     Shape.prototype._setAttr = function(type, size, attr, offset) {
         if (this._vertexType&type) {
@@ -128,8 +134,7 @@ define(function(require) {
     /**
      * Sets the attribute for the vertex before a draw.
      * @private
-     * @param {Object} attr   [description]
-     * TODO: Comment
+     * @param  {Object} attr  The attribute to unset.
      */
     Shape.prototype._unsetAttr = function(attr) {
         if ((attr !== null) && (attr !== undefined)) {
@@ -151,6 +156,7 @@ define(function(require) {
         offset = this._setAttr(Const.NORM, 3, this.normAttr, offset);
         offset = this._setAttr(Const.TXT,  2, this.txtAttr,  offset);
         offset = this._setAttr(Const.CUBE, 3, this.cubeAttr, offset);
+        offset = this._setAttr(Const.BINM, 3, this.binmAttr, offset);
 
         var objCount = this._indexObjs.length;
         for (var i = 0; i < objCount; i++) {
@@ -165,6 +171,7 @@ define(function(require) {
         this._unsetAttr(this.normAttr);
         this._unsetAttr(this.txtAttr);
         this._unsetAttr(this.cubeAttr);
+        this._unsetAttr(this.binmAttr);
         this._gl.bindBuffer(this._gl.ARRAY_BUFFER, null);
     };
 
@@ -174,7 +181,7 @@ define(function(require) {
      * A 2 value vertex buffer for building the shape.
      * @param  {Number} type  The type of the buffer this is.
      */
-    function Vertex2DataBuffer(type, name) {
+    function Vertex2DataBuffer(type) {
 
         /**
          * The list of x, y in-line tuples for vertex data.
@@ -258,7 +265,7 @@ define(function(require) {
      * A 3 value vertex buffer for building the shape.
      * @param  {Number} type  The type of the buffer this is.
      */
-    function Vertex3DataBuffer(type, name) {
+    function Vertex3DataBuffer(type) {
 
         /**
          * The list of x, y, z in-line triplets for vertex data.
@@ -347,7 +354,7 @@ define(function(require) {
      * A 4 value vertex buffer for building the shape.
      * @param  {Number} type  The type of the buffer this is.
      */
-    function Vertex4DataBuffer(type, name) {
+    function Vertex4DataBuffer(type) {
 
         /**
          * The list of x, y, z, w in-line tuple for vertex data.
@@ -473,16 +480,22 @@ define(function(require) {
         this.txt = new Vertex2DataBuffer(Const.TXT);
 
         /**
-         * The buffer of u, v, w in-line tuple of vertex color data.
+         * The buffer of u, v, w in-line triplets of vertex color data.
          * @type {Array}
          */
         this.cube = new Vertex3DataBuffer(Const.CUBE);
 
         /**
+         * The buffer of x, y, z in-line triplets of vertex binormal data.
+         * @type {Array}
+         */
+        this.binm = new Vertex3DataBuffer(Const.BINM);
+
+        /**
          * The list of all vertex data buffers.
          * @type {Array}
          */
-        this.data = [ this.pos, this.clr3, this.clr4, this.norm, this.txt, this.cube ];
+        this.data = [ this.pos, this.clr3, this.clr4, this.norm, this.txt, this.cube, this.binm ];
         
         /**
          * The list of indices for points.

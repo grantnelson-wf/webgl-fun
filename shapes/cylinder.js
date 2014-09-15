@@ -92,11 +92,10 @@ define(function(require) {
 
 
     /**
-     * Creates a cylinder.
-     * TODO:: Comment
+     * Builds the top cap of the cylinder.
      * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Shape} shape  The shape being built.
      * @param  {Number} vertexType  The type of vertices the cylinder should have.
-     * @returns  {Shape}  The created cylinder.
      */
     CylinderBuilder.prototype._buildTopCap = function(gl, shape, vertexType) {
         if (!Common.eq(this.topRadius, 0, 0.00001)) {
@@ -146,11 +145,10 @@ define(function(require) {
     };
         
     /**
-     * Creates a cylinder.
-     * TODO:: Comment
+     * Builds the bottom cap of the cylinder.
      * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Shape} shape  The shape being built.
      * @param  {Number} vertexType  The type of vertices the cylinder should have.
-     * @returns  {Shape}  The created cylinder.
      */
     CylinderBuilder.prototype._buildBottomCap = function(gl, shape, vertexType) {
         if (!Common.eq(this.bottomRadius, 0, 0.00001)) {
@@ -200,11 +198,10 @@ define(function(require) {
     };
         
     /**
-     * Creates a cylinder.
-     * TODO:: Comment
+     * Builds the sides of the cylinder.
      * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Shape} shape  The shape being built.
      * @param  {Number} vertexType  The type of vertices the cylinder should have.
-     * @returns  {Shape}  The created cylinder.
      */
     CylinderBuilder.prototype._buildSides = function(gl, shape, vertexType) {
         var i, j;

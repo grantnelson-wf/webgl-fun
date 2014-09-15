@@ -6,8 +6,8 @@ define(function(require) {
     var ViewMover = require('movers/userFocus');
     var SkyboxShaderBuilder = require('shaders/textureCube');
     var SkyboxShapeBuilder = require('shapes/cube');
-    var ObjShaderBuilder = require('shaders/metal');
-    var ObjShapeBuilder = require('shapes/toroid');
+    var ObjShaderBuilder = require('shaders/bubble');
+    var ObjShapeBuilder = require('shapes/sphere');
     var TxtCube = require('tools/textureCube');
     
     /**
@@ -21,7 +21,7 @@ define(function(require) {
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = 'Matal';
+    Item.prototype.name = 'Bubble';
     
     /**
      * Starts this item for rendering.
@@ -82,16 +82,16 @@ define(function(require) {
         // Set projection transformation for object.
         this.objShader.setProjMat(projMatrix);
         this.objShader.setTxtSampler(this.txtCube.index);
+        this.objShader.setReflWeight(0.90);
+        this.objShader.setDentPosOffset(0.01);
+        this.objShader.setDentNormOffset(0.05);
 
         //=================================================
 
         // Initialize view movement.
         this.viewMover = new ViewMover();
         this.viewMover.start(gl);
-        
-        // Initialize object movement.
-        this.objMover = new ObjMover();
-        this.objMover.start(gl);
+        this.dentValue = 0;
         return true;
     };
     
@@ -101,9 +101,10 @@ define(function(require) {
      * @return  {Boolean}  True if updated correctly, false on error.
      */
     Item.prototype.update = function(gl) {
-        // Update movers.
+        // Update movers and values.
         this.viewMover.update();
-        this.objMover.update();
+        this.dentValue += 0.01;
+        var invViewMat = Matrix.inverse(this.viewMover.matrix());
         
         // Clear color buffer.
         // (Because of the skybox the color buffer doesn't have to be cleared.)
@@ -119,9 +120,9 @@ define(function(require) {
         // Setup and draw object.
         this.objShader.use();
         this.objShader.setViewMat(this.viewMover.matrix());
-        this.objShader.setObjMat(this.objMover.matrix());
-        var invViewMat = Matrix.inverse(this.viewMover.matrix());
+        this.objShader.setObjMat(Matrix.identity());
         this.objShader.setInvViewMat(invViewMat);
+        this.objShader.setDentValue(this.dentValue);
         this.txtCube.bind();
         this.objShape.draw();
         return true;
@@ -133,7 +134,6 @@ define(function(require) {
      */
     Item.prototype.stop = function(gl) {
         this.viewMover.stop(gl);
-        this.objMover.stop(gl);
     };
      
     return Item;
