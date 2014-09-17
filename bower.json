@@ -8,9 +8,15 @@
         "Gruntfile.js",
         "index.html",
         "init.sh",
-        "package.json"
+        "package.json",
+        "site"
     ],
     "dependencies": {
-        "requirejs": "2.1.8"
+        "requirejs": "2.1.8",
+        "react": "0.11.0",
+        "react-bootstrap": "0.11.0"
+    },
+    "devDependencies": {
+        "jquery": "2.0.3"
     }
 }

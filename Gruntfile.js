@@ -5,38 +5,39 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         jshint: {
-            examples: {
-                src: allFiles,
-                options: {
-                    globals: {
-                        ga: true,
-                    }
+            files: [
+                'items/**/*.js',
+                'movers/**/*.js',
+                'shaders/**/*.js',
+                'shapes/**/*.js',
+                'site/**/*.js',
+                'tools/**/*.js',
+            ],
+            options: {
+                globals: {
+                    jQuery: true,
+                    console: true,
+                    module: true,
+                    document: true
                 }
             }
         },
 
-        options: {
-
-            coverageThresholds: {
-                statements: 50,
-                branches:   50,
-                functions:  50,
-                lines:      50
-            },
-
-            requireConfig: {
-                paths: {
-                    shapes: 'shapes',
-                    items: 'items',
-                    tools: 'tools',
-                    movers: 'movers'
-                }
+        shell: {
+            'build-jsx': {
+                command: 'mkdir site; jsx jsx_src site',
+                stdout: true,
+                failOnError: true
             }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-shell');
 
-    grunt.registerTask('default', ['jshint']);
+    grunt.registerTask('test', ['jshint']);
+    grunt.registerTask('jsx', ['shell:build-jsx']);
+
+    grunt.registerTask('default', ['jsx', 'jshint']);
 };
 

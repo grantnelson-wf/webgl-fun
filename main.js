@@ -4,11 +4,15 @@ require.config({
         items: 'items',
         tools: 'tools',
         movers: 'movers',
+        react: 'bower_components/react'
     }
 });
 
-require(['tools/driver', 'items/item008'],
-    function(Driver, Item) {
+require(['site/layout', 'tools/driver', 'items/item008'],
+    function(Layout, Driver, Item) {
+
+        var layout = new Layout();
+        layout.start();
 
         // Configure this item and driver.
         var driver = new Driver();
