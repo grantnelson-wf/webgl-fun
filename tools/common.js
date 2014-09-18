@@ -87,9 +87,9 @@ define(function(require) {
          * @return  {Image}  The resized image.
          */
         resizeImage: function(image, maxSize) {
-            maxSize = Math.pow(2, Math.floor(Math.log2(maxSize)));
+            maxSize = Math.pow(2, Math.floor(Math.log(maxSize)/Math.log(2)));
             size = Math.max(image.width, image.height);
-            size = Math.pow(2, Math.floor(Math.log2(size)));
+            size = Math.pow(2, Math.floor(Math.log(size)/Math.log(2)));
             size = Math.min(size, maxSize);
             if ((image.width === size) || (image.height === size)) {
                 return image;
