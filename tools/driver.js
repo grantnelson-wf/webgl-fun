@@ -10,6 +10,9 @@ define(function(require) {
         
         /// The graphical object.
         this.gl = null;
+
+        /// The control layout object.
+        this.layout = null;
         
         /// The item being run.
         this.item = null;
@@ -49,6 +52,14 @@ define(function(require) {
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.depthFunc(this.gl.LESS);
     };
+
+    /**
+     * This sets the layout object for the controls.
+     * @param  {Layout} layout  The control layout object.
+     */
+    Driver.prototype.setLayout = function(layout) {
+        this.layout = layout;
+    };
     
     /**
      * This starts running an item. Any previous item is stopped.
@@ -63,10 +74,11 @@ define(function(require) {
         if (this.item) {
             this.item.stop(this.gl);
             this.item = null;
+            this.layout.reset();
         }
         this.item = item;
         if (this.item) {
-            if (!this.item.start(this.gl)) {
+            if (!this.item.start(this.gl, this.layout)) {
                 return false;
             }
         

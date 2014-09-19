@@ -11,13 +11,13 @@ require.config({
 
 require(['site/layout', 'tools/driver', 'items/item008'],
     function(Layout, Driver, Item) {
-
-        var layout = new Layout();
-        layout.start();
-
-        // Configure this item and driver.
         var driver = new Driver();
         driver.setup('targetCanvas');
+
+        var layout = new Layout();
+        layout.setup("container", "controls");
+        driver.setLayout(layout);
+
         var item = new Item();
         driver.run(item);
 });
