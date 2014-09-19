@@ -15,7 +15,7 @@ require(['site/layout', 'tools/driver', 'items/item008'],
         driver.setup('targetCanvas');
 
         var layout = new Layout();
-        layout.setup("container", "controls");
+        layout.setup('header', 'controls');
         driver.setLayout(layout);
 
         var item = new Item();

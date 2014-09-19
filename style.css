@@ -1,8 +1,63 @@
 body {
-    background-color: #BBB;
+    background-color: #CCF;
+    background-image: url('data/paper.jpg');
+    background-attachment: fixed;
+    width: 100%;
+    height: 100%;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
 }
 
-canvas {
-    border: 1px solid #138;
-    box-shadow: 2px 2px 2px #444;
+a:link {
+    color: #000;
+}
+
+a:visited {
+    color: #000;
+}
+
+a:hover {
+    color: #000;
+}
+
+a:active {
+    color: #000;
+}
+
+#prevLink {
+  float: left;
+  width:33.33333%;
+  text-align:left;
+}
+
+#title {
+  float: left;
+  width:33.33333%;
+  text-align:center;
+}
+
+#nextLink {
+ float: left;
+ width:33.33333%;
+ text-align:right;
+}
+
+#header {
+    width: 100%;
+    background-color: #48F;
+    height: 20px;
+}
+
+#targetCanvas {
+    display: block;
+    width: 600px;
+    height: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #000;
+}
+
+#controls {
+    width: 100%;
 }

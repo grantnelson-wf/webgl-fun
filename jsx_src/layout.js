@@ -2,7 +2,6 @@
 define(function(require) {
 
     var React = require('react');
-    var Panel = require('bootstrap/Panel');
 
     /**
      * This is the control layout.
@@ -18,15 +17,21 @@ define(function(require) {
 
     /**
      * This sets up the layout.
-     * @param  {String} containerId  The canvas container's identifier.
-     * @param  {String} controlId    The control identifier.
+     * @param  {String} headerId   The header identifier.
+     * @param  {String} controlId  The control identifier.
      */
-    Layout.prototype.setup = function(containerId, controlId) {
-        this._container = document.getElementById(containerId);
-        this._control   = document.getElementById(controlId);
+    Layout.prototype.setup = function(headerId, controlId) {
+        this._header  = document.getElementById(headerId);
+        this._control = document.getElementById(controlId);
 
-        // TODO:: Finish implementing.
-        this.addPanel("Controls", "Hello world");
+        var headBody = (
+            <div>
+                <a href="#" id="prevLink">&larr; Prev</a>
+                <div id="title">Hello</div>
+                <a href="#" id="nextLink">Next &rarr;</a>
+            </div>
+            );
+        React.renderComponent(headBody, this._header);
     };
 
     /**

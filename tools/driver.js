@@ -34,8 +34,6 @@ define(function(require) {
 
         try {
             this.gl = this.canvas.getContext('webgl');
-            this.gl.viewportWidth = this.canvas.width;
-            this.gl.viewportHeight = this.canvas.height;
         }
         catch(ex) {
            console.log('Error getting WebGL context: '+err.message);
@@ -45,12 +43,29 @@ define(function(require) {
            console.log('Failed to get the rendering context for WebGL.');
         }
 
+        window.addEventListener('resize', this.resize);
+        this.resize();
+
         // Initialize the graphics.
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
         this.gl.clearDepth(1.0);
         this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.depthFunc(this.gl.LESS);
+    };
+
+    /**
+     * This resizes the canvas.
+     */
+    Driver.prototype.resize = function() {
+        var width  = this.canvas.width;
+        var height = this.canvas.height;
+        if ((this.canvas.clientWidth !== width) || (this.canvas.clientHeight !== height)) {
+            this.canvas.clientWidth  = width;
+            this.canvas.clientHeight = height;
+            this.gl.viewportWidth  = width;
+            this.gl.viewportHeight = height;
+        }
     };
 
     /**
