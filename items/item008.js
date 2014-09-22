@@ -9,6 +9,7 @@ define(function(require) {
     var ObjShaderBuilder = require('shaders/bubble');
     var ObjShapeBuilder = require('shapes/sphere');
     var TxtCube = require('tools/textureCube');
+    var Controls = require('tools/controls')
     
     /**
      * Creates an item for rendering.

@@ -10,7 +10,6 @@ module.exports = function(grunt) {
                 'movers/**/*.js',
                 'shaders/**/*.js',
                 'shapes/**/*.js',
-                'site/**/*.js',
                 'tools/**/*.js',
             ],
             options: {
@@ -21,23 +20,13 @@ module.exports = function(grunt) {
                     document: true
                 }
             }
-        },
-
-        shell: {
-            'build-jsx': {
-                command: 'mkdir site; jsx jsx_src site',
-                stdout: true,
-                failOnError: true
-            }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-shell');
 
     grunt.registerTask('test', ['jshint']);
-    grunt.registerTask('jsx', ['shell:build-jsx']);
 
-    grunt.registerTask('default', ['jsx', 'jshint']);
+    grunt.registerTask('default', ['jshint']);
 };
 
