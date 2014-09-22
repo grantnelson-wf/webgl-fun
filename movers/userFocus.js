@@ -21,6 +21,12 @@ define(function(require) {
         this.mouseYScalar = 0.005;
 
         /**
+         * The graphical object being used.
+         * @type {WebGLRenderingContext}
+         */
+        this._gl = null;
+
+        /**
          * The yaw rotation in radians.
          * @type {Number}
          */
@@ -75,6 +81,7 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object to start with.
      */
     UserFocus.prototype.start = function(gl) {
+        this._gl = gl;
         this._mouseDown = false;
         var self = this;
         gl.canvas.onmousedown = function(event) {
@@ -109,12 +116,12 @@ define(function(require) {
 
     /**
      * This stops the mover.
-     * @param  {WebGLRenderingContext} gl  The graphical object to stop with.
      */
-    UserFocus.prototype.stop = function(gl) {
-        gl.canvas.onmousedown = null;
+    UserFocus.prototype.stop = function() {
+        this._gl.canvas.onmousedown = null;
         document.onmouseup    = null;
         document.onmousemove  = null;
+        this._gl = null;
     };
     
     /**

@@ -10,11 +10,11 @@ require.config({
     }
 });
 
-require(['tools/driver', 'items/item008'],
-    function(Layout, Driver, Item) {
+require(['tools/driver', 'items/item001'],
+    function(Driver, Item) {
         var driver = new Driver();
         driver.setup('targetCanvas');
-        
+
         var item = new Item();
         driver.run(item);
 });

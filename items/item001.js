@@ -2,7 +2,10 @@ define(function(require) {
 
     var Const = require('tools/const');
     var Matrix = require('tools/matrix');
+    var ProjMover = require('movers/projection');
+    var ViewMover = require('movers/userFocus');
     var ObjMover = require('movers/tumble');
+    var Controls = require('tools/controls');
     var ShaderBuilder = require('shaders/fog');
     var ShapeBuilder = require('shapes/toroid');
     
@@ -41,19 +44,18 @@ define(function(require) {
         // Set light.
         this.shader.setObjClr(1.0, 1.0, 1.0);
         this.shader.setFogClr(0.0, 0.0, 0.0);
-        this.shader.setFogStart(1.0);
-        this.shader.setFogStop(2.5);
-        
-        // Set view transformation.
-        var viewMatrix = Matrix.translate(0.0, 0.0, 2.0);
-        this.shader.setViewMat(viewMatrix);
 
-        // Set projection transformation.
-        var projMatrix = Matrix.perspective(Math.PI/3.0, 1.0, 1.0, -1.0);
-        this.shader.setProjMat(projMatrix);
-        
-        // Initialize object movement.
+        // Setup controls.
+        this.controls = new Controls();
+        this.controls.addFloat("Start", this.shader.setFogStart, 0.0, 4.0, 1.0);
+        this.controls.addFloat("Stop", this.shader.setFogStop, 0.0, 4.0, 2.5);
+                
+        // Initialize movers.
+        this.projMover = new ProjMover();
+        this.viewMover = new ViewMover();
         this.objMover = new ObjMover();
+        this.projMover.start(gl);
+        this.viewMover.start(gl);
         this.objMover.start(gl);
         return true;
     };
@@ -64,13 +66,15 @@ define(function(require) {
      * @return  {Boolean}  True if updated correctly, false on error.
      */
     Item.prototype.update = function(gl) {
+        this.projMover.update();
+        this.viewMover.update();
+        this.objMover.update();
+        this.shader.setProjMat(this.projMover.matrix());
+        this.shader.setViewMat(this.viewMover.matrix());
+        this.shader.setObjMat(this.objMover.matrix());
         
         // Clear color buffer.
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-
-        // Set toroid transformation.
-        this.objMover.update();
-        this.shader.setObjMat(this.objMover.matrix());
 
         // Draw shape.
         this.shape.draw();
@@ -82,6 +86,8 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object.
      */
     Item.prototype.stop = function(gl) {
+        this.projMover.stop(gl);
+        this.viewMover.stop(gl);
         this.objMover.stop(gl);
     };
      

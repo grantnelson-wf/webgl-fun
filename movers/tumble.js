@@ -69,9 +69,8 @@ define(function(require) {
 
     /**
      * This stops the mover.
-     * @param  {WebGLRenderingContext} gl  The graphical object to stop with.
      */
-    Tumble.prototype.stop = function(gl) {
+    Tumble.prototype.stop = function() {
         // Do Nothing
     };
 

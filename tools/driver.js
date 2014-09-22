@@ -43,8 +43,12 @@ define(function(require) {
            console.log('Failed to get the rendering context for WebGL.');
         }
 
-        window.addEventListener('resize', this.resize);
-        this.resize();
+        var driver = this;
+        var innerResize = function() {
+            driver.resize();
+        };
+        window.addEventListener('resize', innerResize);
+        innerResize();
 
         // Initialize the graphics.
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -58,13 +62,12 @@ define(function(require) {
      * This resizes the canvas.
      */
     Driver.prototype.resize = function() {
-        var width  = this.canvas.width;
-        var height = this.canvas.height;
-        if ((this.canvas.clientWidth !== width) || (this.canvas.clientHeight !== height)) {
-            this.canvas.clientWidth  = width;
-            this.canvas.clientHeight = height;
-            this.gl.viewportWidth  = width;
-            this.gl.viewportHeight = height;
+        var width  = window.innerWidth;
+        var height = window.innerHeight;
+        if ((this.canvas.width !== width) || (this.canvas.height !== height)) {
+            this.canvas.width  = width;
+            this.canvas.height = height;
+            this.gl.viewport(0, 0, width, height);
         }
     };
 
@@ -96,16 +99,26 @@ define(function(require) {
             if (!this.item.start(this.gl, this.layout)) {
                 return false;
             }
-        
-            var driver = this;
-            // TODO:: Need to improve event loop.
-            this.timer = setInterval(function() {
-                    if (!driver.item.update(driver.gl)) {
-                        driver.run(null);
-                    }
-                }, 10);
+            this.update();
         }
         return true;
+    };
+
+    /**
+     * This updates the rendering and continues updating the rendering
+     * until the selected item stops the update.
+     */
+    Driver.prototype.update = function() {
+        var driver = this;
+        var innerUpdate = function() {
+            driver.update();
+        };
+
+        if (driver.item.update(driver.gl)) {
+            requestAnimationFrame(innerUpdate);
+        } else {
+            driver.run(null);
+        }
     };
  
     return Driver;
