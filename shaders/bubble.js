@@ -45,7 +45,7 @@ define(function(require) {
         'void main()                                                                   \n'+
         '{                                                                             \n'+
         '  vec3 pos = posAttr + vec3(sin(dentValue*PI), sin((dentValue*2.0/3.0)*PI),   \n'+
-        '             sin((dentValue*4.0/3.0)*PI))*normAttr*dentPosOffset;             \n'+
+        '             sin((dentValue*4.0/3.0)*PI))*posAttr*dentPosOffset;              \n'+
         '  vec3 norm = normAttr + vec3(cos(dentValue*PI), cos((dentValue*2.0/3.0)*PI), \n'+
         '             cos((dentValue*4.0/3.0)*PI))*normAttr*dentNormOffset;            \n'+
         '  vec4 eyeCoords = viewMat*objMat*vec4(pos, 1.0);                             \n'+

@@ -28,7 +28,21 @@ define(function(require) {
     }
     
     /**
-     * Loads a file from the given path.
+     * Loads files from the given path.
+     * @note  The images will load asynchronously.
+     * @param  {String} path  The path to the files to load.
+     *                        The files must be named: "posx.jpg", "negx.jpg", "posy.jpg", etc.
+     * @param  {Boolean} flipY  Indicates if the Y asix should be flipped.
+     */
+    TextureCube.prototype.loadFromPath = function(path, flipY) {
+        this.loadFromFiles(
+            path+'/posx.jpg', path+'/posy.jpg',
+            path+'/posz.jpg', path+'/negx.jpg',
+            path+'/negy.jpg', path+'/negz.jpg', flipY);
+    }
+    
+    /**
+     * Loads files from the given paths.
      * @note  The images will load asynchronously.
      * @param  {String} posXPath  The path to the image to load for the positive X face.
      * @param  {String} posYPath  The path to the image to load for the positive Y face.

@@ -59,6 +59,7 @@ define(function(require) {
         'void main()                                                \n'+
         '{                                                          \n'+
         '   float factor = (position.z-fogStop)/(fogStart-fogStop); \n'+
+        '   factor = clamp(factor, 0.0, 1.0);                       \n'+
         '   gl_FragColor = vec4(mix(fogClr, objClr, factor), 1.0);  \n'+
         '}                                                          \n';
     

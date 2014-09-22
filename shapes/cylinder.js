@@ -86,7 +86,7 @@ define(function(require) {
         var shape = new ShapeBuilder();
         this._buildTopCap(gl, shape, vertexType);
         this._buildBottomCap(gl, shape, vertexType);
-        this._buildSizes(gl, shape, vertexType);
+        this._buildSides(gl, shape, vertexType);
         return shape.build(gl);
     };
 

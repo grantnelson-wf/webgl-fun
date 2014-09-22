@@ -7,7 +7,6 @@ define(function(require) {
     var ObjMover = require('movers/tumble');
     var Controls = require('tools/controls');
     var ShaderBuilder = require('shaders/fog');
-    var ShapeBuilder = require('shapes/toroid');
     
     /**
      * Creates an item for rendering.
@@ -21,7 +20,7 @@ define(function(require) {
      * @type {String}
      */
     Item.prototype.name = 'Fog';
-    
+
     /**
      * Starts this item for rendering.
      * @param  {WebGLRenderingContext} gl  The graphical object.
@@ -36,20 +35,22 @@ define(function(require) {
         }
         this.shader.use();
         
-        // Create shape to use.
-        var shapeBuilder = new ShapeBuilder();
-        this.shape = shapeBuilder.build(gl, this.shader.requiredType);
-        this.shape.posAttr = this.shader.posAttrLoc;
-
-        // Set light.
-        this.shader.setObjClr(1.0, 1.0, 1.0);
-        this.shader.setFogClr(0.0, 0.0, 0.0);
-
         // Setup controls.
+        item = this;
         this.controls = new Controls();
+        this.controls.addShapeSelect("Shape", function(shapeBuilder){
+            item.shape = shapeBuilder.build(gl, item.shader.requiredType);
+            item.shape.posAttr = item.shader.posAttrLoc;
+        }, "Toroid");
+
         this.controls.addFloat("Start", this.shader.setFogStart, 0.0, 4.0, 1.0);
-        this.controls.addFloat("Stop", this.shader.setFogStop, 0.0, 4.0, 2.5);
-                
+        this.controls.addFloat("Stop",  this.shader.setFogStop,  0.0, 4.0, 2.5);
+        this.controls.addRGB("Object", this.shader.setObjClr, 1.0, 1.0, 1.0);
+        this.controls.addRGB("Fog",    this.shader.setFogClr, 0.0, 0.0, 0.0);
+        this.controls.addRGB("Background", function(red, green, blue) {
+            gl.clearColor(red, green, blue, 1.0);
+        }, 0.0, 0.0, 0.0);
+
         // Initialize movers.
         this.projMover = new ProjMover();
         this.viewMover = new ViewMover();
