@@ -39,7 +39,7 @@ define(function(require) {
             path+'/posx.jpg', path+'/posy.jpg',
             path+'/posz.jpg', path+'/negx.jpg',
             path+'/negy.jpg', path+'/negz.jpg', flipY);
-    }
+    };
     
     /**
      * Loads files from the given paths.

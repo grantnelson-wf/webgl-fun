@@ -44,7 +44,7 @@ define(function(require) {
                     break;
                 }
             }
-        }
+        };
         ctrl.onChange(selectShape);
         selectShape(initShape);
     };

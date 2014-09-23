@@ -57,10 +57,7 @@ define(function(require) {
             return false;
         }
         this.objShader.use();
-        this.objShader.setTxtSampler(0);        
-        //this.objShader.setReflWeight(0.90);
-        //this.objShader.setDentPosOffset(0.01);
-        //this.objShader.setDentNormOffset(0.05);
+        this.objShader.setTxtSampler(0);
 
         // Setup controls.
         item = this;
@@ -73,6 +70,8 @@ define(function(require) {
         this.controls.addFloat("Ref Weight",       this.objShader.setReflWeight,     0.0, 1.0, 0.9);
         this.controls.addFloat("Dent Pos Offset",  this.objShader.setDentPosOffset,  0.0, 0.5, 0.01);
         this.controls.addFloat("Dent Norm Offset", this.objShader.setDentNormOffset, 0.0, 0.5, 0.05);
+        this.controls.addFloat("Reflections",      this.objShader.setReflectScalar,  0.0, 1.0, 0.5);
+        this.controls.addFloat("Refractions",      this.objShader.setRefractScalar,  0.0, 1.0, 0.5);
         this.controls.addDic("Background", function(path) {
             item.txtCube = new TxtCube(gl);
             item.txtCube.index = 0;
@@ -83,7 +82,6 @@ define(function(require) {
             'Forest':   './data/forest/',
             'Chapel':   './data/chapel/'
         });
-
 
         //=================================================
 

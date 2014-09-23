@@ -64,20 +64,22 @@ define(function(require) {
         'uniform mat4 invViewMat;        \n'+
         'uniform samplerCube txtSampler; \n'+
         'uniform float reflWeight;       \n'+
+        'uniform float reflectScalar;    \n'+
+        'uniform float refractScalar;    \n'+
         '                                \n'+
         'varying vec3 vNorm;             \n'+
         'varying vec3 vView;             \n'+
         '                                \n'+
-        'void main()                                           \n'+
-        '{                                                     \n'+
-        '   vec3 norm = normalize(vNorm);                      \n'+
-        '   vec3 refl = reflect(normalize(vView), norm);       \n'+
-        '   vec3 refr = mix(-refl, vView, reflWeight);         \n'+
-        '   refl = vec3(invViewMat*vec4(refl, 0.0));           \n'+
-        '   refr = vec3(invViewMat*vec4(refr, 0.0));           \n'+
-        '   gl_FragColor = textureCube(txtSampler, refl)*0.5 + \n'+
-        '                  textureCube(txtSampler, refr)*0.5;  \n'+
-        '}                                                     \n';
+        'void main()                                                     \n'+
+        '{                                                               \n'+
+        '   vec3 norm = normalize(vNorm);                                \n'+
+        '   vec3 refl = reflect(normalize(vView), norm);                 \n'+
+        '   vec3 refr = mix(-refl, vView, reflWeight);                   \n'+
+        '   refl = vec3(invViewMat*vec4(refl, 0.0));                     \n'+
+        '   refr = vec3(invViewMat*vec4(refr, 0.0));                     \n'+
+        '   gl_FragColor = textureCube(txtSampler, refl)*reflectScalar + \n'+
+        '                  textureCube(txtSampler, refr)*refractScalar;  \n'+
+        '}                                                               \n';
     
     /**
      * Initializes the shader.
