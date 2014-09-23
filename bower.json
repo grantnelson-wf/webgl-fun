@@ -8,7 +8,7 @@
         "Gruntfile.js",
         "index.html",
         "init.sh",
-        "package.json",
+        "package.json"
     ],
     "dependencies": {
         "requirejs": "2.1.8",
