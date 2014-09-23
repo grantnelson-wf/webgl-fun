@@ -37,15 +37,15 @@ define(function(require) {
         '                                                           \n'+
         'varying vec3 normal;                                       \n'+
         'varying vec3 litVec;                                       \n'+
+        'varying vec3 camPos;                                       \n'+
         '                                                           \n'+
         'void main()                                                \n'+
         '{                                                          \n'+
+        '  camPos = (viewMat*vec4(0.0, 0.0, 0.0, -1.0)).xyz;        \n'+
         '  normal = normalize(objMat*vec4(normAttr, 0.0)).xyz;      \n'+
         '  litVec = normalize((viewMat*vec4(lightVec, 0.0)).xyz);   \n'+
         '  gl_Position = projMat*viewMat*objMat*vec4(posAttr, 1.0); \n'+
         '}                                                          \n';
-
-
 
     /**
      * The fragment shader program.
@@ -54,7 +54,6 @@ define(function(require) {
     DirectionalBuilder.prototype.fsSource =
         'precision mediump float;                                   \n'+
         '                                                           \n'+
-        'uniform vec3 camPos;                                       \n'+
         'uniform vec3 ambientClr;                                   \n'+
         'uniform vec3 diffuseClr;                                   \n'+
         'uniform vec3 specularClr;                                  \n'+
@@ -62,6 +61,7 @@ define(function(require) {
         '                                                           \n'+
         'varying vec3 normal;                                       \n'+
         'varying vec3 litVec;                                       \n'+
+        'varying vec3 camPos;                                       \n'+
         '                                                           \n'+
         'vec3 diffuse(vec3 norm)                                    \n'+
         '{                                                          \n'+
