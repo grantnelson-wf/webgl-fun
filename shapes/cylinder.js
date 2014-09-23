@@ -128,7 +128,7 @@ define(function(require) {
                     shape.norm.add(0, 1, 0);
                 }
                 if (vertexType&Const.CLR3) {
-                    shape.clr.add(0, 1, 0);
+                    shape.clr3.add(0, 1, 0);
                 }
                 if (vertexType&Const.CLR4) {
                     shape.clr4.add(0, 1, 0, 1);

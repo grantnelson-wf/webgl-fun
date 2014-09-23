@@ -42,7 +42,6 @@ define(function(require) {
             item.shape = shapeBuilder.build(gl, item.shader.requiredType);
             item.shape.posAttr = item.shader.posAttrLoc;
         }, "Toroid");
-
         this.controls.addFloat("Start", this.shader.setFogStart, 0.0, 4.0, 1.0);
         this.controls.addFloat("Stop",  this.shader.setFogStop,  0.0, 4.0, 2.5);
         this.controls.addRGB("Object", this.shader.setObjClr, 1.0, 1.0, 1.0);

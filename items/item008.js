@@ -61,13 +61,17 @@ define(function(require) {
 
         // Setup controls.
         item = this;
+        this.dentDelta = 0.01;
         this.controls = new Controls();
         this.controls.addShapeSelect("Shape", function(shapeBuilder){
             item.objShape = shapeBuilder.build(gl, item.objShader.requiredType);
             item.objShape.posAttr = item.objShader.posAttrLoc;
             item.objShape.normAttr = item.objShader.normAttrLoc;
         }, "Sphere");
-        this.controls.addFloat("Ref Weight",       this.objShader.setReflWeight,     0.0, 1.0, 0.9);
+        this.controls.addFloat("Ref Weight", this.objShader.setReflWeight,     0.0, 1.0, 0.9);
+        this.controls.addFloat("Dent Speed", function(value) {
+            item.dentDelta = value;
+        },  0.0, 0.1, 0.01);
         this.controls.addFloat("Dent Pos Offset",  this.objShader.setDentPosOffset,  0.0, 0.5, 0.01);
         this.controls.addFloat("Dent Norm Offset", this.objShader.setDentNormOffset, 0.0, 0.5, 0.05);
         this.controls.addFloat("Reflections",      this.objShader.setReflectScalar,  0.0, 1.0, 0.5);
@@ -103,7 +107,7 @@ define(function(require) {
         // Update movers and values.
         this.viewMover.update();
         this.projMover.update();
-        this.dentValue += 0.01;
+        this.dentValue += this.dentDelta;
         var invViewMat = Matrix.inverse(this.viewMover.matrix());
         
         // Clear color buffer.

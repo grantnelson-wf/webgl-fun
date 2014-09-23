@@ -2,9 +2,11 @@ define(function(require) {
 
     var Const = require('tools/const');
     var Matrix = require('tools/matrix');
+    var ProjMover = require('movers/projection');
+    var ViewMover = require('movers/userFocus');
     var ObjMover = require('movers/tumble');
     var ShaderBuilder = require('shaders/color');
-    var ShapeBuilder = require('shapes/toroid');
+    var Controls = require('tools/controls');
     
     /**
      * Creates an item for rendering.
@@ -32,23 +34,22 @@ define(function(require) {
             return false;
         }
         this.shader.use();
-        
-        // Create shape to use.
-        var shapeBuilder = new ShapeBuilder();
-        this.shape = shapeBuilder.build(gl, this.shader.requiredType);
-        this.shape.posAttr = this.shader.posAttrLoc;
-        this.shape.clr3Attr = this.shader.clr3AttrLoc;
-        
-        // Set view transformation.
-        var viewMatrix = Matrix.translate(0.0, 0.0, 2.0);
-        this.shader.setViewMat(viewMatrix);
 
-        // Set projection transformation.
-        var projMatrix = Matrix.perspective(Math.PI/3.0, 1.0, 1.0, -1.0);
-        this.shader.setProjMat(projMatrix);
+        // Setup controls.
+        item = this;
+        this.controls = new Controls();
+        this.controls.addShapeSelect("Shape", function(shapeBuilder){
+            item.shape = shapeBuilder.build(gl, item.shader.requiredType);
+            item.shape.posAttr = item.shader.posAttrLoc;
+            item.shape.clr3Attr = item.shader.clr3AttrLoc;
+        }, "Toroid");
         
-        // Initialize object movement.
+        // Initialize movers.
+        this.projMover = new ProjMover();
+        this.viewMover = new ViewMover();
         this.objMover = new ObjMover();
+        this.projMover.start(gl);
+        this.viewMover.start(gl);
         this.objMover.start(gl);
         return true;
     };
@@ -59,13 +60,15 @@ define(function(require) {
      * @return  {Boolean}  True if updated correctly, false on error.
      */
     Item.prototype.update = function(gl) {
+        this.projMover.update();
+        this.viewMover.update();
+        this.objMover.update();
+        this.shader.setProjMat(this.projMover.matrix());
+        this.shader.setViewMat(this.viewMover.matrix());
+        this.shader.setObjMat(this.objMover.matrix());
         
         // Clear color buffer.
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-
-        // Set toroid transformation.
-        this.objMover.update();
-        this.shader.setObjMat(this.objMover.matrix());
 
         // Draw shape.
         this.shape.draw();
@@ -77,6 +80,8 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object.
      */
     Item.prototype.stop = function(gl) {
+        this.projMover.stop(gl);
+        this.viewMover.stop(gl);
         this.objMover.stop(gl);
     };
      
