@@ -2,10 +2,12 @@ define(function(require) {
 
     var Const = require('tools/const');
     var Matrix = require('tools/matrix');
+    var ProjMover = require('movers/projection');
+    var ViewMover = require('movers/userFocus');
     var ObjMover = require('movers/tumble');
     var ShaderBuilder = require('shaders/texture2d');
-    var ShapeBuilder = require('shapes/cube');
     var Txt2D = require('tools/texture2d');
+    var Controls = require('tools/controls');
     
     /**
      * Creates an item for rendering.
@@ -33,29 +35,37 @@ define(function(require) {
             return false;
         }
         this.shader.use();
+        this.shader.setTxtSampler(0);
         
-        // Create shape to use.
-        var shapeBuilder = new ShapeBuilder();
-        this.shape = shapeBuilder.build(gl, this.shader.requiredType);
-        this.shape.posAttr = this.shader.posAttrLoc;
-        this.shape.txtAttr = this.shader.txtAttrLoc;
-
-        // Create texture.
-        this.txt2D = new Txt2D(gl);
-        this.txt2D.index = 0;
-        this.txt2D.loadFromFile('./data/fire.jpg');
-        this.shader.setTxtSampler(this.txt2D.index);
+        // Setup controls.
+        item = this;
+        this.controls = new Controls();
+        this.controls.addShapeSelect("Shape", function(shapeBuilder){
+            item.shape = shapeBuilder.build(gl, item.shader.requiredType);
+            item.shape.posAttr = item.shader.posAttrLoc;
+            item.shape.txtAttr = item.shader.txtAttrLoc;
+        }, "Cube");
+        this.controls.addDic("Texture", function(path) {
+            item.txt2D = new Txt2D(gl);
+            item.txt2D.index = 0;
+            item.txt2D.loadFromFile(path);
+        }, 'Fire', {
+            'Brick':   './data/brick.jpg',
+            'Fire':    './data/fire.jpg',
+            'Grass':   './data/grass.jpg',
+            'Metal':   './data/metal.jpg',
+            'Moon':    './data/moon.jpg',
+            'Paper':   './data/paper.jpg',
+            'Scratch': './data/scratch.jpg',
+            'Wood':    './data/wood.jpg'
+        });
         
-        // Set view transformation.
-        var viewMatrix = Matrix.translate(0.0, 0.0, 2.0);
-        this.shader.setViewMat(viewMatrix);
-
-        // Set projection transformation.
-        var projMatrix = Matrix.perspective(Math.PI/3.0, 1.0, 1.0, -1.0);
-        this.shader.setProjMat(projMatrix);
-        
-        // Initialize object movement.
+        // Initialize movers.
+        this.projMover = new ProjMover();
+        this.viewMover = new ViewMover();
         this.objMover = new ObjMover();
+        this.projMover.start(gl);
+        this.viewMover.start(gl);
         this.objMover.start(gl);
         return true;
     };
@@ -66,13 +76,15 @@ define(function(require) {
      * @return  {Boolean}  True if updated correctly, false on error.
      */
     Item.prototype.update = function(gl) {
+        this.projMover.update();
+        this.viewMover.update();
+        this.objMover.update();
+        this.shader.setProjMat(this.projMover.matrix());
+        this.shader.setViewMat(this.viewMover.matrix());
+        this.shader.setObjMat(this.objMover.matrix());
         
         // Clear color buffer.
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-
-        // Set toroid transformation.
-        this.objMover.update();
-        this.shader.setObjMat(this.objMover.matrix());
 
         // Bind texture.
         this.txt2D.bind();
@@ -87,6 +99,8 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object.
      */
     Item.prototype.stop = function(gl) {
+        this.projMover.stop(gl);
+        this.viewMover.stop(gl);
         this.objMover.stop(gl);
     };
      
