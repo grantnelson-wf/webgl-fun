@@ -5,9 +5,8 @@ define(function(require) {
     var ProjMover = require('movers/projection');
     var ViewMover = require('movers/userFocus');
     var ObjMover = require('movers/tumble');
-    var ShaderBuilder = require('shaders/texture2d');
-    var Txt2D = require('tools/texture2d');
     var Controls = require('tools/controls');
+    var ShaderBuilder = require('shaders/fog');
     
     /**
      * Creates an item for rendering.
@@ -20,15 +19,14 @@ define(function(require) {
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = 'Texture 2D';
-    
+    Item.prototype.name = 'Fog';
+
     /**
      * Starts this item for rendering.
      * @param  {WebGLRenderingContext} gl  The graphical object.
-     * @param  {Driver} driver  The driver running this item.
      * @return  {Boolean}  True if successfully started, false otherwise.
      */
-    Item.prototype.start = function(gl, driver) {
+    Item.prototype.start = function(gl) {
         // Build and set the shader.
         var shaderBuilder = new ShaderBuilder();
         this.shader = shaderBuilder.build(gl);
@@ -36,38 +34,24 @@ define(function(require) {
             return false;
         }
         this.shader.use();
-        this.shader.setTxtSampler(0);
         
         // Setup controls.
         item = this;
         this.controls = new Controls();
-        this.controls.addButton("Menu", driver.gotoMenu());
         this.controls.addShapeSelect("Shape", function(shapeBuilder){
             item.shape = shapeBuilder.build(gl, item.shader.requiredType);
             item.shape.posAttr = item.shader.posAttrLoc;
-            item.shape.txtAttr = item.shader.txtAttrLoc;
         }, "Toroid");
-        this.controls.addDic("Texture", function(path) {
-            item.txt2D = new Txt2D(gl);
-            item.txt2D.index = 0;
-            item.txt2D.loadFromFile(path);
-        }, 'Fire', {
-            'Brick':   './data/brick.jpg',
-            'Fire':    './data/fire.jpg',
-            'Grass':   './data/grass.jpg',
-            'Metal':   './data/metal.jpg',
-            'Moon':    './data/moon.jpg',
-            'Paper':   './data/paper.jpg',
-            'Scratch': './data/scratch.jpg',
-            'Wood':    './data/wood.jpg'
-        });
-        
+        this.controls.addFloat("Start", this.shader.setFogStart, 0.0, 4.0, 1.0);
+        this.controls.addFloat("Stop",  this.shader.setFogStop,  0.0, 4.0, 2.5);
+        this.controls.addRGB("Object", this.shader.setObjClr, 1.0, 1.0, 1.0);
+        this.controls.addRGB("Fog",    this.shader.setFogClr, 0.0, 0.0, 0.0);
+        this.controls.addRGB("Background", function(red, green, blue) {
+            gl.clearColor(red, green, blue, 1.0);
+        }, 0.0, 0.0, 0.0);
+
         // Initialize movers.
-        this.projMover = new ProjMover();
-        this.viewMover = new ViewMover();
         this.objMover = new ObjMover();
-        this.projMover.start(gl);
-        this.viewMover.start(gl);
         this.objMover.start(gl);
         return true;
     };
@@ -78,20 +62,17 @@ define(function(require) {
      * @return  {Boolean}  True if updated correctly, false on error.
      */
     Item.prototype.update = function(gl) {
-        this.projMover.update();
-        this.viewMover.update();
         this.objMover.update();
-        this.shader.setProjMat(this.projMover.matrix());
-        this.shader.setViewMat(this.viewMover.matrix());
-        this.shader.setObjMat(this.objMover.matrix());
         
         // Clear color buffer.
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
-        // Bind texture.
-        this.txt2D.bind();
+        // Draw reflection.
+        this.shader.setObjMat(this.objMover.matrix());
+        this.shape.draw();
 
         // Draw shape.
+        this.shader.setObjMat(this.objMover.matrix());
         this.shape.draw();
         return true;
     };
@@ -101,8 +82,6 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object.
      */
     Item.prototype.stop = function(gl) {
-        this.projMover.stop(gl);
-        this.viewMover.stop(gl);
         this.objMover.stop(gl);
     };
      

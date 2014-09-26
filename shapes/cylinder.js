@@ -110,7 +110,7 @@ define(function(require) {
                 shape.clr4.add(1, 1, 1, 1);
             }
             if (vertexType&Const.TXT) {
-                shape.txt.add(0, 1);
+                shape.txt.add(0.5, 0.5);
             }
             if (vertexType&Const.CUBE) {
                 shape.cube.add(0, 1, 0);
@@ -134,7 +134,7 @@ define(function(require) {
                     shape.clr4.add(0, 1, 0, 1);
                 }
                 if (vertexType&Const.TXT) {
-                    shape.txt.add(i/this.sideCount, 1);
+                    shape.txt.add(cos*0.5+0.5, sin*0.5+0.5);
                 }
                 if (vertexType&Const.CUBE) {
                     shape.cube.add(cos*Math.SQRT2, Math.SQRT2, sin*Math.SQRT2);
@@ -163,7 +163,7 @@ define(function(require) {
                 shape.clr4.add(0, 0, 0, 1);
             }
             if (vertexType&Const.TXT) {
-                shape.txt.add(0, 0);
+                shape.txt.add(0.5, 0.5);
             }
             if (vertexType&Const.CUBE) {
                 shape.cube.add(0, -1, 0);
@@ -187,7 +187,7 @@ define(function(require) {
                     shape.clr4.add(0, 1, 0, 1);
                 }
                 if (vertexType&Const.TXT) {
-                    shape.txt.add(i/this.sideCount, 0);
+                    shape.txt.add(cos*0.5+0.5, sin*0.5+0.5);
                 }
                 if (vertexType&Const.CUBE) {
                     shape.cube.add(cos*Math.SQRT2, -Math.SQRT2, sin*Math.SQRT2);
@@ -209,7 +209,7 @@ define(function(require) {
         for (i = 0; i <= this.divCount; i++) {
             var tu = i/this.divCount;
             var height = this.y+tu*(this.topHeight-this.bottomHeight)+this.bottomHeight;
-            for (j = 0; j < this.sideCount; j++) {
+            for (j = 0; j <= this.sideCount; j++) {
                 var angle = j*Math.PI*2.0/this.sideCount;
                 var cos = Math.cos(angle);
                 var sin = Math.sin(angle);
@@ -225,7 +225,7 @@ define(function(require) {
                     shape.clr4.add(cos, 0, sin, 1);
                 }
                 if (vertexType&Const.TXT) {
-                    shape.txt.add(j/this.sideCount, tu);
+                    shape.txt.add(Math.abs(j*2.0/this.sideCount - 1.0), tu);
                 }
                 if (vertexType&Const.CUBE) {
                     var ty = tu*2.0-1.0;
@@ -235,11 +235,11 @@ define(function(require) {
             }
         }
         for (i = 1; i <= this.divCount; i++) {
-            index += this.sideCount;
-            shape.startTriStrip(index+this.sideCount-1, index-1);
-            for (j = 0; j < this.sideCount; j++) {
-                shape.addToTriStrip(index+j, index-this.sideCount+j);
+            shape.startTriStrip();
+            for (j = 0; j <= this.sideCount; j++) {
+                shape.addToTriStrip(index+this.sideCount+j+1, index+j);
             }
+            index += (this.sideCount+1);
         }
         
         return shape.build(gl);

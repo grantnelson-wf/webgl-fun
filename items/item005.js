@@ -2,10 +2,12 @@ define(function(require) {
 
     var Const = require('tools/const');
     var Matrix = require('tools/matrix');
+    var ProjMover = require('movers/projection');
     var ViewMover = require('movers/userFocus');
     var SkyboxShaderBuilder = require('shaders/textureCube');
     var SkyboxShapeBuilder = require('shapes/cube');
     var TxtCube = require('tools/textureCube');
+    var Controls = require('tools/controls');
     
     /**
      * Creates an item for rendering.
@@ -42,23 +44,30 @@ define(function(require) {
         this.skyboxShape = skyboxShapeBuilder.build(gl, this.skyboxShader.requiredType);
         this.skyboxShape.posAttr = this.skyboxShader.posAttrLoc;
         this.skyboxShape.cubeAttr = this.skyboxShader.cubeAttrLoc;
-
-        // Create texture.
-        this.txtCube = new TxtCube(gl);
-        this.txtCube.index = 0;
-        this.txtCube.loadFromFiles(
-            './data/fire.jpg', './data/grass.jpg',
-            './data/metal.jpg', './data/moon.jpg',
-            './data/brick.jpg', './data/wood.jpg');
-        this.skyboxShader.setTxtSampler(this.txtCube.index);
-
-        // Set projection transformation.
-        var projMatrix = Matrix.perspective(Math.PI/3.0, 1.0, 1.0, -1.0);
-        this.skyboxShader.setProjMat(projMatrix);
+        this.skyboxShader.setTxtSampler(0);
         
         // Initialize view movement.
+        this.projMover = new ProjMover();
         this.viewMover = new ViewMover();
+        this.projMover.start(gl);
         this.viewMover.start(gl);
+
+        // Setup controls.
+        item = this;
+        this.controls = new Controls();
+        this.controls.addFloat("Field of view (degrees)", function(value) {
+            item.projMover.fovAngle = Math.PI*value/180.0;
+        },  30.0, 150.0, 90.0);
+        this.controls.addDic("Background", function(path) {
+            item.txtCube = new TxtCube(gl);
+            item.txtCube.index = 0;
+            item.txtCube.loadFromPath(path);
+        }, 'Glacier', {
+            'Glacier': './data/glacier/',
+            'Beach':   './data/beach/',
+            'Forest':  './data/forest/',
+            'Chapel':  './data/chapel/'
+        });
         return true;
     };
     
@@ -68,18 +77,16 @@ define(function(require) {
      * @return  {Boolean}  True if updated correctly, false on error.
      */
     Item.prototype.update = function(gl) {
+        this.projMover.update();
+        this.viewMover.update();
+        this.skyboxShader.setProjMat(this.projMover.matrix());
+        this.skyboxShader.setViewMat(this.viewMover.matrix());
+        this.skyboxShader.setObjMat(Matrix.identity());
         
         // Clear color buffer.
         // (Because of the skybox the color buffer doesn't have to be cleared.)
         gl.clear(gl.DEPTH_BUFFER_BIT);
 
-        // Set view transformations
-        this.viewMover.update();
-        this.skyboxShader.setViewMat(this.viewMover.matrix());
-
-        // Sky box object should be stable to the world.
-        var objMatrix = Matrix.identity();
-        this.skyboxShader.setObjMat(objMatrix);
 
         // Draw skybox.
         this.txtCube.bind();
@@ -94,6 +101,7 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object.
      */
     Item.prototype.stop = function(gl) {
+        this.projMover.stop(gl);
         this.viewMover.stop(gl);
     };
      

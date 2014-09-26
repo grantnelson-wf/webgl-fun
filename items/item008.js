@@ -68,7 +68,7 @@ define(function(require) {
             item.objShape.posAttr = item.objShader.posAttrLoc;
             item.objShape.normAttr = item.objShader.normAttrLoc;
         }, "Sphere");
-        this.controls.addFloat("Ref Weight", this.objShader.setReflWeight,     0.0, 1.0, 0.9);
+        this.controls.addFloat("Ref Weight", this.objShader.setReflWeight, 0.0, 1.0, 0.9);
         this.controls.addFloat("Dent Speed", function(value) {
             item.dentDelta = value;
         },  0.0, 0.1, 0.01);
@@ -83,8 +83,8 @@ define(function(require) {
         }, 'Glacier', {
             'Glacier': './data/glacier/',
             'Beach':   './data/beach/',
-            'Forest':   './data/forest/',
-            'Chapel':   './data/chapel/'
+            'Forest':  './data/forest/',
+            'Chapel':  './data/chapel/'
         });
 
         //=================================================

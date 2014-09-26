@@ -95,8 +95,8 @@ define(function(require) {
         }
         if (vertexType&Const.TXT) {
             var w = Math.sqrt(nx*nx + ny*ny);
-            var tu = Math.atan2(ny, nx)/Math.PI+0.5;
-            var tv = Math.atan2(w, nz)/Math.PI+0.5;
+            var tu = Math.abs(Math.atan2(ny, nx)*0.5/Math.PI);
+            var tv = Math.abs(Math.atan2(w, nz)/Math.PI);
             shape.txt.add(tu, tv);
         }
         if (vertexType&Const.CUBE) {

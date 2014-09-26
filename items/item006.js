@@ -2,13 +2,14 @@ define(function(require) {
 
     var Const = require('tools/const');
     var Matrix = require('tools/matrix');
+    var ProjMover = require('movers/projection');
     var ObjMover = require('movers/tumble');
     var ViewMover = require('movers/userFocus');
     var SkyboxShaderBuilder = require('shaders/textureCube');
     var SkyboxShapeBuilder = require('shapes/cube');
     var ObjShaderBuilder = require('shaders/metal');
-    var ObjShapeBuilder = require('shapes/toroid');
     var TxtCube = require('tools/textureCube');
+    var Controls = require('tools/controls');
     
     /**
      * Creates an item for rendering.
@@ -29,19 +30,6 @@ define(function(require) {
      * @return  {Boolean}  True if successfully started, false otherwise.
      */
     Item.prototype.start = function(gl) {
-        // Create cube texture.
-        this.txtCube = new TxtCube(gl);
-        this.txtCube.index = 0;
-        this.txtCube.loadFromFiles(
-            './data/glacier/posx.jpg',  './data/glacier/posy.jpg',
-            './data/glacier/posz.jpg', './data/glacier/negx.jpg',
-            './data/glacier/negy.jpg', './data/glacier/negz.jpg');
-
-        // Define projection.
-        var projMatrix = Matrix.perspective(Math.PI/3.0, 1.0, 1.0, -1.0);
-
-        //=================================================
-
         // Build and set the skybox shader.
         var skyboxShaderBuilder = new SkyboxShaderBuilder();
         this.skyboxShader = skyboxShaderBuilder.build(gl);
@@ -49,6 +37,7 @@ define(function(require) {
             return false;
         }
         this.skyboxShader.use();
+        this.skyboxShader.setTxtSampler(0);
         
         // Create skybox shape to use.
         var skyboxShapeBuilder = new SkyboxShapeBuilder();
@@ -59,12 +48,6 @@ define(function(require) {
         this.skyboxShape.posAttr = this.skyboxShader.posAttrLoc;
         this.skyboxShape.cubeAttr = this.skyboxShader.cubeAttrLoc;
 
-        // Set projection transformation for skybox.
-        this.skyboxShader.setProjMat(projMatrix);
-        this.skyboxShader.setTxtSampler(this.txtCube.index);
-
-        //=================================================
-
         // Build and set the object shader.
         var objShaderBuilder = new ObjShaderBuilder();
         this.objShader = objShaderBuilder.build(gl);
@@ -72,25 +55,33 @@ define(function(require) {
             return false;
         }
         this.objShader.use();
-        
-        // Create object shape to use.
-        var objShapeBuilder = new ObjShapeBuilder();
-        this.objShape = objShapeBuilder.build(gl, this.objShader.requiredType);
-        this.objShape.posAttr = this.objShader.posAttrLoc;
-        this.objShape.normAttr = this.objShader.normAttrLoc;
+        this.objShader.setTxtSampler(0);
+     
+        // Setup controls.
+        item = this;
+        this.controls = new Controls();
+        this.controls.addShapeSelect("Shape", function(shapeBuilder){
+            item.objShape = shapeBuilder.build(gl, item.objShader.requiredType);
+            item.objShape.posAttr = item.objShader.posAttrLoc;
+            item.objShape.normAttr = item.objShader.normAttrLoc;
+        }, "Sphere");
+        this.controls.addDic("Background", function(path) {
+            item.txtCube = new TxtCube(gl);
+            item.txtCube.index = 0;
+            item.txtCube.loadFromPath(path);
+        }, 'Glacier', {
+            'Glacier': './data/glacier/',
+            'Beach':   './data/beach/',
+            'Forest':  './data/forest/',
+            'Chapel':  './data/chapel/'
+        });
 
-        // Set projection transformation for object.
-        this.objShader.setProjMat(projMatrix);
-        this.objShader.setTxtSampler(this.txtCube.index);
-
-        //=================================================
-
-        // Initialize view movement.
+        // Initialize movement.
+        this.projMover = new ProjMover();
         this.viewMover = new ViewMover();
-        this.viewMover.start(gl);
-        
-        // Initialize object movement.
         this.objMover = new ObjMover();
+        this.projMover.start(gl);
+        this.viewMover.start(gl);
         this.objMover.start(gl);
         return true;
     };
@@ -101,7 +92,7 @@ define(function(require) {
      * @return  {Boolean}  True if updated correctly, false on error.
      */
     Item.prototype.update = function(gl) {
-        // Update movers.
+        this.projMover.update();
         this.viewMover.update();
         this.objMover.update();
         
@@ -111,6 +102,7 @@ define(function(require) {
 
         // Setup and draw skybox.
         this.skyboxShader.use();
+        this.skyboxShader.setProjMat(this.projMover.matrix());
         this.skyboxShader.setViewMat(this.viewMover.matrix());
         this.skyboxShader.setObjMat(Matrix.identity());
         this.txtCube.bind();
@@ -118,6 +110,7 @@ define(function(require) {
 
         // Setup and draw object.
         this.objShader.use();
+        this.objShader.setProjMat(this.projMover.matrix());
         this.objShader.setViewMat(this.viewMover.matrix());
         this.objShader.setObjMat(this.objMover.matrix());
         var invViewMat = Matrix.inverse(this.viewMover.matrix());
@@ -132,6 +125,7 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object.
      */
     Item.prototype.stop = function(gl) {
+        this.projMover.stop(gl);
         this.viewMover.stop(gl);
         this.objMover.stop(gl);
     };

@@ -99,6 +99,16 @@ define(function(require) {
         ctrl.onChange(callback);
         callback(pairs[initKey]);
     };
+
+    /**
+     * TODO: Comment
+     * @param {[type]}   name      [description]
+     * @param {Function} callback  [description]
+     */
+    Controls.prototype.addButton = function(name, callback) {
+        this[name] = callback;
+        var ctrl = this._gui.add(this, name);
+    };
  
     return Controls;
 });

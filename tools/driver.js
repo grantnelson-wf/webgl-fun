@@ -10,15 +10,12 @@ define(function(require) {
         
         /// The graphical object.
         this.gl = null;
-
-        /// The control layout object.
-        this.layout = null;
         
         /// The item being run.
         this.item = null;
-        
-        /// The update timer.
-        this.timer = null;
+
+        /// The set menu item.
+        this.menuItem = null;
     }
     
     /**
@@ -72,11 +69,18 @@ define(function(require) {
     };
 
     /**
-     * This sets the layout object for the controls.
-     * @param  {Layout} layout  The control layout object.
+     * This sets the menu item.
+     * @param  {Object} item  The menu item to set.
      */
-    Driver.prototype.setLayout = function(layout) {
-        this.layout = layout;
+    Driver.prototype.setMenuItem = function(item) {
+        this.menuItem = item;
+    };
+
+    /**
+     * This runs the set menu item.
+     */
+    Driver.prototype.gotoMenu = function() {
+        this.run(this.menuItem);
     };
     
     /**
@@ -85,18 +89,14 @@ define(function(require) {
      * @return  {Boolean}  True on success, false otherwise.
      */
     Driver.prototype.run = function(item) {
-        if (this.timer) {
-            clearInterval(this.timer);
-            this.timer = null;
-        }
-        if (this.item) {
+        if (this.item !== null) {
             this.item.stop(this.gl);
             this.item = null;
             this.layout.reset();
         }
         this.item = item;
-        if (this.item) {
-            if (!this.item.start(this.gl, this.layout)) {
+        if (this.item !== null) {
+            if (!this.item.start(this.gl, this)) {
                 return false;
             }
             this.update();

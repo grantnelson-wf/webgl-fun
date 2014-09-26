@@ -72,18 +72,17 @@ define(function(require) {
     ToroidBuilder.prototype.build = function(gl, vertexType) {
         var shape = new ShapeBuilder();
 
-        for(var i = 0; i < this.majorCount; ++i) {
+        for(var i = 0; i <= this.majorCount; ++i) {
             var majorScale = i/this.majorCount;
             var majorAngle = 2.0*Math.PI*majorScale;
             var majorCos = Math.cos(majorAngle);
             var majorSin = Math.sin(majorAngle);
 
             shape.startTriStrip();
-            var i1 = ((i+1)%this.majorCount)*this.minorCount;
-            var i2 = i*this.minorCount;
-            shape.addToTriStrip(i1+this.minorCount-1, i2+this.minorCount-1);
+            var i1 = ((i+1)%(this.majorCount+1))*(this.minorCount+1);
+            var i2 = i*(this.minorCount+1);
             
-            for(var j = 0; j < this.minorCount; ++j) {
+            for(var j = 0; j <= this.minorCount; ++j) {
                 var minorScale = j/this.minorCount;
                 var minorAngle = 2.0*Math.PI*minorScale;
                 var minorCos = Math.cos(minorAngle);
