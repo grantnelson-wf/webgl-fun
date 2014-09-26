@@ -46,13 +46,6 @@ define(function(require) {
         };
         window.addEventListener('resize', innerResize);
         innerResize();
-
-        // Initialize the graphics.
-        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        this.gl.clearDepth(1.0);
-        this.gl.enable(this.gl.CULL_FACE);
-        this.gl.enable(this.gl.DEPTH_TEST);
-        this.gl.depthFunc(this.gl.LESS);
     };
 
     /**
@@ -89,10 +82,20 @@ define(function(require) {
      * @return  {Boolean}  True on success, false otherwise.
      */
     Driver.prototype.run = function(item) {
+        // Stop old item.
         if (this.item !== null) {
             this.item.stop(this.gl);
             this.item = null;
         }
+
+        // Set some graphics defaults.
+        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        this.gl.clearDepth(1.0);
+        this.gl.enable(this.gl.CULL_FACE);
+        this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.depthFunc(this.gl.LESS);
+
+        // Start new item.
         this.item = item;
         if (this.item !== null) {
             if (!this.item.start(this.gl, this)) {
@@ -113,10 +116,10 @@ define(function(require) {
             driver.update();
         };
 
-        if (driver.item.update(driver.gl)) {
+        if (this.item.update(this.gl)) {
             requestAnimationFrame(innerUpdate);
         } else {
-            driver.run(null);
+            this.run(null);
         }
     };
  

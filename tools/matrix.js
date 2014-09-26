@@ -102,15 +102,27 @@ define(function(require) {
 
         /**
          * Scales the given matrix by the given scalar.
-         * @param  {Array} m        The matrix to scale.
-         * @param  {Number} scalar  The value to scale by.
+         * @param  {Array} m         The matrix to scale.
+         * @param  {Number} scalarX  The value to scale X by. Must be provided.
+         * @param  {Number} scalarY  The value to scale Y by. If undefined scalar X will be used.
+         * @param  {Number} scalarZ  The value to scale Z by. If undefined scalar Y will be used.
+         * @param  {Number} scalarW  The value to scale W by. If undefined scalar Z will be used.
          * @return  {Array}  The scaled matrix.
          */
-        scale: function(m, scalar) {
-            return [  m[ 0]*scalar, m[ 1]*scalar, m[ 2]*scalar, m[ 3]*scalar,
-                      m[ 4]*scalar, m[ 5]*scalar, m[ 6]*scalar, m[ 7]*scalar,
-                      m[ 8]*scalar, m[ 9]*scalar, m[10]*scalar, m[11]*scalar,
-                      m[12]*scalar, m[13]*scalar, m[14]*scalar, m[15]*scalar ];
+        scale: function(m, scalarX, scalarY, scalarZ, scalarW) {
+            if (scalarY === undefined) {
+                scalarY = scalarX;
+            }
+            if (scalarZ === undefined) {
+                scalarZ = scalarY;
+            }
+            if (scalarW === undefined) {
+                scalarW = scalarZ;
+            }
+            return [  m[ 0]*scalarX, m[ 1]*scalarY, m[ 2]*scalarZ, m[ 3]*scalarW,
+                      m[ 4]*scalarX, m[ 5]*scalarY, m[ 6]*scalarZ, m[ 7]*scalarW,
+                      m[ 8]*scalarX, m[ 9]*scalarY, m[10]*scalarZ, m[11]*scalarW,
+                      m[12]*scalarX, m[13]*scalarY, m[14]*scalarZ, m[15]*scalarW ];
         },
 
         /**
