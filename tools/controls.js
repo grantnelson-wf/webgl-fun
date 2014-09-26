@@ -109,6 +109,15 @@ define(function(require) {
         this[name] = callback;
         var ctrl = this._gui.add(this, name);
     };
+
+    /**
+     * [distroy description]
+     * @return {[type]} [description]
+     */
+    Controls.prototype.destroy = function() {
+        this._gui.destroy()
+        this._gui = null;
+    }
  
     return Controls;
 });

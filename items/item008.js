@@ -26,9 +26,10 @@ define(function(require) {
     /**
      * Starts this item for rendering.
      * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Driver} driver  The driver running this item.
      * @return  {Boolean}  True if successfully started, false otherwise.
      */
-    Item.prototype.start = function(gl) {
+    Item.prototype.start = function(gl, driver) {
 
         // Build and set the skybox shader.
         var skyboxShaderBuilder = new SkyboxShaderBuilder();
@@ -63,6 +64,9 @@ define(function(require) {
         item = this;
         this.dentDelta = 0.01;
         this.controls = new Controls();
+        this.controls.addButton("Menu", function() {
+            driver.gotoMenu();
+        });
         this.controls.addShapeSelect("Shape", function(shapeBuilder){
             item.objShape = shapeBuilder.build(gl, item.objShader.requiredType);
             item.objShape.posAttr = item.objShader.posAttrLoc;
@@ -141,6 +145,7 @@ define(function(require) {
     Item.prototype.stop = function(gl) {
         this.viewMover.stop(gl);
         this.projMover.stop(gl);
+        this.controls.destroy();
     };
      
     return Item;

@@ -106,6 +106,7 @@ define(function(require) {
         this.projMover.stop(gl);
         this.viewMover.stop(gl);
         this.objMover.stop(gl);
+        this.controls.destroy();
     };
      
     return Item;

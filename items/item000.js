@@ -24,9 +24,10 @@ define(function(require) {
     /**
      * Starts this item for rendering.
      * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Driver} driver  The driver running this item.
      * @return  {Boolean}  True if successfully started, false otherwise.
      */
-    Item.prototype.start = function(gl) {
+    Item.prototype.start = function(gl, driver) {
         // Build and set the shader.
         var shaderBuilder = new ShaderBuilder();
         this.shader = shaderBuilder.build(gl);

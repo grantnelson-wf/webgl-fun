@@ -25,9 +25,10 @@ define(function(require) {
     /**
      * Starts this item for rendering.
      * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Driver} driver  The driver running this item.
      * @return  {Boolean}  True if successfully started, false otherwise.
      */
-    Item.prototype.start = function(gl) {
+    Item.prototype.start = function(gl, driver) {
         // Build and set the shader.
         var skyboxShaderBuilder = new SkyboxShaderBuilder();
         this.skyboxShader = skyboxShaderBuilder.build(gl);
@@ -55,6 +56,9 @@ define(function(require) {
         // Setup controls.
         item = this;
         this.controls = new Controls();
+        this.controls.addButton("Menu", function() {
+            driver.gotoMenu();
+        });
         this.controls.addFloat("Field of view (degrees)", function(value) {
             item.projMover.fovAngle = Math.PI*value/180.0;
         },  30.0, 150.0, 90.0);
@@ -103,6 +107,7 @@ define(function(require) {
     Item.prototype.stop = function(gl) {
         this.projMover.stop(gl);
         this.viewMover.stop(gl);
+        this.controls.destroy();
     };
      
     return Item;
