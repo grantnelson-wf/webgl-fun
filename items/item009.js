@@ -96,7 +96,8 @@ define(function(require) {
             'Mesh':     './data/bumpmaps/mesh.jpg',
             'Scales':   './data/bumpmaps/scales.jpg',
             'Shapes':   './data/bumpmaps/shapes.jpg',
-            'Wood':     './data/bumpmaps/wood.jpg'
+            'Wood':     './data/bumpmaps/wood.jpg',
+            'Workiva':  './data/bumpmaps/workiva.jpg'
         });
 
         // Initialize movement.
