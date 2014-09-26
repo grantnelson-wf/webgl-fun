@@ -92,7 +92,6 @@ define(function(require) {
         if (this.item !== null) {
             this.item.stop(this.gl);
             this.item = null;
-            this.layout.reset();
         }
         this.item = item;
         if (this.item !== null) {

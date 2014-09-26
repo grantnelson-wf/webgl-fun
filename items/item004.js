@@ -41,7 +41,9 @@ define(function(require) {
         // Setup controls.
         item = this;
         this.controls = new Controls();
-        this.controls.addButton("Menu", driver.gotoMenu());
+        this.controls.addButton("Menu", function() {
+            driver.gotoMenu();
+        });
         this.controls.addShapeSelect("Shape", function(shapeBuilder){
             item.shape = shapeBuilder.build(gl, item.shader.requiredType);
             item.shape.posAttr = item.shader.posAttrLoc;
