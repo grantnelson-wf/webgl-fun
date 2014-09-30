@@ -764,7 +764,7 @@ define(function(require) {
      * @returns  {Object} The buffer, buffer length, vertex type, and vertex size.
      */
     ShapeBuilder.prototype._buildVertices = function(gl, vertexType) {
-        vertexType = vertexType || (Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE);
+        vertexType = vertexType || (Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.BINM);
         if (!(vertexType&Const.POS)) {
             throw 'Error: Must have at least the positional vertex type.';
         }

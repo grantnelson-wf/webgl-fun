@@ -39,9 +39,9 @@ define(function(require) {
         
         // Create skyboxShape to use.
         var skyboxShapeBuilder = new SkyboxShapeBuilder();
-        skyboxShapeBuilder.width = -40;
-        skyboxShapeBuilder.height = -40;
-        skyboxShapeBuilder.depth = -40;
+        skyboxShapeBuilder.width = -1;
+        skyboxShapeBuilder.height = -1;
+        skyboxShapeBuilder.depth = -1;
         this.skyboxShape = skyboxShapeBuilder.build(gl, this.skyboxShader.requiredType);
         this.skyboxShape.posAttr = this.skyboxShader.posAttrLoc;
         this.skyboxShape.cubeAttr = this.skyboxShader.cubeAttrLoc;
@@ -59,18 +59,21 @@ define(function(require) {
         this.controls.addButton("Menu", function() {
             driver.gotoMenu();
         });
-        this.controls.addFloat("Field of view (degrees)", function(value) {
+        this.controls.addFloat("Field of view", function(value) {
             item.projMover.fovAngle = Math.PI*value/180.0;
         },  30.0, 150.0, 90.0);
+        this.controls.addFloat("Size of box", function(value) {
+            item.scale = value;
+        },  1.0, 100.0, 40.0);
         this.controls.addDic("Background", function(path) {
             item.txtCube = new TxtCube(gl);
             item.txtCube.index = 0;
             item.txtCube.loadFromPath(path);
         }, 'Glacier', {
-            'Glacier': './data/glacier/',
-            'Beach':   './data/beach/',
-            'Forest':  './data/forest/',
-            'Chapel':  './data/chapel/'
+            'Glacier': './data/cubemaps/glacier/',
+            'Beach':   './data/cubemaps/beach/',
+            'Forest':  './data/cubemaps/forest/',
+            'Chapel':  './data/cubemaps/chapel/'
         });
         return true;
     };
@@ -85,7 +88,7 @@ define(function(require) {
         this.viewMover.update();
         this.skyboxShader.setProjMat(this.projMover.matrix());
         this.skyboxShader.setViewMat(this.viewMover.matrix());
-        this.skyboxShader.setObjMat(Matrix.identity());
+        this.skyboxShader.setObjMat(Matrix.scalar(this.scale, this.scale, this.scale, 1.0));
         
         // Clear color buffer.
         // (Because of the skybox the color buffer doesn't have to be cleared.)

@@ -16,6 +16,7 @@ define(function(require) {
     var Item006 = require('items/item006');
     var Item007 = require('items/item007');
     var Item008 = require('items/item008');
+    var Item009 = require('items/item009');
     
     /**
      * Creates an item for rendering.
@@ -48,6 +49,7 @@ define(function(require) {
         this.shader.setViewMat(view);
         this.shader.setColor(0x70/0xFF, 0xC4/0xFF, 0x0A/0xFF);
         this.shader.setTint(0.7);
+        this.shader.setYFade(-0.6);
         gl.depthFunc(gl.LESS);
         gl.clearColor(1.0, 1.0, 1.0, 1.0);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -67,13 +69,14 @@ define(function(require) {
             new Item005(),
             new Item006(),
             new Item007(),
-            new Item008() ];
+            new Item008(),
+            new Item009() ];
 
         // Setup controls.
         this.controls = new Controls();
         for (var i = 0; i < items.length; i++) {
             this.addButton(items[i], driver);
-        };
+        }
 
         // Initialize movers.
         this.projMover = new ProjMover();
@@ -108,7 +111,7 @@ define(function(require) {
 
         // Setup values for both.
         var mat = this.objMover.matrix();
-        mat = Matrix.mul(mat, Matrix.translate(0.0, 0.6, 0.0));
+        mat = Matrix.mul(mat, Matrix.translate(0.0, 0.5, 0.0));
         var negmat = Matrix.scale(mat, 1.0, -1.0, 1.0, 1.0);
         var flatmat = Matrix.scale(mat, 1.0, 0.0, 1.0, 1.0);
         var brightness = 0.8;
@@ -116,20 +119,16 @@ define(function(require) {
 
         // Draw reflection.
         gl.cullFace(gl.FRONT);
-        this.shader.setAlpha(1.0);
-        this.shader.setShade(1.0);
         this.shader.setBrightness(0.7);
-        this.shader.setViewLoc(0.0, -4.0, -4.0);
+        this.shader.setViewLoc(0.0, -1.0, -2.0);
         this.shader.setObjMat(negmat);
         this.shape.draw();
 
         // Draw shape.
         gl.disable(gl.BLEND);
         gl.cullFace(gl.BACK);
-        this.shader.setAlpha(1.0);
-        this.shader.setShade(1.0);
         this.shader.setBrightness(0.0);
-        this.shader.setViewLoc(0.0, 4.0, -4.0);
+        this.shader.setViewLoc(0.0, 1.0, -2.0);
         this.shader.setObjMat(mat);
         this.shape.draw();
         return true;

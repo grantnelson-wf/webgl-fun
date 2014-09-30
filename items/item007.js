@@ -75,10 +75,10 @@ define(function(require) {
             item.txtCube.index = 0;
             item.txtCube.loadFromPath(path);
         }, 'Glacier', {
-            'Glacier': './data/glacier/',
-            'Beach':   './data/beach/',
-            'Forest':  './data/forest/',
-            'Chapel':  './data/chapel/'
+            'Glacier': './data/cubemaps/glacier/',
+            'Beach':   './data/cubemaps/beach/',
+            'Forest':  './data/cubemaps/forest/',
+            'Chapel':  './data/cubemaps/chapel/'
         });
 
         // Initialize movement.

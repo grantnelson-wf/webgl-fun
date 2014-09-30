@@ -19,6 +19,25 @@ define(function(require) {
         },
 
         /**
+         * TODO: Comment
+         */
+        scalar: function(scalarX, scalarY, scalarZ, scalarW) {
+            if (scalarY === undefined) {
+                scalarY = scalarX;
+            }
+            if (scalarZ === undefined) {
+                scalarZ = scalarY;
+            }
+            if (scalarW === undefined) {
+                scalarW = scalarZ;
+            }
+            return [ scalarX, 0, 0, 0,
+                     0, scalarY, 0, 0,
+                     0, 0, scalarZ, 0,
+                     0, 0, 0, scalarW ];
+        },
+
+        /**
          * Creates a rotation matrix for a X rotation.
          * @param  {Number} angle  The angle in radians to rotate.
          * @returns  {Array}  The created matrix.

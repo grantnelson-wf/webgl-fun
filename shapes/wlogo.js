@@ -20,7 +20,7 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    WLogoBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE;
+    WLogoBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
     
     /**
      * Adds a vertex to the shape.
@@ -32,8 +32,11 @@ define(function(require) {
      * @param  {Number} nx           The x component of the normal.
      * @param  {Number} ny           The y component of the normal.
      * @param  {Number} nz           The z component of the normal.
+     * @param  {Number} bix          The x component of the binormal.
+     * @param  {Number} biy          The y component of the binormal.
+     * @param  {Number} biz          The z component of the binormal.
      */
-    WLogoBuilder.prototype._addVec = function(shape, vertexType, px, py, pz, nx, ny, nz) {
+    WLogoBuilder.prototype._addVec = function(shape, vertexType, px, py, pz, nx, ny, nz, bix, biy, biz) {
         var scalar = 1/133;
         px = px*scalar-0.5;
         py = py*scalar-0.5;
@@ -47,6 +50,9 @@ define(function(require) {
         }
         if (vertexType&Const.NORM) {
             shape.norm.add(nx, ny, nz);
+        }
+        if (vertexType&Const.BINM) {
+            shape.binm.add(bix, biy, biz);
         }
         if (vertexType&Const.TXT) {
             shape.txt.add(px+0.5, py+0.5);
@@ -73,10 +79,10 @@ define(function(require) {
 
         // Add front face (uses fan for triangles).
         index = shape.pos.count();
-        this._addVec(shape, vertexType, poly[0], poly[1], 77, 0, 0, 1);
+        this._addVec(shape, vertexType, poly[0], poly[1], 77, 0, 0, 1, 0, 1, 0);
         shape.startTriFan(index);
         for (i = 1, j = count - 1; i < count; i++, j--) {
-            this._addVec(shape, vertexType, poly[j*2], poly[j*2+1], 77, 0, 0, 1);
+            this._addVec(shape, vertexType, poly[j*2], poly[j*2+1], 77, 0, 0, 1, 0, 1, 0);
             shape.addToTriFan(index+i);
         }
 
@@ -84,7 +90,7 @@ define(function(require) {
         index = shape.pos.count();
         shape.startTriFan();
         for (i = 0; i < count; i++) {
-            this._addVec(shape, vertexType, poly[i*2], poly[i*2+1], 55, 0, 0, -1);
+            this._addVec(shape, vertexType, poly[i*2], poly[i*2+1], 55, 0, 0, -1, 0, -1, 0);
             shape.addToTriFan(index+i);
         }
 
@@ -97,10 +103,10 @@ define(function(require) {
             var nx = dy/len, ny = -dx/len;
 
             index = shape.pos.count();
-            this._addVec(shape, vertexType, x1, y1, 77, nx, ny, 0);
-            this._addVec(shape, vertexType, x2, y2, 77, nx, ny, 0);
-            this._addVec(shape, vertexType, x2, y2, 55, nx, ny, 0);
-            this._addVec(shape, vertexType, x1, y1, 55, nx, ny, 0);
+            this._addVec(shape, vertexType, x1, y1, 77, nx, ny, 0, 0, nx, -ny);
+            this._addVec(shape, vertexType, x2, y2, 77, nx, ny, 0, 0, nx, -ny);
+            this._addVec(shape, vertexType, x2, y2, 55, nx, ny, 0, 0, nx, -ny);
+            this._addVec(shape, vertexType, x1, y1, 55, nx, ny, 0, 0, nx, -ny);
             shape.addQuadIndices(index, index+1, index+2, index+3);
 
             x1 = x2;

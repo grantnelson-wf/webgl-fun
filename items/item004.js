@@ -54,14 +54,14 @@ define(function(require) {
             item.txt2D.index = 0;
             item.txt2D.loadFromFile(path);
         }, 'Fire', {
-            'Brick':   './data/brick.jpg',
-            'Fire':    './data/fire.jpg',
-            'Grass':   './data/grass.jpg',
-            'Metal':   './data/metal.jpg',
-            'Moon':    './data/moon.jpg',
-            'Paper':   './data/paper.jpg',
-            'Scratch': './data/scratch.jpg',
-            'Wood':    './data/wood.jpg'
+            'Brick':   './data/textures/brick.jpg',
+            'Fire':    './data/textures/fire.jpg',
+            'Grass':   './data/textures/grass.jpg',
+            'Metal':   './data/textures/metal.jpg',
+            'Moon':    './data/textures/moon.jpg',
+            'Paper':   './data/textures/paper.jpg',
+            'Scratch': './data/textures/scratch.jpg',
+            'Wood':    './data/textures/wood.jpg'
         });
         
         // Initialize movers.

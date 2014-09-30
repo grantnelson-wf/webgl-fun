@@ -1,13 +1,16 @@
 define(function(require) {
 
     var Const = require('tools/const');
+    var Common = require('tools/common');
     var Matrix = require('tools/matrix');
     var ProjMover = require('movers/projection');
+    var ObjMover = require('movers/tumble');
     var ViewMover = require('movers/userFocus');
     var SkyboxShaderBuilder = require('shaders/textureCube');
     var SkyboxShapeBuilder = require('shapes/cube');
-    var ObjShaderBuilder = require('shaders/bubble');
+    var ObjShaderBuilder = require('shaders/bumpyMetal');
     var TxtCube = require('tools/textureCube');
+    var Txt2D = require('tools/texture2d');
     var Controls = require('tools/controls');
     
     /**
@@ -21,7 +24,7 @@ define(function(require) {
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = 'Bubble';
+    Item.prototype.name = 'Bump Map';
     
     /**
      * Starts this item for rendering.
@@ -30,7 +33,6 @@ define(function(require) {
      * @return  {Boolean}  True if successfully started, false otherwise.
      */
     Item.prototype.start = function(gl, driver) {
-
         // Build and set the skybox shader.
         var skyboxShaderBuilder = new SkyboxShaderBuilder();
         this.skyboxShader = skyboxShaderBuilder.build(gl);
@@ -38,6 +40,7 @@ define(function(require) {
             return false;
         }
         this.skyboxShader.use();
+        this.skyboxShader.setTxtSampler(0);
         
         // Create skybox shape to use.
         var skyboxShapeBuilder = new SkyboxShapeBuilder();
@@ -47,9 +50,6 @@ define(function(require) {
         this.skyboxShape = skyboxShapeBuilder.build(gl, this.skyboxShader.requiredType);
         this.skyboxShape.posAttr = this.skyboxShader.posAttrLoc;
         this.skyboxShape.cubeAttr = this.skyboxShader.cubeAttrLoc;
-        this.skyboxShader.setTxtSampler(0);
-
-        //=================================================
 
         // Build and set the object shader.
         var objShaderBuilder = new ObjShaderBuilder();
@@ -58,47 +58,51 @@ define(function(require) {
             return false;
         }
         this.objShader.use();
-        this.objShader.setTxtSampler(0);
-
+        this.objShader.setCubeSampler(0);
+        this.objShader.setBumpSampler(1);
+     
         // Setup controls.
         item = this;
-        this.dentDelta = 0.01;
         this.controls = new Controls();
         this.controls.addButton("Menu", function() {
             driver.gotoMenu();
         });
-        this.controls.addShapeSelect("Shape", function(shapeBuilder){
+        this.controls.addShapeSelect("Shape", function(shapeBuilder) {
             item.objShape = shapeBuilder.build(gl, item.objShader.requiredType);
-            item.objShape.posAttr = item.objShader.posAttrLoc;
+            item.objShape.posAttr  = item.objShader.posAttrLoc;
             item.objShape.normAttr = item.objShader.normAttrLoc;
-        }, "Sphere");
-        this.controls.addFloat("Ref Weight", this.objShader.setReflWeight, 0.0, 1.0, 0.9);
-        this.controls.addFloat("Dent Speed", function(value) {
-            item.dentDelta = value;
-        },  0.0, 5.0, 0.4);
-        this.controls.addFloat("Dent Pos Offset",  this.objShader.setDentPosOffset,  0.0, 0.5, 0.01);
-        this.controls.addFloat("Dent Norm Offset", this.objShader.setDentNormOffset, 0.0, 0.5, 0.05);
-        this.controls.addFloat("Reflections",      this.objShader.setReflectScalar,  0.0, 1.0, 0.5);
-        this.controls.addFloat("Refractions",      this.objShader.setRefractScalar,  0.0, 1.0, 0.5);
+            item.objShape.binmAttr = item.objShader.binmAttrLoc;
+            item.objShape.txtAttr  = item.objShader.txtAttrLoc;
+        }, "Grid");
         this.controls.addDic("Background", function(path) {
             item.txtCube = new TxtCube(gl);
             item.txtCube.index = 0;
             item.txtCube.loadFromPath(path);
-        }, 'Glacier', {
+        }, 'Chapel', {
             'Glacier': './data/cubemaps/glacier/',
             'Beach':   './data/cubemaps/beach/',
             'Forest':  './data/cubemaps/forest/',
             'Chapel':  './data/cubemaps/chapel/'
         });
+        this.controls.addDic("BumpMap", function(path) {
+            item.txtBump = new Txt2D(gl);
+            item.txtBump.index = 1;
+            item.txtBump.loadFromFile(path);
+        }, 'Mesh', {
+            'Cloth':    './data/bumpmaps/cloth.jpg',
+            'Concrete': './data/bumpmaps/concrete.jpg',
+            'Mesh':     './data/bumpmaps/mesh.jpg',
+            'Scales':   './data/bumpmaps/scales.jpg',
+            'Wood':     './data/bumpmaps/wood.jpg'
+        });
 
-        //=================================================
-
-        // Initialize view movement.
-        this.viewMover = new ViewMover();
+        // Initialize movement.
         this.projMover = new ProjMover();
-        this.viewMover.start(gl);
+        this.viewMover = new ViewMover();
+        this.objMover = new ObjMover();
         this.projMover.start(gl);
-        this.startTime=(new Date()).getTime();
+        this.viewMover.start(gl);
+        this.objMover.start(gl);
         return true;
     };
     
@@ -108,13 +112,9 @@ define(function(require) {
      * @return  {Boolean}  True if updated correctly, false on error.
      */
     Item.prototype.update = function(gl) {
-        // Update movers and values.
-        this.viewMover.update();
         this.projMover.update();
-        var curTime = (new Date()).getTime();
-        var dt = (curTime - this.startTime)/1000;
-        var dentValue = dt*this.dentDelta;
-        var invViewMat = Matrix.inverse(this.viewMover.matrix());
+        this.viewMover.update();
+        //this.objMover.update();
         
         // Clear color buffer.
         // (Because of the skybox the color buffer doesn't have to be cleared.)
@@ -132,10 +132,11 @@ define(function(require) {
         this.objShader.use();
         this.objShader.setProjMat(this.projMover.matrix());
         this.objShader.setViewMat(this.viewMover.matrix());
-        this.objShader.setObjMat(Matrix.identity());
+        this.objShader.setObjMat(this.objMover.matrix());
+        var invViewMat = Matrix.inverse(this.viewMover.matrix());
         this.objShader.setInvViewMat(invViewMat);
-        this.objShader.setDentValue(dentValue);
         this.txtCube.bind();
+        this.txtBump.bind();
         this.objShape.draw();
         return true;
     };
@@ -145,8 +146,9 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object.
      */
     Item.prototype.stop = function(gl) {
-        this.viewMover.stop(gl);
         this.projMover.stop(gl);
+        this.viewMover.stop(gl);
+        this.objMover.stop(gl);
         this.controls.destroy();
     };
      

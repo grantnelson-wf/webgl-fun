@@ -19,10 +19,11 @@ define(function(require) {
     }
 
     /**
-     * TODO: Comment
-     * @param {[type]}   name      [description]
-     * @param {Function} callback  [description]
-     * @param {[type]}   initShape [description]
+     * Adds a shape selection control.
+     * @param  {String}   name       The name of the shape to store.
+     * @param  {Function} callback   The method to call on change.
+     *                               It will have one parameter, the shape builder object for the selected shape. 
+     * @param  {String}   initShape  The name of the initial shape to show.
      */
     Controls.prototype.addShapeSelect = function(name, callback, initShape) {
         this[name] = initShape;
@@ -115,9 +116,9 @@ define(function(require) {
      * @return {[type]} [description]
      */
     Controls.prototype.destroy = function() {
-        this._gui.destroy()
+        this._gui.destroy();
         this._gui = null;
-    }
+    };
  
     return Controls;
 });

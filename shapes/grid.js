@@ -12,13 +12,13 @@ define(function(require) {
          * The width of the grid.
          * @type {Number}
          */
-        this.width = 1;
+        this.width = 2;
         
         /**
          * The depth of the grid.
          * @type {Number}
          */
-        this.depth = 1;
+        this.depth = 2;
         
         /**
          * The handle for determining the height.
@@ -71,7 +71,7 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    GridBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE;
+    GridBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
     
     /**
      * Creates a grid.
@@ -94,6 +94,9 @@ define(function(require) {
                 if (vertexType&Const.NORM) {
                     shape.norm.add(0, 1, 0);
                 }
+                if (vertexType&Const.BINM) {
+                    shape.binm.add(0, 0, 1);
+                }
                 if (vertexType&Const.CLR3) {
                     shape.clr3.add(u, 1-u*v, v);
                 }
@@ -113,9 +116,9 @@ define(function(require) {
         }
         
         for (i = 0; i < this.widthDiv; i++) {
-            shape.startTriStrip(i*(this.depthDiv+1), (i+1)*(this.depthDiv+1));
+            shape.startTriStrip((i+1)*(this.depthDiv+1), i*(this.depthDiv+1));
             for (j = 1; j <= this.depthDiv; j++) {
-                shape.addToTriStrip(i*(this.depthDiv+1)+j, (i+1)*(this.depthDiv+1)+j);
+                shape.addToTriStrip((i+1)*(this.depthDiv+1)+j, i*(this.depthDiv+1)+j);
             }     
         }
         
