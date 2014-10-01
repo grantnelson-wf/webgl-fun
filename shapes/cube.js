@@ -185,11 +185,11 @@ define(function(require) {
         //                      
         //                               nx  ny  nz bix biy biz  tu1  tv1  tu2  tv2
         this._addFace(shape, vertexType,  1,  0,  0,  0,  1,  0, 3/4, 1/3, 2/4, 2/3); // x+
-        this._addFace(shape, vertexType, -1,  0,  0,  0, -1,  0, 1/4, 2/3, 0/4, 1/3); // X-
+        this._addFace(shape, vertexType, -1,  0,  0,  0,  1,  0, 1/4, 2/3, 0/4, 1/3); // X-
         this._addFace(shape, vertexType,  0,  1,  0,  0,  0,  1, 3/4, 1/3, 4/4, 2/3); // Y+
         this._addFace(shape, vertexType,  0, -1,  0,  0,  0, -1, 1/4, 2/3, 2/4, 1/3); // Y-
-        this._addFace(shape, vertexType,  0,  0,  1,  1,  0,  0, 2/4, 0/3, 1/4, 1/3); // Z+
-        this._addFace(shape, vertexType,  0,  0, -1, -1,  0,  0, 1/4, 2/3, 2/4, 3/3); // Z-
+        this._addFace(shape, vertexType,  0,  0,  1,  0,  1,  0, 2/4, 0/3, 1/4, 1/3); // Z+
+        this._addFace(shape, vertexType,  0,  0, -1,  0,  1,  0, 1/4, 2/3, 2/4, 3/3); // Z-
         return shape.build(gl);
     };
 

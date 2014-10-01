@@ -16,6 +16,12 @@ define(function(require) {
 
         /// The set menu item.
         this.menuItem = null;
+        
+        /// The update count.
+        this.updateCount = 0;
+        
+        /// The start time in milliseconds.
+        this.startTime = (new Date()).getTime();
     }
     
     /**
@@ -46,6 +52,9 @@ define(function(require) {
         };
         window.addEventListener('resize', innerResize);
         innerResize();
+        
+        // Start update loop
+        this.update();
     };
 
     /**
@@ -101,7 +110,8 @@ define(function(require) {
             if (!this.item.start(this.gl, this)) {
                 return false;
             }
-            this.update();
+            this.updateCount = 0;
+            this.startTime = (new Date()).getTime();
         }
         return true;
     };
@@ -111,16 +121,26 @@ define(function(require) {
      * until the selected item stops the update.
      */
     Driver.prototype.update = function() {
+        if (this.item) {
+            this.updateCount++;
+            var curTime = (new Date()).getTime();
+            var dt = (curTime - this.startTime)/1000;
+
+            if (!this.item.update(this.gl, this.updateCount/dt)) {
+                this.run(null);
+            }
+
+            if (dt > 10.0) {
+                this.updateCount = 0;
+                this.startTime = (new Date()).getTime();
+            }
+        }
+
         var driver = this;
         var innerUpdate = function() {
             driver.update();
         };
-
-        if (this.item.update(this.gl)) {
-            requestAnimationFrame(innerUpdate);
-        } else {
-            this.run(null);
-        }
+        requestAnimationFrame(innerUpdate);
     };
  
     return Driver;

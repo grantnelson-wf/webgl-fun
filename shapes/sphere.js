@@ -61,7 +61,7 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    SphereBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE;
+    SphereBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
     
     /**
      * This looks up the index at the coordinate or add the position for the coordinate.
@@ -101,6 +101,9 @@ define(function(require) {
         }
         if (vertexType&Const.CUBE) {
             shape.cube.add(nx, ny, nz);
+        }
+        if (vertexType&Const.BINM) {
+            shape.binm.add(nz, nx, ny);
         }
         return shape.norm.count()-1;
     };

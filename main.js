@@ -10,14 +10,14 @@ require.config({
     }
 });
 
-require(['tools/driver', 'items/item000', 'items/item009'],
-    function(Driver, MenuItem, Item) {
+require(['tools/driver', 'items/item000', 'items/item010'],
+    function(Driver, MenuItem, InitItem) {
         var driver = new Driver();
         driver.setup('targetCanvas');
 
         var menu = new MenuItem();
         driver.setMenuItem(menu);
 
-        var item = new Item();
+        var item = new InitItem();
         driver.run(item);
 });

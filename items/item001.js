@@ -42,6 +42,7 @@ define(function(require) {
         this.controls.addButton("Menu", function() {
             driver.gotoMenu();
         });
+        this.controls.setFps(0.0);
         this.controls.addShapeSelect("Shape", function(shapeBuilder){
             item.shape = shapeBuilder.build(gl, item.shader.requiredType);
             item.shape.posAttr = item.shader.posAttrLoc;
@@ -69,7 +70,8 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object
      * @return  {Boolean}  True if updated correctly, false on error.
      */
-    Item.prototype.update = function(gl) {
+    Item.prototype.update = function(gl, fps) {
+        this.controls.setFps(fps);
         this.projMover.update();
         this.viewMover.update();
         this.objMover.update();

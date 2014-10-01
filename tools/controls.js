@@ -19,6 +19,16 @@ define(function(require) {
     }
 
     /**
+     * TODO: Comment
+     */
+    Controls.prototype.setFps = function(fps) {
+        this["FPS"] = fps;
+        if (!this.ctrlFps) {
+            this.ctrlFps = this._gui.add(this, "FPS", 0, 100).listen();
+        }
+    };
+
+    /**
      * Adds a shape selection control.
      * @param  {String}   name       The name of the shape to store.
      * @param  {Function} callback   The method to call on change.

@@ -110,7 +110,12 @@ define(function(require) {
                     var nz = majorCos*minorCos;
                     shape.norm.add(nx, ny, nz);
                 }
-
+                if (vertexType&Const.BINM) {
+                    var nz = majorSin*minorCos;
+                    var nx = minorSin;
+                    var ny = majorCos*minorCos;
+                    shape.binm.add(nz, nx, ny);
+                }
                 if (vertexType&Const.TXT) {
                     shape.txt.add(majorScale, minorScale);
                 }

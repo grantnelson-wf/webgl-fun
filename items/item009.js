@@ -24,7 +24,7 @@ define(function(require) {
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = 'Bump Map';
+    Item.prototype.name = 'Bump Map Reflection';
     
     /**
      * Starts this item for rendering.
@@ -67,13 +67,14 @@ define(function(require) {
         this.controls.addButton("Menu", function() {
             driver.gotoMenu();
         });
+        this.controls.setFps(0.0);
         this.controls.addShapeSelect("Shape", function(shapeBuilder) {
             item.objShape = shapeBuilder.build(gl, item.objShader.requiredType);
             item.objShape.posAttr  = item.objShader.posAttrLoc;
             item.objShape.normAttr = item.objShader.normAttrLoc;
             item.objShape.binmAttr = item.objShader.binmAttrLoc;
             item.objShape.txtAttr  = item.objShader.txtAttrLoc;
-        }, "Grid");
+        }, "Cube");
         this.controls.addDic("Background", function(path) {
             item.txtCube = new TxtCube(gl);
             item.txtCube.index = 0;
@@ -88,11 +89,13 @@ define(function(require) {
             item.txtBump = new Txt2D(gl);
             item.txtBump.index = 1;
             item.txtBump.loadFromFile(path);
-        }, 'Mesh', {
+        }, 'Scales', {
+            'Bump':     './data/bumpmaps/bump.jpg',
             'Cloth':    './data/bumpmaps/cloth.jpg',
             'Concrete': './data/bumpmaps/concrete.jpg',
             'Mesh':     './data/bumpmaps/mesh.jpg',
             'Scales':   './data/bumpmaps/scales.jpg',
+            'Shapes':   './data/bumpmaps/shapes.jpg',
             'Wood':     './data/bumpmaps/wood.jpg'
         });
 
@@ -111,7 +114,8 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object
      * @return  {Boolean}  True if updated correctly, false on error.
      */
-    Item.prototype.update = function(gl) {
+    Item.prototype.update = function(gl, fps) {
+        this.controls.setFps(fps);
         this.projMover.update();
         this.viewMover.update();
         //this.objMover.update();

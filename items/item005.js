@@ -59,6 +59,7 @@ define(function(require) {
         this.controls.addButton("Menu", function() {
             driver.gotoMenu();
         });
+        this.controls.setFps(0.0);
         this.controls.addFloat("Field of view", function(value) {
             item.projMover.fovAngle = Math.PI*value/180.0;
         },  30.0, 150.0, 90.0);
@@ -83,7 +84,8 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object
      * @return  {Boolean}  True if updated correctly, false on error.
      */
-    Item.prototype.update = function(gl) {
+    Item.prototype.update = function(gl, fps) {
+        this.controls.setFps(fps);
         this.projMover.update();
         this.viewMover.update();
         this.skyboxShader.setProjMat(this.projMover.matrix());

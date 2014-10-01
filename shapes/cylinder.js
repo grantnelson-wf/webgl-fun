@@ -74,7 +74,7 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    CylinderBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE;
+    CylinderBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.Binm;
     
     /**
      * Creates a cylinder.
@@ -90,7 +90,6 @@ define(function(require) {
         return shape.build(gl);
     };
 
-
     /**
      * Builds the top cap of the cylinder.
      * @param  {WebGLRenderingContext} gl  The graphical object.
@@ -101,7 +100,7 @@ define(function(require) {
         if (!Common.eq(this.topRadius, 0, 0.00001)) {
             shape.pos.add(this.x, this.y+this.topHeight, this.z);
             if (vertexType&Const.NORM) {
-                shape.norm.add(0, 1, 0);
+                shape.norm.add(0, -1, 0);
             }
             if (vertexType&Const.CLR3) {
                 shape.clr3.add(1, 1, 1);
@@ -115,6 +114,9 @@ define(function(require) {
             if (vertexType&Const.CUBE) {
                 shape.cube.add(0, 1, 0);
             }
+            if (vertexType&Const.BINM) {
+                shape.binm.add(0, 0, -1)
+            }
             var index = shape.pos.count();
             shape.startTriFan(index-1, index+this.sideCount-1);
             
@@ -125,7 +127,7 @@ define(function(require) {
                 shape.pos.add(cos*this.topRadius + this.x,
                     this.y+this.topHeight, sin*this.topRadius + this.z);
                 if (vertexType&Const.NORM) {
-                    shape.norm.add(0, 1, 0);
+                    shape.norm.add(0, -1, 0);
                 }
                 if (vertexType&Const.CLR3) {
                     shape.clr3.add(0, 1, 0);
@@ -138,6 +140,9 @@ define(function(require) {
                 }
                 if (vertexType&Const.CUBE) {
                     shape.cube.add(cos*Math.SQRT2, Math.SQRT2, sin*Math.SQRT2);
+                }
+                if (vertexType&Const.BINM) {
+                    shape.binm.add(0, 0, -1)
                 }
                 shape.addToTriFan(index+i);
             }
@@ -154,7 +159,7 @@ define(function(require) {
         if (!Common.eq(this.bottomRadius, 0, 0.00001)) {
             shape.pos.add(this.x, this.y+this.bottomHeight, this.z);
             if (vertexType&Const.NORM) {
-                shape.norm.add(0, -1, 0);
+                shape.norm.add(0, 1, 0);
             }
             if (vertexType&Const.CLR3) {
                 shape.clr3.add(0, 0, 0);
@@ -168,6 +173,9 @@ define(function(require) {
             if (vertexType&Const.CUBE) {
                 shape.cube.add(0, -1, 0);
             }
+            if (vertexType&Const.BINM) {
+                shape.binm.add(0, 0, 1)
+            }
             var index = shape.pos.count();
             shape.startTriFan(index-1, index);
             
@@ -178,7 +186,7 @@ define(function(require) {
                 shape.pos.add(cos*this.bottomRadius + this.x,
                     this.y+this.bottomHeight, sin*this.bottomRadius + this.z);
                 if (vertexType&Const.NORM) {
-                    shape.norm.add(0, -1, 0);
+                    shape.norm.add(0, 1, 0);
                 }
                 if (vertexType&Const.CLR3) {
                     shape.clr3.add(0, 1, 0);
@@ -191,6 +199,9 @@ define(function(require) {
                 }
                 if (vertexType&Const.CUBE) {
                     shape.cube.add(cos*Math.SQRT2, -Math.SQRT2, sin*Math.SQRT2);
+                }
+                if (vertexType&Const.BINM) {
+                    shape.binm.add(0, 0, 1)
                 }
                 shape.addToTriFan(index+this.sideCount-1-i);
             }
@@ -231,6 +242,9 @@ define(function(require) {
                     var ty = tu*2.0-1.0;
                     var len = Math.sqrt(1 + ty*ty);
                     shape.cube.add(cos/len, ty/len, sin/len);
+                }
+                if (vertexType&Const.BINM) {
+                    shape.binm.add(0, sin, Math.abs(cos));
                 }
             }
         }

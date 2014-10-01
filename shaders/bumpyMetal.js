@@ -72,8 +72,8 @@ define(function(require) {
         '{                                                 \n'+
         '   vec3 n = normalize(vNorm);                     \n'+
         '   vec3 b = normalize(vBinm);                     \n'+
-        '   vec3 c = cross(n, b);                          \n'+
-        '   b = cross(c, n);                               \n'+
+        '   vec3 c = -cross(n, b);                         \n'+
+        '   b = -cross(c, n);                              \n'+
         '                                                  \n'+
         '   mat3 m = mat3(c.x, c.y, c.z,                   \n'+
         '                 n.x, n.y, n.z,                   \n'+
