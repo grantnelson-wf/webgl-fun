@@ -4,8 +4,6 @@ require.config({
         items: 'items',
         tools: 'tools',
         movers: 'movers',
-        react: 'bower_components/react/react',
-        bootstrap: 'bower_components/react-bootstrap',
         datgui: 'bower_components/dat-gui/build/dat.gui'
     }
 });
