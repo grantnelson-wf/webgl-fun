@@ -55,7 +55,7 @@ define(function(require) {
     TextureCube.prototype.loadFromFiles = function(
         posXPath, posYPath, posZPath, negXPath, negYPath, negZPath, flipY) {
         var gl = this.gl;
-        
+
         this.texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture);
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);

@@ -20,6 +20,12 @@ define(function(require) {
          * @type {Number}
          */
         this.topHeight = 0.5;
+
+        /**
+         * Indicates the top is closed.
+         * @type {Boolean}
+         */
+        this.closedTop = true;
  
         /**
          * The radius of the bottom of the cylinder.
@@ -32,6 +38,12 @@ define(function(require) {
          * @type {Number}
          */
         this.bottomHeight = -0.5;
+
+        /**
+         * Indicates the bottom is closed.
+         * @type {Boolean}
+         */
+        this.closedBottom = true;
 
         /**
          * The side count of the cylinder.
@@ -84,8 +96,12 @@ define(function(require) {
      */
     CylinderBuilder.prototype.build = function(gl, vertexType) {
         var shape = new ShapeBuilder();
-        this._buildTopCap(gl, shape, vertexType);
-        this._buildBottomCap(gl, shape, vertexType);
+        if (this.closedTop) {
+            this._buildTopCap(gl, shape, vertexType);
+        }
+        if (this.closedBottom) {
+            this._buildBottomCap(gl, shape, vertexType);
+        }
         this._buildSides(gl, shape, vertexType);
         return shape.build(gl);
     };

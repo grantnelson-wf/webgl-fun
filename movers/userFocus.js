@@ -21,6 +21,24 @@ define(function(require) {
         this.mouseYScalar = 0.005;
 
         /**
+         * The target of the camera pre-rotation.
+         * @type {Array}
+         */
+        this.target = [0, 0, 0];
+
+        /**
+         * The upward direction of the camera pre-rotation.
+         * @type {Array}
+         */
+        this.up = [0, -1, 0];
+
+        /**
+         * The location of the camera pre-rotation.
+         * @type {Array}
+         */
+        this.location = [0, 0, -2];
+
+        /**
          * The graphical object being used.
          * @type {WebGLRenderingContext}
          */
@@ -101,7 +119,10 @@ define(function(require) {
     UserFocus.prototype.update = function() {
         var mat = Matrix.rotateY(-this._yaw);
         mat = Matrix.mul(mat, Matrix.rotateX(-this._pitch));
-        mat = Matrix.mul(mat, Matrix.lookat(0, 0, 0, 0, -1, 0, 0, 0, -2));
+        mat = Matrix.mul(mat, Matrix.lookat(
+            this.target[0],   this.target[1],   this.target[2],
+            this.up[0],       this.up[1],       this.up[2],
+            this.location[0], this.location[1], this.location[2]));
         this._mat = mat;
     };
     
