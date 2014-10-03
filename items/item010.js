@@ -76,7 +76,7 @@ define(function(require) {
         cylinderBuilder.closedBottom = false;
         cylinderBuilder.topRadius = 0.5;
         cylinderBuilder.bottomRadius = 0.5;
-        cylinderBuilder.topHeight = 10.0;
+        cylinderBuilder.topHeight = 15.0;
         cylinderBuilder.bottomHeight = 0.0;
         cylinderBuilder.sideCount = 10;
         this.tree = cylinderBuilder.build(gl, this.shader.requiredType);
@@ -112,12 +112,12 @@ define(function(require) {
         // Build random lists.
         this.trees = [];
         for (var i = 0; i < TreeCount; i++) {
-            this.trees[i] = new Tree(Math.random()*6.0-3.0, Math.random()*6.0-3.0);
+            this.trees[i] = new Tree(Math.random()*10.0-5.0, Math.random()*10.0-5.0);
         }
 
         this.fireflies = [];
         for (var i = 0; i < FireFlyCount; i++) {
-            this.fireflies[i] = new FireFly(Math.random()*6.0-3.0, Math.random()*6.0, Math.random()*6.0-3.0);
+            this.fireflies[i] = new FireFly(Math.random()*10.0-5.0, Math.random()*6.0, Math.random()*10.0-5.0);
         }
 
         // Initialize movers.
@@ -143,7 +143,6 @@ define(function(require) {
         this.shader.setViewMat(this.viewMover.matrix());
         this.shader.setProjMat(this.projMover.matrix());
 
-
         // Update FireFlies
         for (var i = 0; i < FireFlyCount; i++) {
             this.fireflies[i].x += Math.random()*0.02-0.01;
@@ -156,8 +155,17 @@ define(function(require) {
 
         // Draw dark shapes.
         this.shader.setLightRange(-1.0);
-        this.shader.setColor(0.1, 0.1, 0.1);
+        this.shader.setColor(0.0, 0.0, 0.0);
         this.shader.setLightPnt(0.0, 0.0, 0.0);
+        for (var i = 0; i < TreeCount; i++) {
+            this._drawTree(null, 0.0, this.trees[i]);
+        }
+        this._drawGround(null, 0.0);
+
+        // Base lighting.
+        this.shader.setLightRange(20.0);
+        this.shader.setColor(0.1, 0.1, 0.1);
+        this.shader.setLightPnt(0.0, 5.0, -10.0);
         for (var i = 0; i < TreeCount; i++) {
             this._drawTree(null, 0.0, this.trees[i]);
         }
