@@ -43,6 +43,7 @@ define(function(require) {
         '  pos = vPos.xyz;                                          \n'+
         '  normal = normalize(objMat*vec4(normAttr, 0.0)).xyz;      \n'+
         '  gl_Position = projMat*viewMat*vPos;                      \n'+
+        ' gl_PointSize = 4.0;                                       \n'+
         '}                                                          \n';
 
     /**
@@ -50,32 +51,33 @@ define(function(require) {
      * @type {String}
      */
     DirectionalBuilder.prototype.fsSource =
-        'precision mediump float;                                          \n'+
-        '                                                                  \n'+
-        'uniform vec4 ambientClr;                                          \n'+
-        'uniform vec4 diffuseClr;                                          \n'+
-        'uniform float lightRange;                                         \n'+
-        'uniform vec3 lightPnt;                                            \n'+
-        '                                                                  \n'+
-        'varying vec3 pos;                                                 \n'+
-        'varying vec3 normal;                                              \n'+
-        '                                                                  \n'+
-        'void main()                                                       \n'+
-        '{                                                                 \n'+
-        '   vec4 clr = ambientClr;                                         \n'+
-        '   if (lightRange <= 0.0) {                                       \n'+
-        '      vec3 norm = normalize(normal);                              \n'+
-        '      vec3 litDir = lightPnt - pos;                               \n'+
-        '      float dist = length(litDir);                                \n'+
-        '      if (dist < lightRange) {                                    \n'+
-        '         float scalar = dot(norm, normalize(litDir));             \n'+
-        '         if (scalar > 0.0) {                                      \n'+
-        '            clr += diffuseClr * scalar * (1.0 - dist/lightRange); \n'+
-        '         }                                                        \n'+
-        '      }                                                           \n'+
-        '   }                                                              \n'+
-        '   gl_FragColor = clr;                                            \n'+
-        '}                                                                 \n';
+        'precision mediump float;                                \n'+
+        '                                                        \n'+
+        'uniform vec3 color;                                     \n'+
+        'uniform float lightRange;                               \n'+
+        'uniform vec3 lightPnt;                                  \n'+
+        '                                                        \n'+
+        'varying vec3 pos;                                       \n'+
+        'varying vec3 normal;                                    \n'+
+        '                                                        \n'+
+        'void main()                                             \n'+
+        '{                                                       \n'+
+        '   float alpha = 1.0;                                   \n'+
+        '   if (lightRange > 0.0) {                              \n'+
+        '      alpha = 0.0;                                      \n'+
+        '      vec3 norm = normalize(normal);                    \n'+
+        '      vec3 litDir = lightPnt - pos;                     \n'+
+        '      float dist = length(litDir);                      \n'+
+        '      if (dist < lightRange) {                          \n'+
+        '         float scalar = dot(norm, normalize(litDir));   \n'+
+        '         if (scalar > 0.0) {                            \n'+
+        '            alpha = scalar * (1.0 - dist/lightRange);   \n'+
+        '            alpha = min(1.0, max(0.0, alpha));          \n'+
+        '         }                                              \n'+
+        '      }                                                 \n'+
+        '   }                                                    \n'+
+        '   gl_FragColor = vec4(color, alpha);                   \n'+
+        '}                                                       \n';
     
     /**
      * Initializes the shader.
