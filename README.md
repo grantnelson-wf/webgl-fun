@@ -30,7 +30,7 @@ For Developers
 This uses grunt to jshint and test.
 
 ```bash
-# Run the init script.
+# Run grunt help.
 $ grunt -h
 ```
 
