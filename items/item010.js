@@ -9,19 +9,7 @@ define(function(require) {
     var CylinderBuilder = require('shapes/cylinder');
     var GridBuilder = require('shapes/grid');
     var Controls = require('tools/controls');
-    
-    /**
-     * The data for drawing a fire fly.
-     * @param  {Number} x  The initial x location.
-     * @param  {Number} y  The initial y location.
-     * @param  {Number} z  The initial z location.
-     */
-    function FireFly(x, y, z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.brightness = 1;
-    }
+    var FireFly = require('tools/fireFly');
 
     /**
      * The data for drawing a tree.
@@ -36,7 +24,7 @@ define(function(require) {
     }
 
     var TreeCount = 10;
-    var FireFlyCount = 100;
+    var FireFlyCount = 10;
     var LightRadius = 1.0;
 
     /**
@@ -117,7 +105,7 @@ define(function(require) {
 
         this.fireflies = [];
         for (var i = 0; i < FireFlyCount; i++) {
-            this.fireflies[i] = new FireFly(Math.random()*10.0-5.0, Math.random()*6.0, Math.random()*10.0-5.0);
+            this.fireflies[i] = new FireFly();
         }
 
         // Initialize movers.
@@ -128,6 +116,7 @@ define(function(require) {
         this.projMover = new ProjMover();
         this.viewMover.start(gl);
         this.projMover.start(gl);
+        this.startTime = (new Date()).getTime();
         return true;
     };
     
@@ -144,10 +133,11 @@ define(function(require) {
         this.shader.setProjMat(this.projMover.matrix());
 
         // Update FireFlies
+        var curTime = (new Date()).getTime();
+        var dt = (curTime - this.startTime);
+        this.startTime = curTime;
         for (var i = 0; i < FireFlyCount; i++) {
-            this.fireflies[i].x += Math.random()*0.02-0.01;
-            this.fireflies[i].y += Math.random()*0.02-0.01;
-            this.fireflies[i].z += Math.random()*0.02-0.01;
+            this.fireflies[i].update(dt);
         }
         
         // Clear color buffer.
