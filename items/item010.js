@@ -2,15 +2,70 @@ define(function(require) {
 
     var Const = require('tools/const');
     var Matrix = require('tools/matrix');
+    var ViewMover = require('movers/userFocus');
     var ProjMover = require('movers/projection');
     var ShapeBuilder = require('shapes/shape');
     var ShaderBuilder = require('shaders/pointLights');
     var CylinderBuilder = require('shapes/cylinder');
     var GridBuilder = require('shapes/grid');
     var Controls = require('tools/controls');
-    var FireFly = require('tools/fireFly');
     var Txt2D = require('tools/texture2d');
+    
+    /**
+     * TODO: Comment
+     */
+    function clamp(val, min, max) {
+        if (val < min) {
+            return min;
+        } else if (val > max) {
+            return max;
+        } else {
+            return val;
+        }
+    }
 
+    // TODO: Comment
+    var FireFlyDdmax = 0.00001;
+    
+    // TODO: Comment
+    var FireFlyDmax  = 0.0005;
+
+    /**
+     * The data for drawing a fire fly.
+     */
+    function FireFly() {
+        this.cx = Math.random()*20.0 - 10.0;
+        this.cy = Math.random()* 9.9 +  0.1;
+        this.cz = Math.random()*20.0 - 10.0;
+        this.x  = Math.random()*20.0 - 10.0;
+        this.y  = Math.random()*10.0;
+        this.z  = Math.random()*15.0 -  5.0;
+        this.dx = (Math.random()*2.0 - 1.0)*FireFlyDmax;
+        this.dy = (Math.random()*2.0 - 1.0)*FireFlyDmax;
+        this.dz = (Math.random()*2.0 - 1.0)*FireFlyDmax;
+        this.r  = Math.random();
+        this.g  = Math.random();
+        this.b  = Math.random();
+        this.light = Math.random();
+    }
+    
+    /**
+     * TODO: Comment
+     */
+    FireFly.prototype.update = function(dt) {
+        var ddx = (Math.random()*2.0 - 1.0 + (this.cx-this.x)*0.1)*FireFlyDdmax;
+        var ddy = (Math.random()*2.0 - 1.0 + (this.cy-this.y)*0.1)*FireFlyDdmax;
+        var ddz = (Math.random()*2.0 - 1.0 + (this.cz-this.z)*0.1)*FireFlyDdmax;
+        this.dx = clamp(this.dx + dt*ddx, -FireFlyDmax, FireFlyDmax);
+        this.dy = clamp(this.dy + dt*ddy, -FireFlyDmax, FireFlyDmax);
+        this.dz = clamp(this.dz + dt*ddz, -FireFlyDmax, FireFlyDmax);
+        this.x  = clamp(this.x  + dt*this.dx, -10.0, 10.0);
+        this.y  = clamp(this.y  + dt*this.dy,   0.1,  9.9);
+        this.z  = clamp(this.z  + dt*this.dz,  -5.0, 15.0);
+        var dlight = Math.random()*0.1;
+        this.light = clamp(this.light + dt*dlight, 0.0, 1.0);
+    };
+    
     /**
      * The data for drawing a tree.
      * @param  {Number} x  The initial x location.
@@ -63,6 +118,7 @@ define(function(require) {
         }
         this.shader.use();
         this.shader.setTxtSampler(0);
+        this.shader.setBumpSampler(1);
         gl.depthFunc(gl.LEQUAL);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         gl.enable(gl.BLEND);
@@ -72,13 +128,14 @@ define(function(require) {
         cylinderBuilder.closedTop = false;
         cylinderBuilder.closedBottom = false;
         cylinderBuilder.topRadius = 0.5;
-        cylinderBuilder.bottomRadius = 0.5;
+        cylinderBuilder.bottomRadius = 0.6;
         cylinderBuilder.topHeight = 15.0;
         cylinderBuilder.bottomHeight = 0.0;
         cylinderBuilder.sideCount = 10;
         this.tree = cylinderBuilder.build(gl, this.shader.requiredType);
         this.tree.posAttr = this.shader.posAttrLoc;
         this.tree.normAttr = this.shader.normAttrLoc;
+        this.tree.binmAttr = this.shader.binmAttrLoc;
         this.tree.txtAttr = this.shader.txtAttrLoc;
 
         // Setup ground shape.
@@ -89,6 +146,7 @@ define(function(require) {
         this.ground = gridBuilder.build(gl, this.shader.requiredType);
         this.ground.posAttr = this.shader.posAttrLoc;
         this.ground.normAttr = this.shader.normAttrLoc;
+        this.ground.binmAttr = this.shader.binmAttrLoc;
         this.ground.txtAttr = this.shader.txtAttrLoc;
 
         // Setup firefly shape.
@@ -96,16 +154,27 @@ define(function(require) {
         shape.pos.add(0.0, 0.0, 0.0);
         shape.norm.add(1.0, 0.0, 0.0);
         shape.txt.add(0.0, 0.0);
+        shape.binm.add(0.0, 0.0, 1.0);
         shape.addPointIndex(0);
         this.fireFlyShape = shape.build(gl);
         this.fireFlyShape.posAttr = this.shader.posAttrLoc;
         this.fireFlyShape.normAttr = this.shader.normAttrLoc;
+        this.fireFlyShape.binmAttr = this.shader.binmAttrLoc;
         this.fireFlyShape.txtAttr = this.shader.txtAttrLoc;
         
         // Load textures
+        this.treeTxt = new Txt2D(gl);
+        this.treeTxt.index = 0;
+        this.treeTxt.loadFromFile('./data/textures/bark.jpg');
+        this.treeBump = new Txt2D(gl);
+        this.treeBump.index = 1;
+        this.treeBump.loadFromFile('./data/bumpmaps/bark.jpg');
         this.groundTxt = new Txt2D(gl);
         this.groundTxt.index = 0;
         this.groundTxt.loadFromFile('./data/textures/grass.jpg');
+        this.groundBump = new Txt2D(gl);
+        this.groundBump.index = 1;
+        this.groundBump.loadFromFile('./data/bumpmaps/concrete.jpg');
         
         // Setup controls.
         item = this;
@@ -123,6 +192,9 @@ define(function(require) {
         this.controls.addFloat("Light Radius", function(value) {
             item.lightRadius = value;
         }, 0.1, MaxLightRadius, 1.0);
+        this.controls.addBool("Colors", function(value) {
+            item.useColors = value;
+        }, false);
         
         // Build random lists.
         this.trees = [];
@@ -137,10 +209,13 @@ define(function(require) {
         }
 
         // Initialize movers.
-        this.shader.setViewMat(Matrix.lookat(
-            0.0, 4.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 5.0, -10.0));
+        this.viewMover = new ViewMover();
+        this.viewMover.target   = [0.0, 4.0,   0.0];
+        this.viewMover.up       = [0.0, 1.0,   0.0];
+        this.viewMover.location = [0.0, 5.0, -10.0];
+        this.viewMover.maxPitch = Math.PI * 0.125;
+        this.viewMover.minPitch = -Math.PI * 0.25;
+        this.viewMover.start(gl);
         this.projMover = new ProjMover();
         this.projMover.start(gl);
         this.startTime = (new Date()).getTime();
@@ -154,9 +229,10 @@ define(function(require) {
      */
     Item.prototype.update = function(gl, fps) {
         this.controls.setFps(fps);
+        this.viewMover.update();
         this.projMover.update();
+        this.shader.setViewMat(this.viewMover.matrix());
         this.shader.setProjMat(this.projMover.matrix());
-        this.groundTxt.bind();
 
         // Update FireFlies
         var curTime = (new Date()).getTime();
@@ -178,22 +254,15 @@ define(function(require) {
         }
         this._drawGround(null);
 
-        // Base lighting.
-        /*
-        this.shader.setLightRange(40.0);
-        this.shader.setColor(0.01, 0.01, 0.01);
-        this.shader.setLightPnt(0.0, 5.0, -10.0);
-        for (var i = 0; i < this.treeCount; i++) {
-            this._drawTree(null, 0.0, this.trees[i]);
-        }
-        this._drawGround(null);
-        */
-
         // Draw fireflies.
         this.shader.setLightRange(-1.0);
-        this.shader.setColor(1.0, 1.0, 0.0);
         for (var i = 0; i < this.fireFlyCount; i++) {
             var fireFly = this.fireflies[i];
+            if (this.useColors) {
+                this.shader.setColor(fireFly.r, fireFly.g, fireFly.b);
+            } else {
+                this.shader.setColor(1.0, 1.0, 1.0);
+            }
             this.shader.setLightPnt(fireFly.x, fireFly.y, fireFly.z);
             this.shader.setObjMat(Matrix.translate(fireFly.x, fireFly.y, fireFly.z));
             this.fireFlyShape.draw();
@@ -203,11 +272,19 @@ define(function(require) {
         for (var i = 0; i < this.fireFlyCount; i++) {
             var fireFly = this.fireflies[i];
             this.shader.setLightRange(this.lightRadius);
-            this.shader.setColor(1.0, 1.0, 1.0);
+            if (this.useColors) {
+                this.shader.setColor(fireFly.r, fireFly.g, fireFly.b);
+            } else {
+                this.shader.setColor(1.0, 1.0, 1.0);
+            }
             this.shader.setLightPnt(fireFly.x, fireFly.y, fireFly.z);
+            this.treeTxt.bind();
+            this.treeBump.bind();
             for (var j = 0; j < this.treeCount; j++) {
                 this._drawTree(fireFly, this.lightRadius, this.trees[j]);
             }
+            this.groundTxt.bind();
+            this.groundBump.bind();
             this._drawGround(fireFly);
         }         
         
@@ -219,6 +296,7 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object.
      */
     Item.prototype.stop = function(gl) {
+        this.viewMover.stop(gl);
         this.projMover.stop(gl);
         this.controls.destroy();
     };

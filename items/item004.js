@@ -55,6 +55,7 @@ define(function(require) {
             item.txt2D.index = 0;
             item.txt2D.loadFromFile(path);
         }, 'Fire', {
+            'Bark':    './data/textures/bark.jpg',
             'Brick':   './data/textures/brick.jpg',
             'Fire':    './data/textures/fire.jpg',
             'Grass':   './data/textures/grass.jpg',

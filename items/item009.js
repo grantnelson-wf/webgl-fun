@@ -90,6 +90,7 @@ define(function(require) {
             item.txtBump.index = 1;
             item.txtBump.loadFromFile(path);
         }, 'Scales', {
+            'Bark':     './data/bumpmaps/bark.jpg',
             'Bump':     './data/bumpmaps/bump.jpg',
             'Cloth':    './data/bumpmaps/cloth.jpg',
             'Concrete': './data/bumpmaps/concrete.jpg',

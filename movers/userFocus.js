@@ -37,6 +37,16 @@ define(function(require) {
          * @type {Array}
          */
         this.location = [0, 0, -2];
+        
+        /**
+         * TODO: Comment
+         */
+        this.maxPitch = Math.PI * 0.5;
+        
+        /**
+         * TODO: Comment
+         */
+        this.minPitch = -Math.PI * 0.5;
 
         /**
          * The graphical object being used.
@@ -177,14 +187,12 @@ define(function(require) {
             this._yaw = this._yaw % (Math.PI * 2);
             if (this._yaw < 0) this._yaw = this._yaw + Math.PI * 2;
 
-            var halfPi =  Math.PI * 0.5;
-            if (this._pitch > halfPi) {
-                this._pitch = halfPi;
+            if (this._pitch > this.maxPitch) {
+                this._pitch = this.maxPitch;
             }
-            else if (this._pitch < -halfPi) {
-                this._pitch = -halfPi;
+            else if (this._pitch < this.minPitch) {
+                this._pitch = this.minPitch;
             }
-
         }
     };
 

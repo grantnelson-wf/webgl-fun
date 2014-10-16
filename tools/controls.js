@@ -82,6 +82,19 @@ define(function(require) {
 
     /**
      * TODO: Comment
+     * @param {[type]}   name     [description]
+     * @param {Function} callback [description]
+     * @param {[type]}   initial  [description]
+     */
+    Controls.prototype.addBool = function(name, callback, initial) {
+        this[name] = initial;
+        var ctrl = this._gui.add(this, name);
+        ctrl.onChange(callback);
+        callback(initial);
+    };
+
+    /**
+     * TODO: Comment
      * @param {[type]}   name      [description]
      * @param {Function} callback  [description]
      * @param {[type]}   initRed   [description]
