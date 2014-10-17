@@ -46,8 +46,10 @@ define(function(require) {
         this.r  = Math.random();
         this.g  = Math.random();
         this.b  = Math.random();
-        this.lit = Math.random() >= 0.5;
+        this.lit = 0;
+        this.litStep = 0.0;
         this.litDur = (Math.random()*3.0 + 1.0) * 1000;
+        this.litVal = 0.0;
     }
     
     /**
@@ -64,10 +66,28 @@ define(function(require) {
         this.y  = clamp(this.y  + dt*this.dy,   0.1,  9.9);
         this.z  = clamp(this.z  + dt*this.dz,  -5.0, 15.0); 
 
-        this.litDur -= dt;
-        if (this.litDur < 0.0) {
-            this.lit = !this.lit;
-            this.litDur = (Math.random()*3.0 + 1.0) * 1000;
+        this.litStep += dt;
+        if (this.litDur < this.litStep) {
+            this.litStep = 0.0;
+            ++this.lit;
+            if (this.lit == 1) {
+                this.litDur = (Math.random()*1.0 + 0.1) * 1000;
+                this.litVal = 0.0;
+            } else if (this.lit == 2) {
+                this.litDur = (Math.random()*3.0 + 1.0) * 1000;
+                this.litVal = 1.0;
+            } else if (this.lit == 3) {
+                this.litDur = (Math.random()*2.0 + 0.1) * 1000;
+                this.litVal = 1.0;
+            } else {
+                this.lit = 0;
+                this.litDur = (Math.random()*5.0 + 0.1) * 1000;
+                this.litVal = 0.0;
+            }
+        } else if (this.lit == 1) {
+            this.litVal = clamp(this.litStep/this.litDur, 0.0, 1.0);
+        } else if (this.lit == 3) {
+            this.litVal = clamp(1.0 - this.litStep/this.litDur, 0.0, 1.0);
         }
     };
     
@@ -199,6 +219,9 @@ define(function(require) {
         this.controls.addFloat("Light Radius", function(value) {
             item.lightRadius = value;
         }, 0.1, MaxLightRadius, 2.5);
+        this.controls.addFloat("Brightness", function(value) {
+            item.brightness = value;
+        }, 0.0, 1.0, 0.7);
         this.controls.addBool("Colors", function(value) {
             item.useColors = value;
         }, false);
@@ -265,11 +288,12 @@ define(function(require) {
         this.shader.setLightRange(-1.0);
         for (var i = 0; i < this.fireFlyCount; i++) {
             var fireFly = this.fireflies[i];
-            if (fireFly.lit) {
+            if (fireFly.lit > 0) {
+                var scalar = fireFly.litVal*this.brightness;
                 if (this.useColors) {
-                    this.shader.setColor(fireFly.r, fireFly.g, fireFly.b);
+                    this.shader.setColor( fireFly.r*scalar, fireFly.g*scalar, fireFly.b*scalar);
                 } else {
-                    this.shader.setColor(1.0, 1.0, 1.0);
+                    this.shader.setColor(scalar, scalar, scalar);
                 }
                 this.shader.setLightPnt(fireFly.x, fireFly.y, fireFly.z);
                 this.shader.setObjMat(Matrix.translate(fireFly.x, fireFly.y, fireFly.z));
@@ -280,12 +304,13 @@ define(function(require) {
         // Draw fireFly light.
         for (var i = 0; i < this.fireFlyCount; i++) {
             var fireFly = this.fireflies[i];
-            if (fireFly.lit) {
+            if (fireFly.lit > 0) {
                 this.shader.setLightRange(this.lightRadius);
+                var scalar = fireFly.litVal*this.brightness;
                 if (this.useColors) {
-                    this.shader.setColor(fireFly.r, fireFly.g, fireFly.b);
+                    this.shader.setColor( fireFly.r*scalar, fireFly.g*scalar, fireFly.b*scalar);
                 } else {
-                    this.shader.setColor(1.0, 1.0, 1.0);
+                    this.shader.setColor(scalar, scalar, scalar);
                 }
                 this.shader.setLightPnt(fireFly.x, fireFly.y, fireFly.z);
                 this.treeTxt.bind();

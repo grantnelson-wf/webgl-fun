@@ -88,7 +88,7 @@ define(function(require) {
         '                       b.x, b.y, b.z,                   \n'+
         '                       n.x, n.y, n.z);                  \n'+
         '         vec3 bump = texture2D(bumpSampler, vTxt).rbg;  \n'+
-        '         bump = normalize(m * bump);                    \n'+
+        '         bump = normalize(m * (bump*2.0 - 1.0));        \n'+
         '         float scalar = dot(bump, normalize(litDir));   \n'+
         '         if (scalar > 0.0) {                            \n'+
         '            alpha = scalar * (1.0 - dist/lightRange);   \n'+
