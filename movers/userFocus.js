@@ -39,12 +39,14 @@ define(function(require) {
         this.location = [0, 0, -2];
         
         /**
-         * TODO: Comment
+         * The maximum allowed pitch rotation in radians.
+         * @type {Number}
          */
         this.maxPitch = Math.PI * 0.5;
         
         /**
-         * TODO: Comment
+         * The minimum allowed pitch rotation in radians.
+         * @type {Number}
          */
         this.minPitch = -Math.PI * 0.5;
 

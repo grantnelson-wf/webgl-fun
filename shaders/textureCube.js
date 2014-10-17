@@ -47,16 +47,18 @@ define(function(require) {
      * @type {String}
      */
     TextureBuilder.prototype.fsSource =
-        'precision mediump float;                          \n'+
-        '                                                  \n'+
-        'varying vec3 vCube;                               \n'+
-        '                                                  \n'+
-        'uniform samplerCube txtSampler;                   \n'+
-        '                                                  \n'+
-        'void main()                                       \n'+
-        '{                                                 \n'+
-        '   gl_FragColor = textureCube(txtSampler, vCube); \n'+
-        '}                                                 \n';
+        'precision mediump float;                                                   \n'+
+        '                                                                           \n'+
+        'uniform vec3 filterColor;                                                  \n'+
+        '                                                                           \n'+
+        'varying vec3 vCube;                                                        \n'+
+        '                                                                           \n'+
+        'uniform samplerCube txtSampler;                                            \n'+
+        '                                                                           \n'+
+        'void main()                                                                \n'+
+        '{                                                                          \n'+
+        '   gl_FragColor = textureCube(txtSampler, vCube) * vec4(filterColor, 1.0); \n'+
+        '}                                                                          \n';
     
     /**
      * Initializes the shader.

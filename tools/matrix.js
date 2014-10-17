@@ -19,7 +19,12 @@ define(function(require) {
         },
 
         /**
-         * TODO: Comment
+         * Creates a scalar matrix.
+         * @param  {Number} scalarX  The value to scale X by. Must be provided.
+         * @param  {Number} scalarY  The value to scale Y by. If undefined scalar X will be used.
+         * @param  {Number} scalarZ  The value to scale Z by. If undefined scalar Y will be used.
+         * @param  {Number} scalarW  The value to scale W by. If undefined scalar Z will be used.
+         * @return  {Array}  The created matrix.
          */
         scalar: function(scalarX, scalarY, scalarZ, scalarW) {
             if (scalarY === undefined) {

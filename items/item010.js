@@ -12,7 +12,11 @@ define(function(require) {
     var Txt2D = require('tools/texture2d');
     
     /**
-     * TODO: Comment
+     * Clamps the given value to a range.
+     * @param  {Number} val  The value to clamp.
+     * @param  {Number} min  The minimum value to clamp to.
+     * @param  {Number} max  The maximum value to clamp to.
+     * @return  {Number}  The resulting clamped value.
      */
     function clamp(val, min, max) {
         if (val < min) {
@@ -24,14 +28,14 @@ define(function(require) {
         }
     }
 
-    // TODO: Comment
+    // The maximum (negative is the minimum) impulse value that can be applied to a firefly.
     var FireFlyDdmax = 0.00001;
     
-    // TODO: Comment
+    // The maximum (negative is the minimum) velocity value that can be applied to a firefly.
     var FireFlyDmax  = 0.0005;
 
     /**
-     * The data for drawing a fire fly.
+     * The firefly particle.
      */
     function FireFly() {
         this.cx = Math.random()*20.0 - 10.0;
@@ -53,7 +57,8 @@ define(function(require) {
     }
     
     /**
-     * TODO: Comment
+     * Updates the firefly's position and lighting information for the render frame.
+     * @param  {number} dt  The delta time between this frame and the last time, in milliseconds.
      */
     FireFly.prototype.update = function(dt) {
         var ddx = (Math.random()*2.0 - 1.0 + (this.cx-this.x)*0.1)*FireFlyDdmax;
@@ -71,13 +76,13 @@ define(function(require) {
             this.litStep = 0.0;
             ++this.lit;
             if (this.lit == 1) {
-                this.litDur = (Math.random()*1.0 + 0.1) * 1000;
+                this.litDur = (Math.random()*3.0 + 1.0) * 1000;
                 this.litVal = 0.0;
             } else if (this.lit == 2) {
-                this.litDur = (Math.random()*3.0 + 1.0) * 1000;
+                this.litDur = (Math.random()*5.0 + 0.1) * 1000;
                 this.litVal = 1.0;
             } else if (this.lit == 3) {
-                this.litDur = (Math.random()*2.0 + 0.1) * 1000;
+                this.litDur = (Math.random()*3.0 + 1.0) * 1000;
                 this.litVal = 1.0;
             } else {
                 this.lit = 0;
@@ -338,7 +343,10 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * Draws a tree lit by a firefly's light.
+     * @param  {FireFly} fireFly  The firefly to light the tree with.
+     * @param  {Number} radius  The radius of the light from the firefly.
+     * @param  {Tree} tree  The tree to draw.
      */
     Item.prototype._drawTree = function(fireFly, radius, tree) {
         if (fireFly) {

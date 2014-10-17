@@ -38,6 +38,8 @@ define(function(require) {
             return false;
         }
         this.skyboxShader.use();
+        this.skyboxShader.setTxtSampler(0);
+        this.skyboxShader.setFilterColor(1.0, 1.0, 1.0);
         
         // Create skybox shape to use.
         var skyboxShapeBuilder = new SkyboxShapeBuilder();
@@ -47,8 +49,7 @@ define(function(require) {
         this.skyboxShape = skyboxShapeBuilder.build(gl, this.skyboxShader.requiredType);
         this.skyboxShape.posAttr = this.skyboxShader.posAttrLoc;
         this.skyboxShape.cubeAttr = this.skyboxShader.cubeAttrLoc;
-        this.skyboxShader.setTxtSampler(0);
-
+        
         //=================================================
 
         // Build and set the object shader.

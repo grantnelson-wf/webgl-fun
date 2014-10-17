@@ -46,6 +46,7 @@ define(function(require) {
         this.skyboxShape.posAttr = this.skyboxShader.posAttrLoc;
         this.skyboxShape.cubeAttr = this.skyboxShader.cubeAttrLoc;
         this.skyboxShader.setTxtSampler(0);
+        this.skyboxShader.setFilterColor(1.0, 1.0, 1.0);
         
         // Initialize view movement.
         this.projMover = new ProjMover();

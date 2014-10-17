@@ -41,6 +41,7 @@ define(function(require) {
         }
         this.skyboxShader.use();
         this.skyboxShader.setTxtSampler(0);
+        this.skyboxShader.setFilterColor(1.0, 1.0, 1.0);
         
         // Create skybox shape to use.
         var skyboxShapeBuilder = new SkyboxShapeBuilder();

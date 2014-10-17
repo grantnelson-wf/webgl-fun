@@ -19,7 +19,8 @@ define(function(require) {
     }
 
     /**
-     * TODO: Comment
+     * Sets the FPS (frames per seconds) display in the control.
+     * @param  {Number} fps  The FPS to show.
      */
     Controls.prototype.setFps = function(fps) {
         this["FPS"] = fps;
@@ -61,12 +62,13 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * @param {[type]}   name     [description]
-     * @param {Function} callback [description]
-     * @param {[type]}   min      [description]
-     * @param {[type]}   max      [description]
-     * @param {[type]}   initial  [description]
+     * Adds a float value control.
+     * @param  {String}   name      The name of the value to store.
+     * @param  {Function} callback  The method to call on change.
+     *                              It will have one parameter, the new float value.
+     * @param  {Number}   min       The minimum allowed value.
+     * @param  {Number}   max       The maximum allowed value.
+     * @param  {Number}   initial   The initial value to set.
      */
     Controls.prototype.addFloat = function(name, callback, min, max, initial) {
         if (max < min) {
@@ -81,10 +83,11 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * @param {[type]}   name     [description]
-     * @param {Function} callback [description]
-     * @param {[type]}   initial  [description]
+     * Adds a boolean state control.
+     * @param  {String}   name      The name of the state to store.
+     * @param  {Function} callback  The method to call on change.
+     *                              It will have one parameter, the new boolean state.
+     * @param  {Boolean}  initial   The initial state to set.
      */
     Controls.prototype.addBool = function(name, callback, initial) {
         this[name] = initial;
@@ -94,12 +97,13 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * @param {[type]}   name      [description]
-     * @param {Function} callback  [description]
-     * @param {[type]}   initRed   [description]
-     * @param {[type]}   initGreen [description]
-     * @param {[type]}   initBlue  [description]
+     * Adds a color control.
+     * @param  {String}   name       The name of the state to store.
+     * @param  {Function} callback   The method to call on change.
+     *                               It will have three parameter, the new red, green, and blue float values.
+     * @param  {Number}   initRed    The initial red state, between 0 and 1.
+     * @param  {Number}   initGreen  The initial green state, between 0 and 1.
+     * @param  {Number}   initBlue   The initial blue state, between 0 and 1.
      */
     Controls.prototype.addRGB = function(name, callback, initRed, initGreen, initBlue) {
         this[name] = [ initRed*255.0, initGreen*255.0, initBlue*255.0 ];
@@ -111,11 +115,13 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * @param {[type]}   name      [description]
-     * @param {Function} callback  [description]
-     * @param {[type]}   initValue [description]
-     * @param {[type]}   pairs     [description]
+     * Adds a drop-down dictionary control.
+     * @param  {String}   name      The name of the selection to store.
+     * @param  {Function} callback  The method to call on change.
+     *                              It will have one parameter, the new selected value.
+     * @param  {String}   initKey   The initial key to select.
+     * @param  {Dic}      pairs     The dictionary of key-value pairs.
+     *                              Keys will be displayed and values will be returned on selection change.
      */
     Controls.prototype.addDic = function(name, callback, initKey, pairs) {
         this[name] = pairs[initKey];
@@ -125,9 +131,10 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * @param {[type]}   name      [description]
-     * @param {Function} callback  [description]
+     * Add a button control.
+     * @param  {String}   name      The name of the button to store.
+     * @param  {Function} callback  The method to call on click.
+     *                              It will have no parameters.
      */
     Controls.prototype.addButton = function(name, callback) {
         this[name] = callback;
@@ -135,8 +142,7 @@ define(function(require) {
     };
 
     /**
-     * [distroy description]
-     * @return {[type]} [description]
+     * Destroys and disposes of the control.
      */
     Controls.prototype.destroy = function() {
         this._gui.destroy();
