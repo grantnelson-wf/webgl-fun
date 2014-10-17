@@ -46,7 +46,8 @@ define(function(require) {
         this.r  = Math.random();
         this.g  = Math.random();
         this.b  = Math.random();
-        this.light = Math.random();
+        this.lit = Math.random() >= 0.5;
+        this.litDur = (Math.random()*3.0 + 1.0) * 1000;
     }
     
     /**
@@ -61,9 +62,13 @@ define(function(require) {
         this.dz = clamp(this.dz + dt*ddz, -FireFlyDmax, FireFlyDmax);
         this.x  = clamp(this.x  + dt*this.dx, -10.0, 10.0);
         this.y  = clamp(this.y  + dt*this.dy,   0.1,  9.9);
-        this.z  = clamp(this.z  + dt*this.dz,  -5.0, 15.0);
-        var dlight = Math.random()*0.1;
-        this.light = clamp(this.light + dt*dlight, 0.0, 1.0);
+        this.z  = clamp(this.z  + dt*this.dz,  -5.0, 15.0); 
+
+        this.litDur -= dt;
+        if (this.litDur < 0.0) {
+            this.lit = !this.lit;
+            this.litDur = (Math.random()*3.0 + 1.0) * 1000;
+        }
     };
     
     /**
@@ -82,13 +87,13 @@ define(function(require) {
     }
     
     // The maximum tree count.
-    var MaxTreeCount = 30;
+    var MaxTreeCount = 50;
     
     // The maximum firefly count.
-    var MaxFireFlyCount = 100;
+    var MaxFireFlyCount = 200;
     
     // The maximum fireflies light radius.
-    var MaxLightRadius = 5.0;
+    var MaxLightRadius = 15.0;
 
     /**
      * Creates an item for rendering.
@@ -142,6 +147,8 @@ define(function(require) {
         var gridBuilder = new GridBuilder();
         gridBuilder.width = -40;
         gridBuilder.depth = 40;
+        gridBuilder.widthDiv = 1;
+        gridBuilder.depthDiv = 1;
         gridBuilder.z = 10;
         this.ground = gridBuilder.build(gl, this.shader.requiredType);
         this.ground.posAttr = this.shader.posAttrLoc;
@@ -188,10 +195,10 @@ define(function(require) {
         }, 0, MaxTreeCount, 10);
         this.controls.addFloat("FireFly Count", function(value) {
             item.fireFlyCount = value;
-        }, 0, MaxFireFlyCount, 10);
+        }, 0, MaxFireFlyCount, 30);
         this.controls.addFloat("Light Radius", function(value) {
             item.lightRadius = value;
-        }, 0.1, MaxLightRadius, 1.0);
+        }, 0.1, MaxLightRadius, 2.5);
         this.controls.addBool("Colors", function(value) {
             item.useColors = value;
         }, false);
@@ -254,38 +261,42 @@ define(function(require) {
         }
         this._drawGround(null);
 
-        // Draw fireflies.
+        // Draw fireFlies.
         this.shader.setLightRange(-1.0);
         for (var i = 0; i < this.fireFlyCount; i++) {
             var fireFly = this.fireflies[i];
-            if (this.useColors) {
-                this.shader.setColor(fireFly.r, fireFly.g, fireFly.b);
-            } else {
-                this.shader.setColor(1.0, 1.0, 1.0);
+            if (fireFly.lit) {
+                if (this.useColors) {
+                    this.shader.setColor(fireFly.r, fireFly.g, fireFly.b);
+                } else {
+                    this.shader.setColor(1.0, 1.0, 1.0);
+                }
+                this.shader.setLightPnt(fireFly.x, fireFly.y, fireFly.z);
+                this.shader.setObjMat(Matrix.translate(fireFly.x, fireFly.y, fireFly.z));
+                this.fireFlyShape.draw();
             }
-            this.shader.setLightPnt(fireFly.x, fireFly.y, fireFly.z);
-            this.shader.setObjMat(Matrix.translate(fireFly.x, fireFly.y, fireFly.z));
-            this.fireFlyShape.draw();
         }     
 
-        // Draw firefly light.
+        // Draw fireFly light.
         for (var i = 0; i < this.fireFlyCount; i++) {
             var fireFly = this.fireflies[i];
-            this.shader.setLightRange(this.lightRadius);
-            if (this.useColors) {
-                this.shader.setColor(fireFly.r, fireFly.g, fireFly.b);
-            } else {
-                this.shader.setColor(1.0, 1.0, 1.0);
+            if (fireFly.lit) {
+                this.shader.setLightRange(this.lightRadius);
+                if (this.useColors) {
+                    this.shader.setColor(fireFly.r, fireFly.g, fireFly.b);
+                } else {
+                    this.shader.setColor(1.0, 1.0, 1.0);
+                }
+                this.shader.setLightPnt(fireFly.x, fireFly.y, fireFly.z);
+                this.treeTxt.bind();
+                this.treeBump.bind();
+                for (var j = 0; j < this.treeCount; j++) {
+                    this._drawTree(fireFly, this.lightRadius, this.trees[j]);
+                }
+                this.groundTxt.bind();
+                this.groundBump.bind();
+                this._drawGround(fireFly);
             }
-            this.shader.setLightPnt(fireFly.x, fireFly.y, fireFly.z);
-            this.treeTxt.bind();
-            this.treeBump.bind();
-            for (var j = 0; j < this.treeCount; j++) {
-                this._drawTree(fireFly, this.lightRadius, this.trees[j]);
-            }
-            this.groundTxt.bind();
-            this.groundBump.bind();
-            this._drawGround(fireFly);
         }         
         
         return true;
