@@ -64,19 +64,19 @@ define(function(require) {
         }, 1.0, 0.0, 0.0);
         this.controls.addFloat("Right Offset", function(value) {
             item.rightOffset = value;
-        }, -0.25, 0.25, 0.01);
+        }, -0.25, 0.25, 0.001);
         this.controls.addDic("Texture", function(path) {
             item.txt2D = new Txt2D(gl);
             item.txt2D.index = 0;
             item.txt2D.loadFromFile(path);
         }, 'Puppy', {
             'Jupiter':  './data/stereo/jupiter.jpg',
+            'Legos':    './data/stereo/legos.jpg',
             'Moon':     './data/stereo/moon.jpg',
             'Portal 1': './data/stereo/portal1.jpg',
             'Portal 2': './data/stereo/portal2.jpg',
             'Puppy':    './data/stereo/puppy.jpg',
-            'River':    './data/stereo/river.jpg',
-            'Satern':   './data/stereo/satern.jpg'
+            'River':    './data/stereo/river.jpg'
         });
         
         var shapeBuilder = new ShapeBuilder();
@@ -110,19 +110,21 @@ define(function(require) {
         // Bind texture.
         this.txt2D.bind();
 
-        // Draw shape.
+        // Prepare to draw images.
         var aspect = gl.drawingBufferHeight / gl.drawingBufferWidth;
         this.shader.setAspect(aspect);
         this.shader.setWidth(this.width);
         this.shader.setHeight(this.height);
         
-        this.shader.setDx(this.leftOffset);
+        // Draw left image.
         this.shader.setDv(0.0);
+        this.shader.setDx(this.leftOffset);
         this.shader.setColor(this.leftColor[0], this.leftColor[1], this.leftColor[2]);
         this.shape.draw();
         
-        this.shader.setDx(this.rightOffset);
+        // Draw right image.
         this.shader.setDv(0.5);
+        this.shader.setDx(this.rightOffset);
         this.shader.setColor(this.rightColor[0], this.rightColor[1], this.rightColor[2]);
         this.shape.draw();
         return true;
