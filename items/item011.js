@@ -70,6 +70,7 @@ define(function(require) {
             item.txt2D.index = 0;
             item.txt2D.loadFromFile(path);
         }, 'Puppy', {
+            'House':    './data/stereo/house.jpg',
             'Jupiter':  './data/stereo/jupiter.jpg',
             'Legos':    './data/stereo/legos.jpg',
             'Moon':     './data/stereo/moon.jpg',
