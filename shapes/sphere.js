@@ -61,7 +61,8 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    SphereBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
+    SphereBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|
+                                  Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
     
     /**
      * This looks up the index at the coordinate or add the position for the coordinate.
@@ -143,7 +144,7 @@ define(function(require) {
         //   /___________\      /____\/_____\                 
         //  1             3    1      6      3
         if (iteration <= 0) {
-            shape.addTriIndices(i1, i3, i2);
+            shape.tris.add(i1, i3, i2);
         } else {
             var norm1 = shape.norm.get(i1);
             var norm2 = shape.norm.get(i2);

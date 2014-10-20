@@ -61,7 +61,8 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    ToroidBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE;
+    ToroidBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|
+                                  Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
     
     /**
      * Creates a toroid.
@@ -78,7 +79,7 @@ define(function(require) {
             var majorCos = Math.cos(majorAngle);
             var majorSin = Math.sin(majorAngle);
 
-            shape.startTriStrip();
+            shape.triStrips.start();
             var i1 = ((i+1)%(this.majorCount+1))*(this.minorCount+1);
             var i2 = i*(this.minorCount+1);
             
@@ -127,7 +128,7 @@ define(function(require) {
                     shape.cube.add(tx, ty, tz);
                 }
 
-                shape.addToTriStrip(i1+j, i2+j);
+                shape.triStrips.add(i1+j, i2+j);
             }
         }
 

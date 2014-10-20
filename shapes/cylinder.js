@@ -86,7 +86,8 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    CylinderBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.Binm;
+    CylinderBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|
+                                    Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
     
     /**
      * Creates a cylinder.
@@ -134,7 +135,7 @@ define(function(require) {
                 shape.binm.add(0, 0, -1)
             }
             var index = shape.pos.count();
-            shape.startTriFan(index-1, index+this.sideCount-1);
+            shape.triFans.start(index-1, index+this.sideCount-1);
             
             for (var i = 0; i < this.sideCount; i++) {
                 var angle = i*Math.PI*2.0/this.sideCount;
@@ -160,7 +161,7 @@ define(function(require) {
                 if (vertexType&Const.BINM) {
                     shape.binm.add(0, 0, -1)
                 }
-                shape.addToTriFan(index+i);
+                shape.triFans.add(index+i);
             }
         }
     };
@@ -193,7 +194,7 @@ define(function(require) {
                 shape.binm.add(0, 0, 1)
             }
             var index = shape.pos.count();
-            shape.startTriFan(index-1, index);
+            shape.triFans.start(index-1, index);
             
             for (var i = 0; i < this.sideCount; i++) {
                 var angle = i*Math.PI*2.0/this.sideCount;
@@ -219,7 +220,7 @@ define(function(require) {
                 if (vertexType&Const.BINM) {
                     shape.binm.add(0, 0, 1)
                 }
-                shape.addToTriFan(index+this.sideCount-1-i);
+                shape.triFans.add(index+this.sideCount-1-i);
             }
         }
     };
@@ -265,9 +266,9 @@ define(function(require) {
             }
         }
         for (i = 1; i <= this.divCount; i++) {
-            shape.startTriStrip();
+            shape.triStrips.start();
             for (j = 0; j <= this.sideCount; j++) {
-                shape.addToTriStrip(index+this.sideCount+j+1, index+j);
+                shape.triStrips.add(index+this.sideCount+j+1, index+j);
             }
             index += (this.sideCount+1);
         }

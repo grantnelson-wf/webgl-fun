@@ -45,8 +45,8 @@ define(function(require) {
         this.controls.setFps(0.0);
         this.controls.addShapeSelect("Shape", function(shapeBuilder){
             item.shape = shapeBuilder.build(gl, item.shader.requiredType);
-            item.shape.posAttr = item.shader.posAttrLoc;
-            item.shape.clr3Attr = item.shader.clr3AttrLoc;
+            item.shape.posAttr.set(item.shader.posAttrLoc);
+            item.shape.clr3Attr.set(item.shader.clr3AttrLoc);
         }, "Toroid");
         
         // Initialize movers.

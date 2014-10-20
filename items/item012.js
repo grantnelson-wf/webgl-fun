@@ -48,12 +48,12 @@ define(function(require) {
         this.controls.setFps(0.0);
         this.controls.addShapeSelect("Shape", function(shapeBuilder){
             item.shape = shapeBuilder.build(gl, item.shader.requiredType);
-            item.shape.posAttr = item.shader.posAttrLoc;
-            item.shape.normAttr = item.shader.normAttrLoc;
-            item.shape.txtAttr = item.shader.txtAttrLoc;
+            item.shape.posAttr.set(item.shader.posAttrLoc);
+            item.shape.normAttr.set(item.shader.normAttrLoc);
+            item.shape.txtAttr.set(item.shader.txtAttrLoc);
         }, "Toroid");  
-        this.controls.addFloat("Ambient",   this.shader.setAmbient,   0.0, 1.0, 0.4);
-        this.controls.addFloat("Diffuse",   this.shader.setDiffuse,   0.0, 1.0, 0.6);
+        this.controls.addFloat("Ambient", this.shader.setAmbient, 0.0, 1.0, 0.4);
+        this.controls.addFloat("Diffuse", this.shader.setDiffuse, 0.0, 1.0, 0.6);
         
         this.txt2D = new Txt2D(gl);
         this.txt2D.index = 0;

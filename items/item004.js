@@ -47,8 +47,8 @@ define(function(require) {
         this.controls.setFps(0.0);
         this.controls.addShapeSelect("Shape", function(shapeBuilder){
             item.shape = shapeBuilder.build(gl, item.shader.requiredType);
-            item.shape.posAttr = item.shader.posAttrLoc;
-            item.shape.txtAttr = item.shader.txtAttrLoc;
+            item.shape.posAttr.set(item.shader.posAttrLoc);
+            item.shape.txtAttr.set(item.shader.txtAttrLoc);
         }, "Toroid");
         this.controls.addDic("Texture", function(path) {
             item.txt2D = new Txt2D(gl);

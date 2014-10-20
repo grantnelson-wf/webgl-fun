@@ -110,12 +110,8 @@ define(function(require) {
      * @param  {Number} bix          The x binormal component.
      * @param  {Number} biy          The y binormal component.
      * @param  {Number} biz          The z binormal component.
-     * @param  {Number} tu1          The first u texture coordinate.
-     * @param  {Number} tv1          The first v texture coordinate.
-     * @param  {Number} tu2          The second u texture coordinate.
-     * @param  {Number} tv2          The second v texture coordinate.
      */
-    CubeBuilder.prototype._addFace = function(shape, vertexType, nx, ny, nz, bix, biy, biz, tu1, tv1, tu2, tv2) {
+    CubeBuilder.prototype._addFace = function(shape, vertexType, nx, ny, nz, bix, biy, biz) {
         var index = shape.pos.count();
 
         this._addPos(shape, nx+ny+nz, ny+nz+nx, nz+nx+ny);
@@ -144,10 +140,10 @@ define(function(require) {
         }
 
         if (vertexType&Const.TXT) {
-            shape.txt.add(tu1, tv1);
-            shape.txt.add(tu1, tv2);
-            shape.txt.add(tu2, tv1);
-            shape.txt.add(tu2, tv2);
+            shape.txt.add(0, 0);
+            shape.txt.add(0, 1);
+            shape.txt.add(1, 0);
+            shape.txt.add(1, 1);
         }
 
         if (vertexType&Const.CUBE) {
@@ -158,9 +154,9 @@ define(function(require) {
         }
 
         if (nx+ny+nz > 0) {
-            shape.addQuadIndices(index, index+1, index+3, index+2);
+            shape.quads.add(index, index+1, index+3, index+2);
         } else {
-            shape.addQuadIndices(index, index+2, index+3, index+1);
+            shape.quads.add(index, index+2, index+3, index+1);
         }
     };
     
@@ -183,13 +179,13 @@ define(function(require) {
         //                      |     |     |           |
         //                      +--   F-----B   --------+
         //                      
-        //                               nx  ny  nz bix biy biz  tu1  tv1  tu2  tv2
-        this._addFace(shape, vertexType,  1,  0,  0,  0,  1,  0, 3/4, 1/3, 2/4, 2/3); // x+
-        this._addFace(shape, vertexType, -1,  0,  0,  0,  1,  0, 1/4, 2/3, 0/4, 1/3); // X-
-        this._addFace(shape, vertexType,  0,  1,  0,  0,  0,  1, 3/4, 1/3, 4/4, 2/3); // Y+
-        this._addFace(shape, vertexType,  0, -1,  0,  0,  0, -1, 1/4, 2/3, 2/4, 1/3); // Y-
-        this._addFace(shape, vertexType,  0,  0,  1,  0,  1,  0, 2/4, 0/3, 1/4, 1/3); // Z+
-        this._addFace(shape, vertexType,  0,  0, -1,  0,  1,  0, 1/4, 2/3, 2/4, 3/3); // Z-
+        //                               nx  ny  nz bix biy biz
+        this._addFace(shape, vertexType,  1,  0,  0,  0,  1,  0); // x+
+        this._addFace(shape, vertexType, -1,  0,  0,  0,  1,  0); // X-
+        this._addFace(shape, vertexType,  0,  1,  0,  0,  0,  1); // Y+
+        this._addFace(shape, vertexType,  0, -1,  0,  0,  0, -1); // Y-
+        this._addFace(shape, vertexType,  0,  0,  1,  0,  1,  0); // Z+
+        this._addFace(shape, vertexType,  0,  0, -1,  0,  1,  0); // Z-
         return shape.build(gl);
     };
 

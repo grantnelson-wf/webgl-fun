@@ -20,7 +20,8 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    WLogoBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
+    WLogoBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|
+                                 Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
     
     /**
      * Adds a vertex to the shape.
@@ -80,18 +81,18 @@ define(function(require) {
         // Add front face (uses fan for triangles).
         index = shape.pos.count();
         this._addVec(shape, vertexType, poly[0], poly[1], 77, 0, 0, 1, 0, 1, 0);
-        shape.startTriFan(index);
+        shape.triFans.start(index);
         for (i = 1, j = count - 1; i < count; i++, j--) {
             this._addVec(shape, vertexType, poly[j*2], poly[j*2+1], 77, 0, 0, 1, 0, 1, 0);
-            shape.addToTriFan(index+i);
+            shape.triFans.add(index+i);
         }
 
         // Add back face (uses fan for triangles).
         index = shape.pos.count();
-        shape.startTriFan();
+        shape.triFans.start();
         for (i = 0; i < count; i++) {
             this._addVec(shape, vertexType, poly[i*2], poly[i*2+1], 55, 0, 0, -1, 0, -1, 0);
-            shape.addToTriFan(index+i);
+            shape.triFans.add(index+i);
         }
 
         // Add joining faces.
@@ -107,7 +108,7 @@ define(function(require) {
             this._addVec(shape, vertexType, x2, y2, 77, nx, ny, 0, 0, nx, -ny);
             this._addVec(shape, vertexType, x2, y2, 55, nx, ny, 0, 0, nx, -ny);
             this._addVec(shape, vertexType, x1, y1, 55, nx, ny, 0, 0, nx, -ny);
-            shape.addQuadIndices(index, index+1, index+2, index+3);
+            shape.quads.add(index, index+1, index+2, index+3);
 
             x1 = x2;
             y1 = y2;

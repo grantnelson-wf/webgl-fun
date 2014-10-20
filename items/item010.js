@@ -163,10 +163,10 @@ define(function(require) {
         cylinderBuilder.bottomHeight = 0.0;
         cylinderBuilder.sideCount = 10;
         this.tree = cylinderBuilder.build(gl, this.shader.requiredType);
-        this.tree.posAttr = this.shader.posAttrLoc;
-        this.tree.normAttr = this.shader.normAttrLoc;
-        this.tree.binmAttr = this.shader.binmAttrLoc;
-        this.tree.txtAttr = this.shader.txtAttrLoc;
+        this.tree.posAttr.set(this.shader.posAttrLoc);
+        this.tree.normAttr.set(this.shader.normAttrLoc);
+        this.tree.binmAttr.set(this.shader.binmAttrLoc);
+        this.tree.txtAttr.set(this.shader.txtAttrLoc);
 
         // Setup ground shape.
         var gridBuilder = new GridBuilder();
@@ -176,10 +176,10 @@ define(function(require) {
         gridBuilder.depthDiv = 1;
         gridBuilder.z = 10;
         this.ground = gridBuilder.build(gl, this.shader.requiredType);
-        this.ground.posAttr = this.shader.posAttrLoc;
-        this.ground.normAttr = this.shader.normAttrLoc;
-        this.ground.binmAttr = this.shader.binmAttrLoc;
-        this.ground.txtAttr = this.shader.txtAttrLoc;
+        this.ground.posAttr.set(this.shader.posAttrLoc);
+        this.ground.normAttr.set(this.shader.normAttrLoc);
+        this.ground.binmAttr.set(this.shader.binmAttrLoc);
+        this.ground.txtAttr.set(this.shader.txtAttrLoc);
 
         // Setup firefly shape.
         var shape = new ShapeBuilder();
@@ -189,10 +189,10 @@ define(function(require) {
         shape.binm.add(0.0, 0.0, 1.0);
         shape.addPointIndex(0);
         this.fireFlyShape = shape.build(gl);
-        this.fireFlyShape.posAttr = this.shader.posAttrLoc;
-        this.fireFlyShape.normAttr = this.shader.normAttrLoc;
-        this.fireFlyShape.binmAttr = this.shader.binmAttrLoc;
-        this.fireFlyShape.txtAttr = this.shader.txtAttrLoc;
+        this.fireFlyShape.posAttr.set(this.shader.posAttrLoc);
+        this.fireFlyShape.normAttr.set(this.shader.normAttrLoc);
+        this.fireFlyShape.binmAttr.set(this.shader.binmAttrLoc);
+        this.fireFlyShape.txtAttr.set(this.shader.txtAttrLoc);
         
         // Load textures
         this.treeTxt = new Txt2D(gl);

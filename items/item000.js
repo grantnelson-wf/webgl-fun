@@ -60,8 +60,8 @@ define(function(require) {
         // Build shape
         var shapeBuilder = new ShapeBuilder();
         this.shape = shapeBuilder.build(gl, this.shader.requiredType);
-        this.shape.posAttr = this.shader.posAttrLoc;
-        this.shape.normAttr = this.shader.normAttrLoc;
+        this.shape.posAttr.set(this.shader.posAttrLoc);
+        this.shape.normAttr.set(this.shader.normAttrLoc);
 
         // List all other items.
         var items = [

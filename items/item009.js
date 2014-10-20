@@ -49,8 +49,8 @@ define(function(require) {
         skyboxShapeBuilder.height = -40;
         skyboxShapeBuilder.depth = -40;
         this.skyboxShape = skyboxShapeBuilder.build(gl, this.skyboxShader.requiredType);
-        this.skyboxShape.posAttr = this.skyboxShader.posAttrLoc;
-        this.skyboxShape.cubeAttr = this.skyboxShader.cubeAttrLoc;
+        this.skyboxShape.posAttr.set(this.skyboxShader.posAttrLoc);
+        this.skyboxShape.cubeAttr.set(this.skyboxShader.cubeAttrLoc);
 
         // Build and set the object shader.
         var objShaderBuilder = new ObjShaderBuilder();
@@ -71,10 +71,10 @@ define(function(require) {
         this.controls.setFps(0.0);
         this.controls.addShapeSelect("Shape", function(shapeBuilder) {
             item.objShape = shapeBuilder.build(gl, item.objShader.requiredType);
-            item.objShape.posAttr  = item.objShader.posAttrLoc;
-            item.objShape.normAttr = item.objShader.normAttrLoc;
-            item.objShape.binmAttr = item.objShader.binmAttrLoc;
-            item.objShape.txtAttr  = item.objShader.txtAttrLoc;
+            item.objShape.posAttr.set(item.objShader.posAttrLoc);
+            item.objShape.normAttr.set(item.objShader.normAttrLoc);
+            item.objShape.binmAttr.set(item.objShader.binmAttrLoc);
+            item.objShape.txtAttr.set(item.objShader.txtAttrLoc);
         }, "Cube");
         this.controls.addDic("Background", function(path) {
             item.txtCube = new TxtCube(gl);

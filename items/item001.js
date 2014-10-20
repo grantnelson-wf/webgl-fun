@@ -45,7 +45,7 @@ define(function(require) {
         this.controls.setFps(0.0);
         this.controls.addShapeSelect("Shape", function(shapeBuilder){
             item.shape = shapeBuilder.build(gl, item.shader.requiredType);
-            item.shape.posAttr = item.shader.posAttrLoc;
+            item.shape.posAttr.set(item.shader.posAttrLoc);
         }, "Toroid");
         this.controls.addFloat("Start", this.shader.setFogStart, 0.0, 4.0, 1.0);
         this.controls.addFloat("Stop",  this.shader.setFogStop,  0.0, 4.0, 2.5);

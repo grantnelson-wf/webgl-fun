@@ -2,6 +2,62 @@ define(function(require) {
 
     var Const = require('tools/const');
     var Common = require('tools/common');
+    var Buffers = require('shapes/buffers')
+
+    /**
+     * A graphical shape object.
+     * @param  {Number} vertexType  The vertex type.
+     * @param  {Number} vertexSize  The vertex size.
+     * @param  {Object} vertexBuf   The vertex buffer.
+     * @param  {Array} indexObjs    The index information.
+     */
+    function ShapeAttr(gl, type, offset, stride) {
+        this._gl     = gl;
+        this._type   = type;
+        this._offset = offset;
+        this._stride = stride;
+        this._size   = Common.typeSize(this._type);
+        this._attr   = null;
+    }
+
+    /**
+     * Gets the attribute type.
+     * @type {Number}
+     */
+    Shape.prototype.type = function() {
+        return this._type;
+    };
+
+    /**
+     * TODO: Comment
+     * @param {[type]} attr [description]
+     */
+    ShapeAttr.prototype.set = function(attr) {
+        this._attr = attr;
+    }
+
+    /**
+     * Binds the attribute for the vertex before a draw.
+     * @note  Should only be called by the shape object.
+     */
+    ShapeAttr.prototype.bind = function() {
+        if ((this._attr === null) || (this._attr === undefined)) {
+            throw 'Must set the attribute for '+Common.typeString(this._type)+' before calling draw.'; 
+        } else {
+            this._gl.enableVertexAttribArray(this._attr);
+            this._gl.vertexAttribPointer(this._attr, this._size, this._gl.FLOAT, false, this._stride, this._offset);
+        }
+    };
+
+    /**
+     * Unbinds the attribute for the vertex before a draw.
+     * @note  Should only be called by the shape object.
+     */
+    ShapeAttr.prototype.unbind = function() {
+        this._gl.disableVertexAttribArray(this._attr);
+    };
+
+    //======================================================================
 
     /**
      * A graphical shape object.
@@ -48,52 +104,42 @@ define(function(require) {
         this._indexObjs  = indexObjs;
 
         /**
-         * The position attribute handle or null.
-         * @type {Object}
+         * TODO: Comment
+         * @private
+         * @type {Array}
          */
-        this.posAttr = null;
+        this._attrs = [];
 
         /**
-         * The RGB color attribute handle or null.
-         * @type {Object}
+         * Sets the attribute for the vertex before a draw.
+         * @private
+         * @param {Number} type    The type of vertex data to set the attribute for.
+         * @param {Number} size    The number of floats in the vertex type.
+         * @param {Object} attr    The attribute for the vertex to draw.
+         * @param {Number} offset  The offset into the vertex to read from.
+         * @return  {Number}  The adjusted offset.
          */
-        this.clr3Attr = null;
+        var setAttr = function(shape, name, type, offset) {
+            if (shape._vertexType&type) {
+                var stride = shape._vertexSize*Float32Array.BYTES_PER_ELEMENT;
+                var attr = new ShapeAttr(shape._gl, type, offset, stride);
+                shape[name] = attr;
+                shape._attrs.push(attr);
+                offset += Common.typeSize(type)*Float32Array.BYTES_PER_ELEMENT;
+            }
+            return offset;
+        };
 
-        /**
-         * The RGBA color attribute handle or null.
-         * @type {Object}
-         */
-        this.clr4Attr = null;
-        
-        /**
-         * The normal attribute handle or null.
-         * @type {Object}
-         */
-        this.normAttr = null;
-
-        /**
-         * The 2D texture coordinate attribute handle or null.
-         * @type {Object}
-         */
-        this.txtAttr = null;
-
-        /**
-         * The cube texture coordinate attribute handle or null.
-         * @type {Object}
-         */
-        this.cubeAttr = null;
-
-        /**
-         * The binormal coordinate attribute handle or null.
-         * @type {Object}
-         */
-        this.binmAttr = null;
-
-        /**
-         * The weight value coordinate attribute handle or null.
-         * @type {Object}
-         */
-        this.wghtAttr = null;
+        // Setup all attribute members.
+        var offset = 0;
+        offset = setAttr(this, 'posAttr',  Const.POS,  offset);
+        offset = setAttr(this, 'clr3Attr', Const.CLR3, offset);
+        offset = setAttr(this, 'clr4Attr', Const.CLR4, offset);
+        offset = setAttr(this, 'normAttr', Const.NORM, offset);
+        offset = setAttr(this, 'txtAttr',  Const.TXT,  offset);
+        offset = setAttr(this, 'cubeAttr', Const.CUBE, offset);
+        offset = setAttr(this, 'binmAttr', Const.BINM, offset);
+        offset = setAttr(this, 'wghtAttr', Const.WGHT, offset);
     }
 
     /**
@@ -113,57 +159,14 @@ define(function(require) {
     };
 
     /**
-     * Sets the attribute for the vertex before a draw.
-     * @private
-     * @param {Number} type    The type of vertex data to set the attribute for.
-     * @param {Number} size    The number of floats in the vertex type.
-     * @param {Object} attr    The attribute for the vertex to draw.
-     * @param {Number} offset  The offset into the vertex to read from.
-     * @return  {Number}  The adjusted offset.
-     */
-    Shape.prototype._setAttr = function(type, size, attr, offset) {
-        if (this._vertexType&type) {
-            if ((attr === null) || (attr === undefined)) {
-                throw 'Must set the attribute for '+Common.typeString(type)+' before calling draw.'; 
-            } else {
-                var stride = this._vertexSize*Float32Array.BYTES_PER_ELEMENT;
-                this._gl.enableVertexAttribArray(attr);
-                this._gl.vertexAttribPointer(attr, size, this._gl.FLOAT, false, stride, offset);
-            }
-            offset += size*Float32Array.BYTES_PER_ELEMENT;
-        } else if ((attr !== null) && (attr !== undefined)) {
-            throw 'The attribute for '+Common.typeString(type)+' is set for a shape which does not have that type.';
-        }
-        return offset;
-    };
-
-    /**
-     * Sets the attribute for the vertex before a draw.
-     * @private
-     * @param  {Object} attr  The attribute to unset.
-     */
-    Shape.prototype._unsetAttr = function(attr) {
-        if ((attr !== null) && (attr !== undefined)) {
-            this._gl.disableVertexAttribArray(attr);
-        }
-    };
-
-    /**
      * Draws the shape to the graphical object.
      */
     Shape.prototype.draw = function() {
         this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._vertexBuf);
 
-        var offset = 0;
-        // TODO:: Need to base off of an object not specific list.
-        offset = this._setAttr(Const.POS,  3, this.posAttr,  offset);
-        offset = this._setAttr(Const.CLR3, 3, this.clr3Attr, offset);
-        offset = this._setAttr(Const.CLR4, 4, this.clr4Attr, offset);
-        offset = this._setAttr(Const.NORM, 3, this.normAttr, offset);
-        offset = this._setAttr(Const.TXT,  2, this.txtAttr,  offset);
-        offset = this._setAttr(Const.CUBE, 3, this.cubeAttr, offset);
-        offset = this._setAttr(Const.BINM, 3, this.binmAttr, offset);
-        offset = this._setAttr(Const.WGHT, 1, this.wghtAttr, offset);
+        for (var i = this._attrs.length - 1; i >= 0; i--) {
+            this._attrs[i].bind();
+        }
 
         var objCount = this._indexObjs.length;
         for (var i = 0; i < objCount; i++) {
@@ -172,361 +175,10 @@ define(function(require) {
             this._gl.drawElements(indexObj.type, indexObj.count, this._gl.UNSIGNED_SHORT, 0);
         }
 
-        this._unsetAttr(this.posAttr);
-        this._unsetAttr(this.clr3Attr);
-        this._unsetAttr(this.clr4Attr);
-        this._unsetAttr(this.normAttr);
-        this._unsetAttr(this.txtAttr);
-        this._unsetAttr(this.cubeAttr);
-        this._unsetAttr(this.binmAttr);
-        this._unsetAttr(this.wghtAttr);
+        for (var i = this._attrs.length - 1; i >= 0; i--) {
+            this._attrs[i].unbind();
+        }
         this._gl.bindBuffer(this._gl.ARRAY_BUFFER, null);
-    };
-
-    //======================================================================
-
-    /**
-     * A 1 value vertex buffer for building the shape.
-     * @param  {Number} type  The type of the buffer this is.
-     */
-    function Vertex1DataBuffer(type) {
-
-        /**
-         * The list of x in-line tuples for vertex data.
-         * @type {Array}
-         */
-        this.data = [];
-
-        /**
-         * The type of vertex this data is for.
-         * @type {Number}
-         */
-        this.type = type;
-    }
-
-    /**
-     * The size of the vertex buffer data in number of floats.
-     * @return  {Number}  The number of floats per vertex.
-     */
-    Vertex1DataBuffer.prototype.size = function() {
-        return 1;
-    };
-
-    /**
-     * Adds a vertex data to the shape.
-     * @param  {Number} x  The x component of this vertex data.
-     */
-    Vertex1DataBuffer.prototype.add = function(x) {
-        this.data.push(Number(x));
-    };
-
-    /**
-     * Finds the the vertex data in the shape.
-     * @param  {Number} x          The x component of this vertex data.
-     * @param  {Number} [epsilon]  The epsilon comparison.
-     * @return  {Number}  The index found or -1 if not found.
-     */
-    Vertex1DataBuffer.prototype.find = function(x, epsilon) {
-        epsilon = epsilon || 0.000001;
-        for (var i = 0; i < this.data.length; i++) {
-            if (Common.eq(this.data[i], x, epsilon)) {
-                return i;
-            }
-        }
-        return -1;
-    };
-
-    /**
-     * Sets vertex data to the shape.
-     * @param  {Number} index  The index to set.
-     * @param  {Number} x      The x component of this vertex data.
-     */
-    Vertex1DataBuffer.prototype.set = function(index, x) {
-        this.data[index] = Number(x);
-    };
-
-    /**
-     * Gets vertex data from the shape.
-     * @param  {Number} index  The index to get.
-     * @returns  {Array}  The data from the shape.
-     */
-    Vertex1DataBuffer.prototype.get = function(index) {
-        return [ this.data[index] ];
-    };
-
-    /**
-     * Gets the current number of datum.
-     * @returns  {Number}  The count of datum.
-     */
-    Vertex1DataBuffer.prototype.count = function() {
-        return this.data.length;
-    };
-
-    //======================================================================
-
-    /**
-     * A 2 value vertex buffer for building the shape.
-     * @param  {Number} type  The type of the buffer this is.
-     */
-    function Vertex2DataBuffer(type) {
-
-        /**
-         * The list of x, y in-line tuples for vertex data.
-         * @type {Array}
-         */
-        this.data = [];
-
-        /**
-         * The type of vertex this data is for.
-         * @type {Number}
-         */
-        this.type = type;
-    }
-
-    /**
-     * The size of the vertex buffer data in number of floats.
-     * @return  {Number}  The number of floats per vertex.
-     */
-    Vertex2DataBuffer.prototype.size = function() {
-        return 2;
-    };
-
-    /**
-     * Adds a vertex data to the shape.
-     * @param  {Number} x  The x component of this vertex data.
-     * @param  {Number} y  The y component of this vertex data.
-     */
-    Vertex2DataBuffer.prototype.add = function(x, y) {
-        this.data.push(Number(x), Number(y));
-    };
-
-    /**
-     * Finds the the vertex data in the shape.
-     * @param  {Number} x          The x component of this vertex data.
-     * @param  {Number} y          The y component of this vertex data.
-     * @param  {Number} [epsilon]  The epsilon comparison.
-     * @return  {Number}  The index found or -1 if not found.
-     */
-    Vertex2DataBuffer.prototype.find = function(x, y, epsilon) {
-        epsilon = epsilon || 0.000001;
-        for (var i = 0; i < this.data.length; i += 2) {
-            if (Common.eq(this.data[i  ], x, epsilon) &&
-                Common.eq(this.data[i+1], y, epsilon)) {
-                return i/2;
-            }
-        }
-        return -1;
-    };
-
-    /**
-     * Sets vertex data to the shape.
-     * @param  {Number} index  The index to set.
-     * @param  {Number} x      The x component of this vertex data.
-     * @param  {Number} y      The y component of this vertex data.
-     */
-    Vertex2DataBuffer.prototype.set = function(index, x, y) {
-        this.data[index*2  ] = Number(x);
-        this.data[index*2+1] = Number(y);
-    };
-
-    /**
-     * Gets vertex data from the shape.
-     * @param  {Number} index  The index to get.
-     * @returns  {Array}  The data from the shape.
-     */
-    Vertex2DataBuffer.prototype.get = function(index) {
-        return [ this.data[index*2], this.data[index*2+1] ];
-    };
-
-    /**
-     * Gets the current number of datum.
-     * @returns  {Number}  The count of datum.
-     */
-    Vertex2DataBuffer.prototype.count = function() {
-        return this.data.length/2;
-    };
-
-    //======================================================================
-
-    /**
-     * A 3 value vertex buffer for building the shape.
-     * @param  {Number} type  The type of the buffer this is.
-     */
-    function Vertex3DataBuffer(type) {
-
-        /**
-         * The list of x, y, z in-line triplets for vertex data.
-         * @type {Array}
-         */
-        this.data = [];
-
-        /**
-         * The type of vertex this data is for.
-         * @type {Number}
-         */
-        this.type = type;
-    }
-
-    /**
-     * The size of the vertex buffer data in number of floats.
-     * @return  {Number}  The number of floats per vertex.
-     */
-    Vertex3DataBuffer.prototype.size = function() {
-        return 3;
-    };
-
-    /**
-     * Adds a vertex data to the shape.
-     * @param  {Number} x  The x component of this vertex data.
-     * @param  {Number} y  The y component of this vertex data.
-     * @param  {Number} z  The z component of this vertex data.
-     */
-    Vertex3DataBuffer.prototype.add = function(x, y, z) {
-        this.data.push(Number(x), Number(y), Number(z));
-    };
-
-    /**
-     * Finds the the vertex data in the shape.
-     * @param  {Number} x          The x component of this vertex data.
-     * @param  {Number} y          The y component of this vertex data.
-     * @param  {Number} z          The z component of this vertex data.
-     * @param  {Number} [epsilon]  The epsilon comparison.
-     * @return  {Number}  The index found or -1 if not found.
-     */
-    Vertex3DataBuffer.prototype.find = function(x, y, z, epsilon) {
-        epsilon = epsilon || 0.000001;
-        for (var i = 0; i < this.data.length; i += 3) {
-            if (Common.eq(this.data[i  ], x, epsilon) &&
-                Common.eq(this.data[i+1], y, epsilon) &&
-                Common.eq(this.data[i+2], z, epsilon)) {
-                return i/3;
-            }
-        }
-        return -1;
-    };
-
-    /**
-     * Sets vertex data to the shape.
-     * @param  {Number} index  The index to set.
-     * @param  {Number} x      The x component of this vertex data.
-     * @param  {Number} y      The y component of this vertex data.
-     * @param  {Number} z      The z component of this vertex data.
-     */
-    Vertex3DataBuffer.prototype.set = function(index, x, y, z) {
-        this.data[index*3  ] = Number(x);
-        this.data[index*3+1] = Number(y);
-        this.data[index*3+2] = Number(z);
-    };
-
-    /**
-     * Gets vertex data from the shape.
-     * @param  {Number} index  The index to get.
-     * @returns  {Array}  The data from the shape.
-     */
-    Vertex3DataBuffer.prototype.get = function(index) {
-        return [ this.data[index*3], this.data[index*3+1], this.data[index*3+2] ];
-    };
-
-    /**
-     * Gets the current number of datum.
-     * @returns  {Number}  The count of datum.
-     */
-    Vertex3DataBuffer.prototype.count = function() {
-        return this.data.length/3;
-    };
-
-    //======================================================================
-
-    /**
-     * A 4 value vertex buffer for building the shape.
-     * @param  {Number} type  The type of the buffer this is.
-     */
-    function Vertex4DataBuffer(type) {
-
-        /**
-         * The list of x, y, z, w in-line tuple for vertex data.
-         * @type {Array}
-         */
-        this.data = [];
-
-        /**
-         * The type of vertex this data is for.
-         * @type {Number}
-         */
-        this.type = type;
-    }
-
-    /**
-     * The size of the vertex buffer data in number of floats.
-     * @return  {Number}  The number of floats per vertex.
-     */
-    Vertex4DataBuffer.prototype.size = function() {
-        return 4;
-    };
-
-    /**
-     * Adds a vertex data to the shape.
-     * @param  {Number} x  The x component of this vertex data.
-     * @param  {Number} y  The y component of this vertex data.
-     * @param  {Number} z  The z component of this vertex data.
-     * @param  {Number} w  The w component of this vertex data.
-     */
-    Vertex4DataBuffer.prototype.add = function(x, y, z, w) {
-        this.data.push(Number(x), Number(y), Number(z), Number(w));
-    };
-
-    /**
-     * Finds the the vertex data in the shape.
-     * @param  {Number} x          The x component of this vertex data.
-     * @param  {Number} y          The y component of this vertex data.
-     * @param  {Number} z          The z component of this vertex data.
-     * @param  {Number} w          The w component of this vertex data.
-     * @param  {Number} [epsilon]  The epsilon comparison.
-     * @return  {Number}  The index found or -1 if not found.
-     */
-    Vertex4DataBuffer.prototype.find = function(x, y, z, w, epsilon) {
-        epsilon = epsilon || 0.000001;
-        for (var i = 0; i < this.data.length; i += 4) {
-            if (Common.eq(this.data[i  ], x, epsilon) &&
-                Common.eq(this.data[i+1], y, epsilon) &&
-                Common.eq(this.data[i+2], z, epsilon) &&
-                Common.eq(this.data[i+3], w, epsilon)) {
-                return i/4;
-            }
-        }
-        return -1;
-    };
-
-    /**
-     * Sets vertex data to the shape.
-     * @param  {Number} index  The index to set.
-     * @param  {Number} x      The x component of this vertex data.
-     * @param  {Number} y      The y component of this vertex data.
-     * @param  {Number} z      The z component of this vertex data.
-     * @param  {Number} w      The w component of this vertex data.
-     */
-    Vertex4DataBuffer.prototype.set = function(index, x, y, z, w) {
-        this.data[index*4  ] = Number(x);
-        this.data[index*4+1] = Number(y);
-        this.data[index*4+2] = Number(z);
-        this.data[index*4+3] = Number(z);
-    };
-
-    /**
-     * Gets vertex data from the shape.
-     * @param  {Number} index  The index to get.
-     * @returns  {Array}  The data from the shape.
-     */
-    Vertex4DataBuffer.prototype.get = function(index) {
-        return [ this.data[index*4], this.data[index*4+1], this.data[index*4+2], this.data[index*4+3] ];
-    };
-
-    /**
-     * Gets the current number of datum.
-     * @returns  {Number}  The count of datum.
-     */
-    Vertex4DataBuffer.prototype.count = function() {
-        return this.data.length/4;
     };
 
     //======================================================================
@@ -540,49 +192,49 @@ define(function(require) {
          * The buffer of x, y, z in-line triplets of vertex position data.
          * @type {Array}
          */
-        this.pos = new Vertex3DataBuffer(Const.POS);
+        this.pos = new Buffers.Vertex3(Const.POS);
 
         /**
          * The buffer of r, g, b in-line triplets of vertex color data.
          * @type {Array}
          */
-        this.clr3 = new Vertex3DataBuffer(Const.CLR3);
+        this.clr3 = new Buffers.Vertex3(Const.CLR3);
 
         /**
          * The buffer of r, g, b, a in-line triplets of vertex color data.
          * @type {Array}
          */
-        this.clr4 = new Vertex4DataBuffer(Const.CLR4);
+        this.clr4 = new Buffers.Vertex4(Const.CLR4);
 
         /**
          * The buffer of x, y, z in-line triplets of vertex normal data.
          * @type {Array}
          */
-        this.norm = new Vertex3DataBuffer(Const.NORM);
+        this.norm = new Buffers.Vertex3(Const.NORM);
 
         /**
          * The buffer of u, v in-line tuple of vertex color data.
          * @type {Array}
          */
-        this.txt = new Vertex2DataBuffer(Const.TXT);
+        this.txt = new Buffers.Vertex2(Const.TXT);
 
         /**
          * The buffer of u, v, w in-line triplets of vertex color data.
          * @type {Array}
          */
-        this.cube = new Vertex3DataBuffer(Const.CUBE);
+        this.cube = new Buffers.Vertex3(Const.CUBE);
 
         /**
          * The buffer of x, y, z in-line triplets of vertex binormal data.
          * @type {Array}
          */
-        this.binm = new Vertex3DataBuffer(Const.BINM);
+        this.binm = new Buffers.Vertex3(Const.BINM);
 
         /**
          * The buffer of x in-line value of vertex weight data.
          * @type {Array}
          */
-        this.wght = new Vertex1DataBuffer(Const.WGHT);
+        this.wght = new Buffers.Vertex1(Const.WGHT);
 
         /**
          * The list of all vertex data buffers.
@@ -593,246 +245,59 @@ define(function(require) {
         /**
          * The list of indices for points.
          * Each index is a point.
-         * @private
          * @type {Array}
          */
-        this._indicesPoints = [];
+        this.points = new Buffers.PointIndices();
         
         /**
          * The list of index pairs for lines.
          * Each pair is a line.
-         * @private
          * @type {Array}
          */
-        this._indicesLines = [];
-        
-        /**
-         * The current line strip indices being worked on.
-         * Each point is connected to the previous to create lines,
-         * with the exception of the first and last points.
-         * @private
-         * @type {Array}
-         */
-        this._curLineStrips = null;
+        this.lines = new Buffers.LineIndices();
         
         /**
          * The list of line strip indices.
          * @type {Array}
          */
-        this._indicesLineStrips = [];
-        
-        /**
-         * The current line loop indices being worked on.
-         * Each point is connected to the previous to create lines,
-         * and the last point is connected to the first to make a loop.
-         * @private
-         * @type {Array}
-         */
-        this._curLineLoops = null;
+        this.lineStrips = new Buffers.LineStripIndices();
         
         /**
          * The list of line loop indices.
-         * @private
          * @type {Array}
          */
-        this._indicesLineLoops = [];
+        this.lineLoops = new Buffers.LineLoopIndices();
 
         /**
          * The list of triangle indices.
-         * @private
          * @type {Array}
          */
-        this._indicesTris = [];
+        this.tris = new Buffers.TriIndices();
 
         /**
          * The list of quadrilateral indices.
-         * @private
          * @type {Array}
          */
-        this._indicesQuads = [];
-        
-        /**
-         * The current triangle strip indices being worked on.
-         * @private
-         * @type {Array}
-         */
-        this._curTriStrips = null;
+        this.quads = new Buffers.QuadIndices();
         
         /**
          * The list of triangle strip indices.
-         * @private
          * @type {Array}
          */
-        this._indicesTriStrips = [];
-        
-        /**
-         * This current triangle fan indices being worked on.
-         * @private
-         * @type {Array}
-         */
-        this._curTriFans = null;
+        this.triStrips = new Buffers.TriStripIndices();
         
         /**
          * The list of triangle fan indices.
-         * @private
          * @type {Array}
          */
-        this._indicesTriFans = [];
+        this.triFans = new Buffers.TriFanIndices();
+
+        /**
+         * The list of all index buffers.
+         * @type {Array}
+         */
+        this.indices = [ this.points, this.lines, this.lineStrips, this.lineLoops, this.tris, this.quads, this.triStrips, this.triFans ];
     }
-
-    //======================================================================
-    
-    /**
-     * Adds a point index or point indices to the shape.
-     * This appends any number of point indices.
-     */
-    ShapeBuilder.prototype.addPointIndex = function() {
-        for (var i = 0; i < arguments.length; i++) {
-            this._indicesPoints.push(Number(arguments[i]));
-        }
-    };
-    
-    /**
-     * Adds line indices to the shape.
-     * @param  {Number} i  The first index to add.
-     * @param  {Number} j  The second index to add.
-     */
-    ShapeBuilder.prototype.addLineIndices = function(i, j) {
-        this._indicesLines.push(Number(i), Number(j));
-    };
-    
-    /**
-     * Starts a new line strip and adds line strip indices to the shape.
-     * This may also append any number of line strip indices.
-     */
-    ShapeBuilder.prototype.startLineStrip = function() {
-        if ((this._curLineStrips === null) || (this._curLineStrips.length > 0)) {
-            this._curLineStrips = [];
-            this._indicesLineStrips.push(this._curLineStrips);
-            for (var i = 0; i < arguments.length; i++) {
-                this._curLineStrips.push(Number(arguments[i]));
-            }
-        }
-    };
-    
-    /**
-     * Adds line strip indices to the shape.
-     * startLineStrip must be called before any strips can be added to.
-     * This may also append any number of line strip indices.
-     */
-    ShapeBuilder.prototype.addToLineStrip = function() {
-        if (this._curLineStrips === null) {
-            throw 'Error: Must start a line strip before adding to it.';
-        }
-        for (var i = 0; i < arguments.length; i++) {
-            this._curLineStrips.push(Number(arguments[i]));
-        }
-    };
-    
-    /**
-     * Starts a new line loop and adds line loop indices to the shape.
-     * This may also append any number of line loop indices.
-     */
-    ShapeBuilder.prototype.startLineLoop = function() {
-        if ((this._curLineLoops === null) || (this._curLineLoops.length > 0)) {
-            this._curLineLoops = [];
-            this._indicesLineLoops.push(this._curLineLoops);
-            for (var i = 0; i < arguments.length; i++) {
-                this._curLineLoops.push(Number(arguments[i]));
-            }
-        }
-    };
-    
-    /**
-     * Adds line loop indices to the shape.
-     * startLineLoop must be called before any strips can be added to.
-     * This may also append any number of line loop indices.
-     */
-    ShapeBuilder.prototype.addToLineLoop = function() {
-        if (this._curLineLoops === null) {
-            throw 'Error: Must start a line loop before adding to it.';
-        }
-        for (var i = 0; i < arguments.length; i++) {
-            this._curLineLoops.push(Number(arguments[i]));
-        }
-    };
-    
-    /**
-     * Adds triangle indices to the shape.
-     * @param  {Number} i  The first index to add.
-     * @param  {Number} j  The second index to add.
-     * @param  {Number} k  The third index to add.
-     */
-    ShapeBuilder.prototype.addTriIndices = function(i, j, k) {
-        this._indicesTris.push(Number(i), Number(j), Number(k));
-    };
-
-    /**
-     * Adds quadrilateral indices to the shape.
-     * @param  {Number} i  The first index to add.
-     * @param  {Number} j  The second index to add.
-     * @param  {Number} k  The third index to add.
-     * @param  {Number} l  The forth index to add.
-     */
-    ShapeBuilder.prototype.addQuadIndices = function(i, j, k, l) {
-        this._indicesQuads.push(Number(i), Number(j), Number(k), Number(l));
-    };
-
-    /**
-     * Starts a new triangle strip and adds triangle strip indices to the shape.
-     * This may also append any number of triangle strip indices.
-     */
-    ShapeBuilder.prototype.startTriStrip = function() {
-        if ((this._curTriStrips === null) || (this._curTriStrips.length > 0)) {
-            this._curTriStrips = [];
-            this._indicesTriStrips.push(this._curTriStrips);
-            for (var i = 0; i < arguments.length; i++) {
-                this._curTriStrips.push(Number(arguments[i]));
-            }
-        }
-    };
-    
-    /**
-     * Adds triangle strip indices to the shape.
-     * startTriStrip must be called before any strips can be added to.
-     * This may also append any number of triangle strip indices.
-     */
-    ShapeBuilder.prototype.addToTriStrip = function() {
-        if (this._curTriStrips === null) {
-            throw 'Error: Must start a triangle strip before adding to it.';
-        }
-        for (var i = 0; i < arguments.length; i++) {
-            this._curTriStrips.push(Number(arguments[i]));
-        }
-    };
-    
-    /**
-     * Starts a new triangle fan and adds triangle fan indices to the shape.
-     * This may also append any number of triangle fan indices.
-     */
-    ShapeBuilder.prototype.startTriFan = function() {
-        if ((this._curTriFans === null) || (this._curTriFans.length > 0)) {
-            this._curTriFans = [];
-            this._indicesTriFans.push(this._curTriFans);
-            for (var i = 0; i < arguments.length; i++) {
-                this._curTriFans.push(Number(arguments[i]));
-            }
-        }
-    };
-    
-    /**
-     * Adds triangle fan indices to the shape.
-     * startTriFan must be called before any strips can be added to.
-     * This may also append any number of triangle fan indices.
-     */
-    ShapeBuilder.prototype.addToTriFan = function() {
-        if (this._curTriFans === null) {
-            throw 'Error: Must start a triangle fan before adding to it.';
-        }
-        for (var i = 0; i < arguments.length; i++) {
-            this._curTriFans.push(Number(arguments[i]));
-        }
-    };
     
     //======================================================================
     
@@ -859,7 +324,15 @@ define(function(require) {
      * @returns  {Object}  The buffer length, vertex type, and vertex size.
      */
     ShapeBuilder.prototype._validateVertices = function(vertexType) {
-        vertexType = vertexType || (Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.BINM);
+        vertexType = vertexType || (Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.BINM|Const.WGHT);
+        if (vertexType === undefined) {
+            if (this.data.length) {
+                vertexType = this.data[0].type;
+                for (var i = this.data.length - 1; i >= 1; i--) {
+                    vertexType |= this.data[i].type;
+                }
+            }
+        }
         if (!(vertexType&Const.POS)) {
             throw 'Error: Must have at least the positional vertex type.';
         }
@@ -875,7 +348,7 @@ define(function(require) {
         // Determine prepared types.
         var i, datum;
         var hasData = new Array(this.data.length);
-        for (i = 0; i < this.data.length; i++) {
+        for (i = this.data.length - 1; i >= 0; i--) {
             datum = this.data[i];
             hasData[i] = false;
             if ((vertexType&datum.type) && (datum.count() > 0)) {
@@ -902,126 +375,14 @@ define(function(require) {
      * Build the indices for the shape.
      */
     ShapeBuilder.prototype._validateIndices = function(len) {
-        var i, j;
         var hasIndexObjs = false;
-        
-        // Check the point indices and range.
-        if (this._indicesPoints.length > 0) {
-            for (i = 0; i < this._indicesPoints.length; i++) {
-                index = this._indicesPoints[i];
-                if ((index < 0) || (index >= len)) {
-                    throw 'Error: The point index, '+index+', at '+i+' was not in [0..'+len+').';
-                }
+        for (var i = 0; i < this.indices.length; i++) {
+            var indices = this.indices[i];
+            indices.validate(len);
+            if (!indices.empty()) {
+                hasIndexObjs = true;
             }
-            hasIndexObjs = true;
         }
-        
-        // Check the line indices and range.
-        if (this._indicesLines.length > 0) {
-            if (lineStrip.length%2 !== 0) {
-                throw 'Error: The lines must be in groups of two, it has '+lineStrip.length+'.';
-            }
-            for (i = 0; i < this._indicesLines.length; i++) {
-                index = this._indicesLines[i];
-                if ((index < 0) || (index >= len)) {
-                    throw 'Error: The line index, '+index+', at '+i+' was not in [0..'+len+').';
-                }
-            }
-            hasIndexObjs = true;
-        }
-        
-        // Check the line strips indices and range.
-        for (i = 0; i < this._indicesLineStrips.length; i++) {
-            var lineStrip = this._indicesLineStrips[i];
-            if (lineStrip.length < 2) {
-                throw 'Error: The line loop at '+i+' must have at least two indices.';
-            }
-            for (j = 0; j < lineStrip.length; j++) {
-                index = lineStrip[j];
-                if ((index < 0) || (index >= len)) {
-                    throw 'Error: The line strip index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
-                }
-            }
-            hasIndexObjs = true;
-        }
-        
-        // Check the line loops indices and range.
-        if (this._indicesLineLoops.length > 0) {
-            for (i = 0; i < this._indicesLineLoops.length; i++) {
-                var lineLoop = this._indicesLineLoops[i];
-                if (lineLoop.length < 3) {
-                    throw 'Error: The line loop at '+i+' must have at least three indices.';
-                }
-                for (j = 0; j < lineLoop.length; j++) {
-                    index = lineLoop[j];
-                    if ((index < 0) || (index >= len)) {
-                        throw 'Error: The line loop index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
-                    }
-                }
-            }
-            hasIndexObjs = true;
-        }
-        
-        // Check the triangles and range.
-        if (this._indicesTris.length > 0) {
-            if (this._indicesTris.length%3 !== 0) {
-                throw 'Error: The triangles must be in groups of three, it has '+this._indicesTris.length+'.';
-            }
-            for (i = 0; i < this._indicesTris.length; i++) {
-                index = this._indicesTris[i];
-                if ((index < 0) || (index >= len)) {
-                    throw 'Error: The triangle index, '+index+', at '+i+' was not in [0..'+len+').';
-                }
-            }
-            hasIndexObjs = true;
-        }
-        
-        // Check the quads and range.
-        if (this._indicesQuads.length > 0) {
-            if (this._indicesQuads.length%4 !== 0) {
-                throw 'Error: The quadrilaterals must be in groups of four, it has '+this._indicesQuads.length+'.';
-            }
-            for (i = 0; i < this._indicesQuads.length; i += 4) {
-                for (j = 0; j < 4; j++) {
-                    index = this._indicesQuads[i+j];
-                    if ((index < 0) || (index >= len)) {
-                        throw 'Error: The quads index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
-                    }
-                }
-            }
-            hasIndexObjs = true;
-        }
-        
-        // Check the triangle strips indices and range.
-        for (i = 0; i < this._indicesTriStrips.length; i++) {
-            var triStrip = this._indicesTriStrips[i];
-            if (triStrip.length < 3) {
-                throw 'Error: The triangle strip at '+i+' must have at least three indices.';
-            }
-            for (j = 0; j < triStrip.length; j++) {
-                index = triStrip[j];
-                if ((index < 0) || (index >= len)) {
-                    throw 'Error: The triangle strip index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
-                }
-            }
-            hasIndexObjs = true;
-        }
-        
-        // Check the triangle fan indices and range.
-        for (i = 0; i < this._indicesTriFans.length; i++) {
-            var triFan = this._indicesTriFans[i];
-            if (triFan.length < 3) {
-                throw 'Error: The triangle fan at '+i+' must have at least three indices.';
-            }
-            for (j = 0; j < triFan.length; j++) {
-                index = triFan[j];
-                if ((index < 0) || (index >= len)) {
-                    throw 'Error: The triangle fan index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
-                }
-            }
-            hasIndexObjs = true;
-        }
-        
         if (!hasIndexObjs) {
             throw 'Error: Must have at least one index object.';
         }
@@ -1029,14 +390,13 @@ define(function(require) {
     
     /**
      * Builds the vertices for a shape.
-     * @param  {WebGLRenderingContext} gl  The graphical object to build the shape for.
      * @param  {Number} [vertexData]  The vertex data used to build the vertices.
      * @returns  {Object}  The vertex buffer.
      */
     ShapeBuilder.prototype._buildVertices = function(gl, vertexData) {     
         // Pack the vertices.
         var vertices = new Array(vertexData.length*vertexData.size);
-        for (i = 0, j = 0; i < vertexData.length; i++) {
+        for (var i = 0, j = 0; i < vertexData.length; i++) {
             for (var k = 0; k < this.data.length; k++) {
                 if (vertexData.hasData[k]) {
                     datum = this.data[k];
@@ -1061,116 +421,16 @@ define(function(require) {
      * @returns  {Array}  The list of index objects.
      */
     ShapeBuilder.prototype._buildIndices = function(gl) {
-        var i, j;
-        var indices = [];
-        var indexObjs = [];
-        var addIndexObj = function(type) {
-            var indexBuf  = gl.createBuffer();
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuf);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-            indexObjs.push({
-                type:   type,
-                count:  indices.length,
-                buffer: indexBuf
-            });
-            indices = [];
-        };
-        
-        // Copy the point indices.
-        if (this._indicesPoints.length > 0) {
-            for (i = 0; i < this._indicesPoints.length; i++) {
-                indices.push(this._indicesPoints[i]);
-            }
-            addIndexObj(gl.POINTS);
+        builder = new Buffers.IndicesBuilder();
+        for (var i = 0; i < this.indices.length; i++) {
+            this.indices[i].build(gl, builder);
         }
-        
-        // Copy the line indices.
-        if (this._indicesLines.length > 0) {
-            for (i = 0; i < this._indicesLines.length; i++) {
-                indices.push(this._indicesLines[i]);
-            }
-            addIndexObj(gl.LINES);
-        }
-        
-        // Copy the line strips indices.
-        for (i = 0; i < this._indicesLineStrips.length; i++) {
-            var lineStrip = this._indicesLineStrips[i];
-            for (j = 0; j < lineStrip.length; j++) {
-                indices.push(lineStrip[j]);
-            }
-            addIndexObj(gl.LINE_STRIP);
-        }
-        
-        // Copy the line loops indices.
-        if (this._indicesLineLoops.length > 0) {
-            for (i = 0; i < this._indicesLineLoops.length; i++) {
-                var lineLoop = this._indicesLineLoops[i];
-                for (j = 0; j < lineLoop.length; j++) {
-                    indices.push(lineLoop[j]);
-                }
-                addIndexObj(gl.LINE_LOOP);
-            }
-        }
-        
-        // Copy the triangles.
-        if (this._indicesTris.length > 0) {
-            for (i = 0; i < this._indicesTris.length; i++) {
-                indices.push(this._indicesTris[i]);
-            }
-            addIndexObj(gl.TRIANGLES);
-        }
-        
-        // Copy the quads.
-        if (this._indicesQuads.length > 0) {
-            for (i = 0; i < this._indicesQuads.length; i += 4) {
-                for (j = 0; j < 4; j++) {
-                    indices.push(this._indicesQuads[i+j]);
-                }
-                addIndexObj(gl.TRIANGLE_FAN);
-            }
-        }
-        
-        // Copy the triangle strips indices.
-        for (i = 0; i < this._indicesTriStrips.length; i++) {
-            var triStrip = this._indicesTriStrips[i];
-            for (j = 0; j < triStrip.length; j++) {
-                indices.push(triStrip[j]);
-            }
-            addIndexObj(gl.TRIANGLE_STRIP);
-        }
-        
-        // Copy the triangle fan indices.
-        for (i = 0; i < this._indicesTriFans.length; i++) {
-            var triFan = this._indicesTriFans[i];
-            for (j = 0; j < triFan.length; j++) {
-                indices.push(triFan[j]);
-            }
-            addIndexObj(gl.TRIANGLE_FAN);
-        }
-        
-        return indexObjs;
+        return builder.objs();
     };
     
     //======================================================================
     
-    /**
-     * TODO: Comment
-     * Build a shape with the set data.
-     * @returns  {Shape}  The built shape for the graphical object.
-     */
-    ShapeBuilder.prototype.createPoints = function() {
-        var vertexData = this._validateVertices();
-        this._validateIndices(vertexData.length);
-        
-        // TODO: Implement
-        
-        
-    };
-    
+    // TODO: Create to points, to lines, to degenerate points, to degenerate lines.
 
-    
-    
-    
-    
     return ShapeBuilder;
 });

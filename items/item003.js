@@ -48,8 +48,8 @@ define(function(require) {
         this.controls.setFps(0.0);
         this.controls.addShapeSelect("Shape", function(shapeBuilder){
             item.shape = shapeBuilder.build(gl, item.shader.requiredType);
-            item.shape.posAttr = item.shader.posAttrLoc;
-            item.shape.normAttr = item.shader.normAttrLoc;
+            item.shape.posAttr.set(item.shader.posAttrLoc);
+            item.shape.normAttr.set(item.shader.normAttrLoc);
         }, "Toroid");  
         this.controls.addRGB("Ambient",     this.shader.setAmbientClr,  0.0, 0.0, 1.0);
         this.controls.addRGB("Diffuse",     this.shader.setDiffuseClr,  1.0, 0.0, 0.0);

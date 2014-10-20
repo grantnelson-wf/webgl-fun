@@ -71,7 +71,8 @@ define(function(require) {
      * The supported vertex types.
      * @type {Number}
      */
-    GridBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
+    GridBuilder.prototype.supportedTypes = Const.POS|Const.CLR3|Const.CLR4|
+                                Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
     
     /**
      * Creates a grid.
@@ -116,9 +117,9 @@ define(function(require) {
         }
         
         for (i = 0; i < this.widthDiv; i++) {
-            shape.startTriStrip((i+1)*(this.depthDiv+1), i*(this.depthDiv+1));
+            shape.triStrips.start((i+1)*(this.depthDiv+1), i*(this.depthDiv+1));
             for (j = 1; j <= this.depthDiv; j++) {
-                shape.addToTriStrip((i+1)*(this.depthDiv+1)+j, i*(this.depthDiv+1)+j);
+                shape.triStrips.add((i+1)*(this.depthDiv+1)+j, i*(this.depthDiv+1)+j);
             }     
         }
         

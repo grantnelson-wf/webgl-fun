@@ -43,8 +43,8 @@ define(function(require) {
         skyboxShapeBuilder.height = -1;
         skyboxShapeBuilder.depth = -1;
         this.skyboxShape = skyboxShapeBuilder.build(gl, this.skyboxShader.requiredType);
-        this.skyboxShape.posAttr = this.skyboxShader.posAttrLoc;
-        this.skyboxShape.cubeAttr = this.skyboxShader.cubeAttrLoc;
+        this.skyboxShape.posAttr.set(this.skyboxShader.posAttrLoc);
+        this.skyboxShape.cubeAttr.set(this.skyboxShader.cubeAttrLoc);
         this.skyboxShader.setTxtSampler(0);
         this.skyboxShader.setFilterColor(1.0, 1.0, 1.0);
         
@@ -96,7 +96,6 @@ define(function(require) {
         // Clear color buffer.
         // (Because of the skybox the color buffer doesn't have to be cleared.)
         gl.clear(gl.DEPTH_BUFFER_BIT);
-
 
         // Draw skybox.
         this.txtCube.bind();

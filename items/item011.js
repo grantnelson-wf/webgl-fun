@@ -91,8 +91,8 @@ define(function(require) {
         shapeBuilder.txt.add( 1.0,  1.0);
         shapeBuilder.startTriFan(0, 3, 2, 1);
         this.shape = shapeBuilder.build(gl, this.shader.requiredType);
-        this.shape.posAttr = this.shader.posAttrLoc;
-        this.shape.txtAttr = this.shader.txtAttrLoc;
+        this.shape.posAttr.set(this.shader.posAttrLoc);
+        this.shape.txtAttr.set(this.shader.txtAttrLoc);
         
         return true;
     };
