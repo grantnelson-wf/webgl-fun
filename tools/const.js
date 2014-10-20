@@ -51,7 +51,13 @@ define(function(require) {
          * Indicates that a shape vertex contains a binormal coordinate.
          * @type {Number}
          */
-        BINM: 0x0040
+        BINM: 0x0040,
+
+        /**
+         * Indicates that a shape vertex contains a weight value.
+         * @type {Number}
+         */
+        WGHT: 0x0080
     };
 
     return Const;

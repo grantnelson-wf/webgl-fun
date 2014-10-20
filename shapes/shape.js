@@ -84,10 +84,16 @@ define(function(require) {
         this.cubeAttr = null;
 
         /**
-         * The binormal texture coordinate attribute handle or null.
+         * The binormal coordinate attribute handle or null.
          * @type {Object}
          */
         this.binmAttr = null;
+
+        /**
+         * The weight value coordinate attribute handle or null.
+         * @type {Object}
+         */
+        this.wghtAttr = null;
     }
 
     /**
@@ -157,6 +163,7 @@ define(function(require) {
         offset = this._setAttr(Const.TXT,  2, this.txtAttr,  offset);
         offset = this._setAttr(Const.CUBE, 3, this.cubeAttr, offset);
         offset = this._setAttr(Const.BINM, 3, this.binmAttr, offset);
+        offset = this._setAttr(Const.WGHT, 1, this.wghtAttr, offset);
 
         var objCount = this._indexObjs.length;
         for (var i = 0; i < objCount; i++) {
@@ -172,7 +179,87 @@ define(function(require) {
         this._unsetAttr(this.txtAttr);
         this._unsetAttr(this.cubeAttr);
         this._unsetAttr(this.binmAttr);
+        this._unsetAttr(this.wghtAttr);
         this._gl.bindBuffer(this._gl.ARRAY_BUFFER, null);
+    };
+
+    //======================================================================
+
+    /**
+     * A 1 value vertex buffer for building the shape.
+     * @param  {Number} type  The type of the buffer this is.
+     */
+    function Vertex1DataBuffer(type) {
+
+        /**
+         * The list of x in-line tuples for vertex data.
+         * @type {Array}
+         */
+        this.data = [];
+
+        /**
+         * The type of vertex this data is for.
+         * @type {Number}
+         */
+        this.type = type;
+    }
+
+    /**
+     * The size of the vertex buffer data in number of floats.
+     * @return  {Number}  The number of floats per vertex.
+     */
+    Vertex1DataBuffer.prototype.size = function() {
+        return 1;
+    };
+
+    /**
+     * Adds a vertex data to the shape.
+     * @param  {Number} x  The x component of this vertex data.
+     */
+    Vertex1DataBuffer.prototype.add = function(x) {
+        this.data.push(Number(x));
+    };
+
+    /**
+     * Finds the the vertex data in the shape.
+     * @param  {Number} x          The x component of this vertex data.
+     * @param  {Number} [epsilon]  The epsilon comparison.
+     * @return  {Number}  The index found or -1 if not found.
+     */
+    Vertex1DataBuffer.prototype.find = function(x, epsilon) {
+        epsilon = epsilon || 0.000001;
+        for (var i = 0; i < this.data.length; i++) {
+            if (Common.eq(this.data[i], x, epsilon)) {
+                return i;
+            }
+        }
+        return -1;
+    };
+
+    /**
+     * Sets vertex data to the shape.
+     * @param  {Number} index  The index to set.
+     * @param  {Number} x      The x component of this vertex data.
+     */
+    Vertex1DataBuffer.prototype.set = function(index, x) {
+        this.data[index] = Number(x);
+    };
+
+    /**
+     * Gets vertex data from the shape.
+     * @param  {Number} index  The index to get.
+     * @returns  {Array}  The data from the shape.
+     */
+    Vertex1DataBuffer.prototype.get = function(index) {
+        return [ this.data[index] ];
+    };
+
+    /**
+     * Gets the current number of datum.
+     * @returns  {Number}  The count of datum.
+     */
+    Vertex1DataBuffer.prototype.count = function() {
+        return this.data.length;
     };
 
     //======================================================================
@@ -492,10 +579,16 @@ define(function(require) {
         this.binm = new Vertex3DataBuffer(Const.BINM);
 
         /**
+         * The buffer of x in-line value of vertex weight data.
+         * @type {Array}
+         */
+        this.wght = new Vertex1DataBuffer(Const.WGHT);
+
+        /**
          * The list of all vertex data buffers.
          * @type {Array}
          */
-        this.data = [ this.pos, this.clr3, this.clr4, this.norm, this.txt, this.cube, this.binm ];
+        this.data = [ this.pos, this.clr3, this.clr4, this.norm, this.txt, this.cube, this.binm, this.wght ];
         
         /**
          * The list of indices for points.
@@ -751,19 +844,21 @@ define(function(require) {
      * @returns  {Shape}  The built shape for the graphical object.
      */
     ShapeBuilder.prototype.build = function(gl, vertexType) {
-        var vertices = this._buildVertices(gl, vertexType);
-        var indexObjs = this._buildIndices(gl, vertices.length);
-        return new Shape(gl, vertices.type, vertices.size, vertices.buffer, indexObjs);
+        var vertexData = this._validateVertices(vertexType);
+        this._validateIndices(vertexData.length);
+        var vertexBuf = this._buildVertices(gl, vertexData);
+        var indexObjs = this._buildIndices(gl);
+        return new Shape(gl, vertexData.type, vertexData.size, vertexBuf, indexObjs);
     };
     
     /**
+     * TODO: Comment
      * Builds the vertices for a shape.
-     * @param  {WebGLRenderingContext} gl  The graphical object to build the shape for.
      * @param  {Number} [vertexType]  The vertex type to build.
      *                                If not provided, all the defined types are used.
-     * @returns  {Object} The buffer, buffer length, vertex type, and vertex size.
+     * @returns  {Object}  The buffer length, vertex type, and vertex size.
      */
-    ShapeBuilder.prototype._buildVertices = function(gl, vertexType) {
+    ShapeBuilder.prototype._validateVertices = function(vertexType) {
         vertexType = vertexType || (Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.BINM);
         if (!(vertexType&Const.POS)) {
             throw 'Error: Must have at least the positional vertex type.';
@@ -793,12 +888,157 @@ define(function(require) {
                 hasData[i] = true;
             }
         }
-
+        
+        return {
+            type: newVertexType,
+            size: vertexSize,
+            length: len,
+            hasData: hasData
+        };
+    };
+    
+    /**
+     * TODO: Comment
+     * Build the indices for the shape.
+     */
+    ShapeBuilder.prototype._validateIndices = function(len) {
+        var i, j;
+        var hasIndexObjs = false;
+        
+        // Check the point indices and range.
+        if (this._indicesPoints.length > 0) {
+            for (i = 0; i < this._indicesPoints.length; i++) {
+                index = this._indicesPoints[i];
+                if ((index < 0) || (index >= len)) {
+                    throw 'Error: The point index, '+index+', at '+i+' was not in [0..'+len+').';
+                }
+            }
+            hasIndexObjs = true;
+        }
+        
+        // Check the line indices and range.
+        if (this._indicesLines.length > 0) {
+            if (lineStrip.length%2 !== 0) {
+                throw 'Error: The lines must be in groups of two, it has '+lineStrip.length+'.';
+            }
+            for (i = 0; i < this._indicesLines.length; i++) {
+                index = this._indicesLines[i];
+                if ((index < 0) || (index >= len)) {
+                    throw 'Error: The line index, '+index+', at '+i+' was not in [0..'+len+').';
+                }
+            }
+            hasIndexObjs = true;
+        }
+        
+        // Check the line strips indices and range.
+        for (i = 0; i < this._indicesLineStrips.length; i++) {
+            var lineStrip = this._indicesLineStrips[i];
+            if (lineStrip.length < 2) {
+                throw 'Error: The line loop at '+i+' must have at least two indices.';
+            }
+            for (j = 0; j < lineStrip.length; j++) {
+                index = lineStrip[j];
+                if ((index < 0) || (index >= len)) {
+                    throw 'Error: The line strip index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
+                }
+            }
+            hasIndexObjs = true;
+        }
+        
+        // Check the line loops indices and range.
+        if (this._indicesLineLoops.length > 0) {
+            for (i = 0; i < this._indicesLineLoops.length; i++) {
+                var lineLoop = this._indicesLineLoops[i];
+                if (lineLoop.length < 3) {
+                    throw 'Error: The line loop at '+i+' must have at least three indices.';
+                }
+                for (j = 0; j < lineLoop.length; j++) {
+                    index = lineLoop[j];
+                    if ((index < 0) || (index >= len)) {
+                        throw 'Error: The line loop index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
+                    }
+                }
+            }
+            hasIndexObjs = true;
+        }
+        
+        // Check the triangles and range.
+        if (this._indicesTris.length > 0) {
+            if (this._indicesTris.length%3 !== 0) {
+                throw 'Error: The triangles must be in groups of three, it has '+this._indicesTris.length+'.';
+            }
+            for (i = 0; i < this._indicesTris.length; i++) {
+                index = this._indicesTris[i];
+                if ((index < 0) || (index >= len)) {
+                    throw 'Error: The triangle index, '+index+', at '+i+' was not in [0..'+len+').';
+                }
+            }
+            hasIndexObjs = true;
+        }
+        
+        // Check the quads and range.
+        if (this._indicesQuads.length > 0) {
+            if (this._indicesQuads.length%4 !== 0) {
+                throw 'Error: The quadrilaterals must be in groups of four, it has '+this._indicesQuads.length+'.';
+            }
+            for (i = 0; i < this._indicesQuads.length; i += 4) {
+                for (j = 0; j < 4; j++) {
+                    index = this._indicesQuads[i+j];
+                    if ((index < 0) || (index >= len)) {
+                        throw 'Error: The quads index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
+                    }
+                }
+            }
+            hasIndexObjs = true;
+        }
+        
+        // Check the triangle strips indices and range.
+        for (i = 0; i < this._indicesTriStrips.length; i++) {
+            var triStrip = this._indicesTriStrips[i];
+            if (triStrip.length < 3) {
+                throw 'Error: The triangle strip at '+i+' must have at least three indices.';
+            }
+            for (j = 0; j < triStrip.length; j++) {
+                index = triStrip[j];
+                if ((index < 0) || (index >= len)) {
+                    throw 'Error: The triangle strip index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
+                }
+            }
+            hasIndexObjs = true;
+        }
+        
+        // Check the triangle fan indices and range.
+        for (i = 0; i < this._indicesTriFans.length; i++) {
+            var triFan = this._indicesTriFans[i];
+            if (triFan.length < 3) {
+                throw 'Error: The triangle fan at '+i+' must have at least three indices.';
+            }
+            for (j = 0; j < triFan.length; j++) {
+                index = triFan[j];
+                if ((index < 0) || (index >= len)) {
+                    throw 'Error: The triangle fan index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
+                }
+            }
+            hasIndexObjs = true;
+        }
+        
+        if (!hasIndexObjs) {
+            throw 'Error: Must have at least one index object.';
+        }
+    };
+    
+    /**
+     * Builds the vertices for a shape.
+     * @param  {WebGLRenderingContext} gl  The graphical object to build the shape for.
+     * @param  {Number} [vertexData]  The vertex data used to build the vertices.
+     * @returns  {Object}  The vertex buffer.
+     */
+    ShapeBuilder.prototype._buildVertices = function(gl, vertexData) {     
         // Pack the vertices.
-        var vertices = new Array(len*vertexSize);
-        for (i = 0, j = 0; i < len; i++) {
+        var vertices = new Array(vertexData.length*vertexData.size);
+        for (i = 0, j = 0; i < vertexData.length; i++) {
             for (var k = 0; k < this.data.length; k++) {
-                if (hasData[k]) {
+                if (vertexData.hasData[k]) {
                     datum = this.data[k];
                     vec = datum.get(i);
                     for (var l = 0; l < datum.size(); l++) {
@@ -812,23 +1052,15 @@ define(function(require) {
         var vertexBuf = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuf);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-        
-        return {
-            buffer: vertexBuf,
-            type: newVertexType,
-            size: vertexSize,
-            length: len
-        };
+        return vertexBuf;
     };
     
     /**
      * Build the indices for the shape.
      * @param  {WebGLRenderingContext} gl  The graphical object to build the shape for.
-     * @param  {Number} [vertexType]  The vertex type to build.
-     *                                If not provided, all the defined types are used.
      * @returns  {Array}  The list of index objects.
      */
-    ShapeBuilder.prototype._buildIndices = function(gl, len) {
+    ShapeBuilder.prototype._buildIndices = function(gl) {
         var i, j;
         var indices = [];
         var indexObjs = [];
@@ -844,136 +1076,101 @@ define(function(require) {
             indices = [];
         };
         
-        // Copy the point indices and check the indices range.
+        // Copy the point indices.
         if (this._indicesPoints.length > 0) {
             for (i = 0; i < this._indicesPoints.length; i++) {
-                index = this._indicesPoints[i];
-                if ((index < 0) || (index >= len)) {
-                    throw 'Error: The point index, '+index+', at '+i+' was not in [0..'+len+').';
-                }
-                indices.push(index);
+                indices.push(this._indicesPoints[i]);
             }
             addIndexObj(gl.POINTS);
         }
         
-        // Copy the line indices and check the indices range.
+        // Copy the line indices.
         if (this._indicesLines.length > 0) {
-            if (lineStrip.length%2 !== 0) {
-                throw 'Error: The lines must be in groups of two, it has '+lineStrip.length+'.';
-            }
             for (i = 0; i < this._indicesLines.length; i++) {
-                index = this._indicesLines[i];
-                if ((index < 0) || (index >= len)) {
-                    throw 'Error: The line index, '+index+', at '+i+' was not in [0..'+len+').';
-                }
-                indices.push(index);
+                indices.push(this._indicesLines[i]);
             }
             addIndexObj(gl.LINES);
         }
         
-        // Copy the line strips indices and check the indices range.
+        // Copy the line strips indices.
         for (i = 0; i < this._indicesLineStrips.length; i++) {
             var lineStrip = this._indicesLineStrips[i];
-            if (lineStrip.length < 2) {
-                throw 'Error: The line loop at '+i+' must have at least two indices.';
-            }
             for (j = 0; j < lineStrip.length; j++) {
-                index = lineStrip[j];
-                if ((index < 0) || (index >= len)) {
-                    throw 'Error: The line strip index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
-                }
-                indices.push(index);
+                indices.push(lineStrip[j]);
             }
             addIndexObj(gl.LINE_STRIP);
         }
         
-        // Copy the line loops indices and check the indices range.
+        // Copy the line loops indices.
         if (this._indicesLineLoops.length > 0) {
             for (i = 0; i < this._indicesLineLoops.length; i++) {
                 var lineLoop = this._indicesLineLoops[i];
-                if (lineLoop.length < 3) {
-                    throw 'Error: The line loop at '+i+' must have at least three indices.';
-                }
                 for (j = 0; j < lineLoop.length; j++) {
-                    index = lineLoop[j];
-                    if ((index < 0) || (index >= len)) {
-                        throw 'Error: The line loop index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
-                    }
-                    indices.push(index);
+                    indices.push(lineLoop[j]);
                 }
                 addIndexObj(gl.LINE_LOOP);
             }
         }
         
-        // Copy the triangles and check the indices range.
+        // Copy the triangles.
         if (this._indicesTris.length > 0) {
-            if (this._indicesTris.length%3 !== 0) {
-                throw 'Error: The triangles must be in groups of three, it has '+this._indicesTris.length+'.';
-            }
             for (i = 0; i < this._indicesTris.length; i++) {
-                index = this._indicesTris[i];
-                if ((index < 0) || (index >= len)) {
-                    throw 'Error: The triangle index, '+index+', at '+i+' was not in [0..'+len+').';
-                }
-                indices.push(index);
+                indices.push(this._indicesTris[i]);
             }
             addIndexObj(gl.TRIANGLES);
         }
         
-        // Copy the quads and check the indices range.
+        // Copy the quads.
         if (this._indicesQuads.length > 0) {
-            if (this._indicesQuads.length%4 !== 0) {
-                throw 'Error: The quadrilaterals must be in groups of four, it has '+this._indicesQuads.length+'.';
-            }
             for (i = 0; i < this._indicesQuads.length; i += 4) {
                 for (j = 0; j < 4; j++) {
-                    index = this._indicesQuads[i+j];
-                    if ((index < 0) || (index >= len)) {
-                        throw 'Error: The quads index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
-                    }
-                    indices.push(index);
+                    indices.push(this._indicesQuads[i+j]);
                 }
                 addIndexObj(gl.TRIANGLE_FAN);
             }
         }
         
-        // Copy the triangle strips indices and check the indices range.
+        // Copy the triangle strips indices.
         for (i = 0; i < this._indicesTriStrips.length; i++) {
             var triStrip = this._indicesTriStrips[i];
-            if (triStrip.length < 3) {
-                throw 'Error: The triangle strip at '+i+' must have at least three indices.';
-            }
             for (j = 0; j < triStrip.length; j++) {
-                index = triStrip[j];
-                if ((index < 0) || (index >= len)) {
-                    throw 'Error: The triangle strip index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
-                }
-                indices.push(index);
+                indices.push(triStrip[j]);
             }
             addIndexObj(gl.TRIANGLE_STRIP);
         }
         
-        // Copy the triangle fan indices and check the indices range.
+        // Copy the triangle fan indices.
         for (i = 0; i < this._indicesTriFans.length; i++) {
             var triFan = this._indicesTriFans[i];
-            if (triFan.length < 3) {
-                throw 'Error: The triangle fan at '+i+' must have at least three indices.';
-            }
             for (j = 0; j < triFan.length; j++) {
-                index = triFan[j];
-                if ((index < 0) || (index >= len)) {
-                    throw 'Error: The triangle fan index, '+index+', at '+j+' in '+i+' was not in [0..'+len+').';
-                }
-                indices.push(index);
+                indices.push(triFan[j]);
             }
             addIndexObj(gl.TRIANGLE_FAN);
         }
         
-        if (indexObjs.length < 1) {
-            throw 'Error: Must have at least one index object.';
-        }
         return indexObjs;
     };
+    
+    //======================================================================
+    
+    /**
+     * TODO: Comment
+     * Build a shape with the set data.
+     * @returns  {Shape}  The built shape for the graphical object.
+     */
+    ShapeBuilder.prototype.createPoints = function() {
+        var vertexData = this._validateVertices();
+        this._validateIndices(vertexData.length);
+        
+        // TODO: Implement
+        
+        
+    };
+    
 
+    
+    
+    
+    
     return ShapeBuilder;
 });

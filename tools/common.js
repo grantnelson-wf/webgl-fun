@@ -46,6 +46,9 @@ define(function(require) {
             if (type&Const.BINM) {
                 size += 3;
             }
+            if (type&Const.WGHT) {
+                size += 1;
+            }
             return size;
         },
 
@@ -76,6 +79,9 @@ define(function(require) {
             }
             if (type&Const.BINM) {
                 names.push('BINM');
+            }
+            if (type&Const.WGHT) {
+                names.push('WGHT');
             }
             return names.join('|');
         },
