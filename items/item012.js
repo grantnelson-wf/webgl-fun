@@ -52,8 +52,8 @@ define(function(require) {
             item.shape.normAttr.set(item.shader.normAttrLoc);
             item.shape.txtAttr.set(item.shader.txtAttrLoc);
         }, "Toroid");  
-        this.controls.addFloat("Ambient", this.shader.setAmbient, 0.0, 1.0, 0.4);
-        this.controls.addFloat("Diffuse", this.shader.setDiffuse, 0.0, 1.0, 0.6);
+        this.controls.addFloat("Ambient", this.shader.setAmbient, 0.0, 1.0, 0.3);
+        this.controls.addFloat("Diffuse", this.shader.setDiffuse, 0.0, 1.0, 0.5);
         
         this.txt2D = new Txt2D(gl);
         this.txt2D.index = 0;

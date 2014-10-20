@@ -447,6 +447,29 @@ define(function(require) {
         }
     };
 
+    /**
+     * TODO: Comment
+     */
+    PointIndices.prototype.eachPoint = function(callBack) {
+        for (var i = 0; i < this._indicesPoints.length; i++) {
+            callBack(this._indicesPoints[i]);
+        }
+    };
+
+    /**
+     * TODO: Comment
+     */
+    PointIndices.prototype.eachLine = function(callBack) {
+        // Do Nothing
+    };
+
+    /**
+     * TODO: Comment
+     */
+    PointIndices.prototype.eachTri = function(callBack) {
+        // Do Nothing
+    };
+
     //======================================================================
 
     /**
@@ -509,6 +532,31 @@ define(function(require) {
             }
             builder.pack(gl, gl.LINES);
         } 
+    };
+
+    /**
+     * TODO: Comment
+     */
+    LineIndices.prototype.eachPoint = function(callBack) {
+        for (var i = 0; i < this._indicesLines.length; i++) {
+            callBack(this._indicesLines[i]);
+        }
+    };
+
+    /**
+     * TODO: Comment
+     */
+    LineIndices.prototype.eachLine = function(callBack) {
+        for (var i = 0; i < this._indicesLines.length; i += 2) {
+            callBack(this._indicesLines[i], this._indicesLines[i+1]);
+        }
+    };
+
+    /**
+     * TODO: Comment
+     */
+    LineIndices.prototype.eachTri = function(callBack) {
+        // Do Nothing
     };
 
     //======================================================================
@@ -603,6 +651,37 @@ define(function(require) {
             }
             builder.pack(gl, gl.LINE_STRIP);
         }
+    };
+
+    /**
+     * TODO: Comment
+     */
+    LineStripIndices.prototype.eachPoint = function(callBack) {
+        for (var i = 0; i < this._indicesLineStrips.length; i++) {
+            var lineStrip = this._indicesLineStrips[i];
+            for (var j = 0; j < lineStrip.length; j++) {
+                callBack(lineStrip[j]);
+            }
+        }
+    };
+
+    /**
+     * TODO: Comment
+     */
+    LineStripIndices.prototype.eachLine = function(callBack) {
+        for (var i = 0; i < this._indicesLineStrips.length; i++) {
+            var lineStrip = this._indicesLineStrips[i];
+            for (var j = 0; j < lineStrip.length; j += 2) {
+                callBack(lineStrip[j], lineStrip[j+1]);
+            }
+        }
+    };
+
+    /**
+     * TODO: Comment
+     */
+    LineStripIndices.prototype.eachTri = function(callBack) {
+        // Do Nothing
     };
 
     //======================================================================
@@ -702,6 +781,38 @@ define(function(require) {
             }
         }
     };
+
+    /**
+     * TODO: Comment
+     */
+    LineLoopIndices.prototype.eachPoint = function(callBack) {
+        for (var i = 0; i < this._indicesLineLoops.length; i++) {
+            var lineLoop = this._indicesLineLoops[i];
+            for (var j = 0; j < lineLoop.length; j++) {
+                callBack(lineLoop[j]);
+            }
+        }
+    };
+
+    /**
+     * TODO: Comment
+     */
+    LineLoopIndices.prototype.eachLine = function(callBack) {
+        for (var i = 0; i < this._indicesLineLoops.length; i++) {
+            var lineLoop = this._indicesLineLoops[i];
+            for (var j = 0; j < lineLoop.length; j += 2) {
+                callBack(lineLoop[j], lineLoop[j+1]);
+            }
+            callBack(lineLoop[lineLoop.length-1], lineLoop[0]);
+        }
+    };
+
+    /**
+     * TODO: Comment
+     */
+    LineLoopIndices.prototype.eachTri = function(callBack) {
+        // Do Nothing
+    };
     
     //======================================================================
 
@@ -765,6 +876,27 @@ define(function(require) {
             }
             builder.pack(gl, gl.TRIANGLES);
         }
+    };
+
+    /**
+     * TODO: Comment
+     */
+    TriIndices.prototype.eachPoint = function(callBack) {
+
+    };
+
+    /**
+     * TODO: Comment
+     */
+    TriIndices.prototype.eachLine = function(callBack) {
+
+    };
+
+    /**
+     * TODO: Comment
+     */
+    TriIndices.prototype.eachTri = function(callBack) {
+
     };
 
     //======================================================================
@@ -834,6 +966,27 @@ define(function(require) {
                 builder.pack(gl, gl.TRIANGLE_FAN);
             }
         }
+    };
+
+    /**
+     * TODO: Comment
+     */
+    QuadIndices.prototype.eachPoint = function(callBack) {
+
+    };
+
+    /**
+     * TODO: Comment
+     */
+    QuadIndices.prototype.eachLine = function(callBack) {
+
+    };
+
+    /**
+     * TODO: Comment
+     */
+    QuadIndices.prototype.eachTri = function(callBack) {
+
     };
 
     //======================================================================
@@ -928,6 +1081,27 @@ define(function(require) {
         }
     };
 
+    /**
+     * TODO: Comment
+     */
+    TriStripIndices.prototype.eachPoint = function(callBack) {
+
+    };
+
+    /**
+     * TODO: Comment
+     */
+    TriStripIndices.prototype.eachLine = function(callBack) {
+
+    };
+
+    /**
+     * TODO: Comment
+     */
+    TriStripIndices.prototype.eachTri = function(callBack) {
+
+    };
+
     //======================================================================
 
     /**
@@ -1018,6 +1192,27 @@ define(function(require) {
             }
             builder.pack(gl, gl.TRIANGLE_FAN);
         }
+    };
+
+    /**
+     * TODO: Comment
+     */
+    TriFanIndices.prototype.eachPoint = function(callBack) {
+
+    };
+
+    /**
+     * TODO: Comment
+     */
+    TriFanIndices.prototype.eachLine = function(callBack) {
+
+    };
+
+    /**
+     * TODO: Comment
+     */
+    TriFanIndices.prototype.eachTri = function(callBack) {
+
     };
 
     //======================================================================

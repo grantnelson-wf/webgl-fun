@@ -431,6 +431,50 @@ define(function(require) {
     //======================================================================
     
     // TODO: Create to points, to lines, to degenerate points, to degenerate lines.
+ 
+
+
+
+
+    /**
+     * TODO: Comment
+     * @return {[type]} [description]
+     */
+    ShapeBuilder.prototype.degenerateLines = function() {
+        var vertexData = this._validateVertices(vertexType);
+        this._validateIndices(vertexData.length);
+
+        // Copy all the data over to the builder, twice.
+        var builder = new ShapeBuilder();
+        for (var i = this.data.length - 1; i >= 0; i--) {
+            var src = this.data[i].data;
+            var srcLen = src.length;
+            var dest = [];
+            for (var j = srcLen - 1; j >= 0; j--) {
+                var value = src[j];
+                dest[j] = value;
+                dest[j+srcLen] = value;
+            };
+            builder.data[i].data = dest;
+        };
+
+        // Set the weight data for the first copy to zero, the second copy to one.
+        var count = this.pos.count();
+        builder.wght.data = [];
+        for (var i = count - 1; i >= 0; i--) {
+            builder.wght.add(0.0);
+        };
+        for (var i = count - 1; i >= 0; i--) {
+            builder.wght.add(1.0);
+        };
+
+        // Foreach edge create a quad with the first and second copy.
+
+
+
+
+        return builder;
+    };
 
     return ShapeBuilder;
 });
