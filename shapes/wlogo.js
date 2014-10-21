@@ -116,13 +116,11 @@ define(function(require) {
     };
     
     /**
-     * Creates the Workiva logo shape.
-     * @param  {WebGLRenderingContext} gl  The graphical object.
-     * @param  {Number} vertexType  The type of the vertex to create.
-     * @returns  {Shape}  The created shape.
+     * Prepares a shape builder for a Workiva logo shape.
+     * @param  {ShapeBuilder} shape  The shape builder to prepare.
+     * @param  {Number} vertexType  The vertex type to build.
      */
-    WLogoBuilder.prototype.build = function(gl, vertexType) {
-        var shape = new ShapeBuilder();
+    WLogoBuilder.prototype.prepare = function(shape, vertexType) {
         //                              I___J
         //                              |   |
         //                             |   |
@@ -140,7 +138,18 @@ define(function(require) {
         this._addPoly(shape, vertexType, [
             82, 83, 111, 0, 133, 0, 95, 115, // H, I, J, K
             72, 115, 48, 47, 70, 47 ]); // L, M, N
-        return shape.build(gl);
+    };
+    
+    /**
+     * Creates the Workiva logo shape.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Number} vertexType  The type of the vertex to create.
+     * @returns  {Shape}  The created shape.
+     */
+    WLogoBuilder.prototype.build = function(gl, vertexType) {
+        var shape = new ShapeBuilder();
+        this.prepare(shape, vertexType);
+        return shape.build(gl, vertexType);
     };
 
     return WLogoBuilder;

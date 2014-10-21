@@ -508,8 +508,8 @@ define(function(require) {
      */
     LineIndices.prototype.validate = function(len) {
         if (this._indicesLines.length > 0) {
-            if (lineStrip.length%2 !== 0) {
-                throw 'Error: The lines must be in groups of two, it has '+lineStrip.length+'.';
+            if (this._indicesLines.length%2 !== 0) {
+                throw 'Error: The lines must be in groups of two, it has '+this._indicesLines.length+'.';
             }
             for (var i = 0; i < this._indicesLines.length; i++) {
                 index = this._indicesLines[i];
@@ -882,21 +882,29 @@ define(function(require) {
      * TODO: Comment
      */
     TriIndices.prototype.eachPoint = function(callBack) {
-
+        for (var i = 0; i < this._indicesTris.length; i++) {
+            callBack(this._indicesTris[i]);
+        }
     };
 
     /**
      * TODO: Comment
      */
     TriIndices.prototype.eachLine = function(callBack) {
-
+        for (var i = 0; i < this._indicesTris.length; i += 3) {
+            callBack(this._indicesTris[i  ], this._indicesTris[i+1]);
+            callBack(this._indicesTris[i+1], this._indicesTris[i+2]);
+            callBack(this._indicesTris[i+2], this._indicesTris[i  ]);
+        }
     };
 
     /**
      * TODO: Comment
      */
     TriIndices.prototype.eachTri = function(callBack) {
-
+        for (var i = 0; i < this._indicesTris.length; i += 3) {
+            callBack(this._indicesTris[i], this._indicesTris[i+1], this._indicesTris[i+2]);
+        }
     };
 
     //======================================================================
@@ -972,21 +980,33 @@ define(function(require) {
      * TODO: Comment
      */
     QuadIndices.prototype.eachPoint = function(callBack) {
-
+        for (var i = 0; i < this._indicesQuads.length; i += 4) {
+            for (var j = 0; j < 4; j++) {
+                callBack(this._indicesQuads[i+j]);
+            }
+        }
     };
 
     /**
      * TODO: Comment
      */
     QuadIndices.prototype.eachLine = function(callBack) {
-
+        for (var i = 0; i < this._indicesQuads.length; i += 4) {
+            callBack(this._indicesQuads[i  ], this._indicesQuads[i+1]);
+            callBack(this._indicesQuads[i+1], this._indicesQuads[i+2]);
+            callBack(this._indicesQuads[i+2], this._indicesQuads[i+3]);
+            callBack(this._indicesQuads[i+3], this._indicesQuads[i  ]);
+        }
     };
 
     /**
      * TODO: Comment
      */
     QuadIndices.prototype.eachTri = function(callBack) {
-
+        for (var i = 0; i < this._indicesQuads.length; i += 4) {
+            callBack(this._indicesQuads[i  ], this._indicesQuads[i+1], this._indicesQuads[i+2]);
+            callBack(this._indicesQuads[i  ], this._indicesQuads[i+2], this._indicesQuads[i+3]);
+        }
     };
 
     //======================================================================
@@ -1085,21 +1105,38 @@ define(function(require) {
      * TODO: Comment
      */
     TriStripIndices.prototype.eachPoint = function(callBack) {
-
+        for (var i = 0; i < this._indicesTriStrips.length; i++) {
+            var triStrip = this._indicesTriStrips[i];
+            for (var j = 0; j < triStrip.length; j++) {
+                callBack(triStrip[j]);
+            }
+        }
     };
 
     /**
      * TODO: Comment
      */
     TriStripIndices.prototype.eachLine = function(callBack) {
-
+        for (var i = 0; i < this._indicesTriStrips.length; i++) {
+            var triStrip = this._indicesTriStrips[i];
+            callBack(triStrip[0], triStrip[1]);
+            for (var j = 2; j < triStrip.length; j += 2) {
+                callBack(triStrip[j-1], triStrip[j]);
+                callBack(triStrip[j-2], triStrip[j]);
+            }
+        }
     };
 
     /**
      * TODO: Comment
      */
     TriStripIndices.prototype.eachTri = function(callBack) {
-
+        for (var i = 0; i < this._indicesTriStrips.length; i++) {
+            var triStrip = this._indicesTriStrips[i];
+            for (var j = 2; j < triStrip.length; j += 2) {
+                callBack(triStrip[j-2], triStrip[j-1], triStrip[j]);
+            }
+        }
     };
 
     //======================================================================
@@ -1198,23 +1235,79 @@ define(function(require) {
      * TODO: Comment
      */
     TriFanIndices.prototype.eachPoint = function(callBack) {
-
+        for (var i = 0; i < this._indicesTriFans.length; i++) {
+            var triFan = this._indicesTriFans[i];
+            for (var j = 0; j < triFan.length; j++) {
+                callBack(triFan[j]);
+            }
+        }
     };
 
     /**
      * TODO: Comment
      */
     TriFanIndices.prototype.eachLine = function(callBack) {
-
+        for (var i = 0; i < this._indicesTriFans.length; i++) {
+            var triFan = this._indicesTriFans[i];
+            callBack(triFan[0], triFan[1]);
+            for (var j = 2; j < triFan.length; j++) {
+                callBack(triFan[j-1], triFan[j]);
+                callBack(triFan[0], triFan[j]);
+            }
+        }
     };
 
     /**
      * TODO: Comment
      */
     TriFanIndices.prototype.eachTri = function(callBack) {
-
+        for (var i = 0; i < this._indicesTriFans.length; i++) {
+            var triFan = this._indicesTriFans[i];
+            for (var j = 2; j < triFan.length; j += 2) {
+                callBack(triFan[0], triFan[j-1], triFan[j]);
+            }
+        }
     };
 
+    //======================================================================
+
+    /**
+     * TODO: Comment
+     */
+    function LineIndexSet() {
+        this._set = {};
+    }
+    
+    /**
+     * TODO: Comment
+     */
+    LineIndexSet.prototype.insert = function(index1, index2) {
+        if (index1 > index2) {
+            var temp = index1;
+            index1 = index2;
+            index2 = temp;
+        }
+        
+        var lines = this._set[index1];
+        if (!lines) {
+            lines = {};
+        }
+        lines[index2] = true;
+        this._set[index1] = lines;
+    };
+    
+    /**
+     * TODO: Comment
+     */
+    LineIndexSet.prototype.eachLine = function(callBack) {
+        for (var index1 in this._set) {
+            var lines = this._set[index1];
+            for (var index2 in lines) {
+                callBack(index1, index2);
+            }
+        }
+    };
+    
     //======================================================================
     
     /**
@@ -1234,7 +1327,8 @@ define(function(require) {
         TriIndices:       TriIndices,
         QuadIndices:      QuadIndices,
         TriStripIndices:  TriStripIndices,
-        TriFanIndices:    TriFanIndices
+        TriFanIndices:    TriFanIndices,
+        LineIndexSet:     LineIndexSet
     };
     
     return Buffers;

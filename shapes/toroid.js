@@ -65,14 +65,11 @@ define(function(require) {
                                   Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
     
     /**
-     * Creates a toroid.
-     * @param  {WebGLRenderingContext} gl  The graphics object.
-     * @param  {Number} vertexType  The type of vertices the toroid should have.
-     * @returns  {Shape}  The created toroid.
+     * Prepares a shape builder for a toroid shape.
+     * @param  {ShapeBuilder} shape  The shape builder to prepare.
+     * @param  {Number} vertexType  The vertex type to build.
      */
-    ToroidBuilder.prototype.build = function(gl, vertexType) {
-        var shape = new ShapeBuilder();
-
+    ToroidBuilder.prototype.prepare = function(shape, vertexType) {
         for(var i = 0; i <= this.majorCount; ++i) {
             var majorScale = i/this.majorCount;
             var majorAngle = 2.0*Math.PI*majorScale;
@@ -131,8 +128,18 @@ define(function(require) {
                 shape.triStrips.add(i1+j, i2+j);
             }
         }
+    };
 
-        return shape.build(gl);
+    /**
+     * Creates a toroid.
+     * @param  {WebGLRenderingContext} gl  The graphics object.
+     * @param  {Number} vertexType  The type of vertices the toroid should have.
+     * @returns  {Shape}  The created toroid.
+     */
+    ToroidBuilder.prototype.build = function(gl, vertexType) {
+        var shape = new ShapeBuilder();
+        this.prepare(shape, vertexType);
+        return shape.build(gl, vertexType);
     };
 
     return ToroidBuilder;

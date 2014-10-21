@@ -160,15 +160,12 @@ define(function(require) {
     };
 
     /**
-     * Creates a toroid.
-     * @param  {WebGLRenderingContext} gl  The graphics object.
-     * @param  {Number} vertexType  The type of vertices the toroid should have.
-     * @returns  {Shape}  The created toroid.
+     * Prepares a shape builder for a sphere shape.
+     * @param  {ShapeBuilder} shape  The shape builder to prepare.
+     * @param  {Number} vertexType  The vertex type to build.
      */
-    SphereBuilder.prototype.build = function(gl, vertexType) {
-        var shape = new ShapeBuilder();
-
-        // cCeate 12 vertices of a icosahedron.
+    SphereBuilder.prototype.prepare = function(shape, vertexType) {
+        // Ceate 12 vertices of a icosahedron.
         var t = Math.sqrt(5)/2 + 0.5;
         this._posIndex(shape, vertexType, -1,  t,  0);
         this._posIndex(shape, vertexType,  1,  t,  0);
@@ -208,7 +205,17 @@ define(function(require) {
         this._div(shape, vertexType,  6,  2, 10, this.iterations);
         this._div(shape, vertexType,  8,  6,  7, this.iterations);
         this._div(shape, vertexType,  9,  8,  1, this.iterations);
-
+    };
+    
+    /**
+     * Creates a sphere.
+     * @param  {WebGLRenderingContext} gl  The graphics object.
+     * @param  {Number} vertexType  The type of vertices the sphere should have.
+     * @returns  {Shape}  The created sphere.
+     */
+    SphereBuilder.prototype.build = function(gl, vertexType) {
+        var shape = new ShapeBuilder();
+        this.prepare(shape, vertexType);
         return shape.build(gl, vertexType);
     };
 

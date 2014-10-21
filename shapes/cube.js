@@ -161,13 +161,11 @@ define(function(require) {
     };
     
     /**
-     * Builds a cube shape.
-     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * Prepares a shape builder for a cube shape.
+     * @param  {ShapeBuilder} shape  The shape builder to prepare.
      * @param  {Number} vertexType  The vertex type to build.
-     * @return  {Shape}  The created cube shape.
      */
-    CubeBuilder.prototype.build = function(gl, vertexType) {
-        var shape = new ShapeBuilder();
+    CubeBuilder.prototype.prepare = function(shape, vertexType) {
         //                      +--   E-----A   --------+
         //      E--------A      |     |Z+   |           |
         //     /|       /|            |     |
@@ -186,7 +184,18 @@ define(function(require) {
         this._addFace(shape, vertexType,  0, -1,  0,  0,  0, -1); // Y-
         this._addFace(shape, vertexType,  0,  0,  1,  0,  1,  0); // Z+
         this._addFace(shape, vertexType,  0,  0, -1,  0,  1,  0); // Z-
-        return shape.build(gl);
+    };
+    
+    /**
+     * Builds a cube shape.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Number} vertexType  The vertex type to build.
+     * @return  {Shape}  The created cube shape.
+     */
+    CubeBuilder.prototype.build = function(gl, vertexType) {
+        var shape = new ShapeBuilder();
+        this.prepare(shape, vertexType);
+        return shape.build(gl, vertexType);
     };
 
     return CubeBuilder;

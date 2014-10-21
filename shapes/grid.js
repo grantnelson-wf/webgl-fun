@@ -75,14 +75,11 @@ define(function(require) {
                                 Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
     
     /**
-     * Creates a grid.
-     * @param  {WebGLRenderingContext} gl  The graphical object.
-     * @param  {Number} vertexType  The type of vertices the grid should have.
-     * @returns  {Shape}  The created grid.
+     * Prepares a shape builder for a grid shape.
+     * @param  {ShapeBuilder} shape  The shape builder to prepare.
+     * @param  {Number} vertexType  The vertex type to build.
      */
-    GridBuilder.prototype.build = function(gl, vertexType) {
-        var shape = new ShapeBuilder();
-
+    GridBuilder.prototype.prepare = function(shape, vertexType) {
         var i, j;
         for (i = 0; i <= this.widthDiv; i++) {
             for (j = 0; j <= this.depthDiv; j++) {
@@ -121,9 +118,19 @@ define(function(require) {
             for (j = 1; j <= this.depthDiv; j++) {
                 shape.triStrips.add((i+1)*(this.depthDiv+1)+j, i*(this.depthDiv+1)+j);
             }     
-        }
-        
-        return shape.build(gl);
+        }    
+    };
+    
+    /**
+     * Creates a grid.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Number} vertexType  The type of vertices the grid should have.
+     * @returns  {Shape}  The created grid.
+     */
+    GridBuilder.prototype.build = function(gl, vertexType) {
+        var shape = new ShapeBuilder();
+        this.prepare(shape, vertexType);
+        return shape.build(gl, vertexType);
     };
 
     return GridBuilder;

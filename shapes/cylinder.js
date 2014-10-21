@@ -90,6 +90,21 @@ define(function(require) {
                                     Const.NORM|Const.TXT|Const.CUBE|Const.BINM;
     
     /**
+     * Prepares a shape builder for a cylinder shape.
+     * @param  {ShapeBuilder} shape  The shape builder to prepare.
+     * @param  {Number} vertexType  The vertex type to build.
+     */
+    CylinderBuilder.prototype.prepare = function(shape, vertexType) {
+        if (this.closedTop) {
+            this._buildTopCap(shape, vertexType);
+        }
+        if (this.closedBottom) {
+            this._buildBottomCap(shape, vertexType);
+        }
+        this._buildSides(shape, vertexType);
+    };
+    
+    /**
      * Creates a cylinder.
      * @param  {WebGLRenderingContext} gl  The graphical object.
      * @param  {Number} vertexType  The type of vertices the cylinder should have.
@@ -97,23 +112,16 @@ define(function(require) {
      */
     CylinderBuilder.prototype.build = function(gl, vertexType) {
         var shape = new ShapeBuilder();
-        if (this.closedTop) {
-            this._buildTopCap(gl, shape, vertexType);
-        }
-        if (this.closedBottom) {
-            this._buildBottomCap(gl, shape, vertexType);
-        }
-        this._buildSides(gl, shape, vertexType);
-        return shape.build(gl);
+        this.prepare(shape, vertexType);
+        return shape.build(gl, vertexType);
     };
 
     /**
      * Builds the top cap of the cylinder.
-     * @param  {WebGLRenderingContext} gl  The graphical object.
      * @param  {Shape} shape  The shape being built.
      * @param  {Number} vertexType  The type of vertices the cylinder should have.
      */
-    CylinderBuilder.prototype._buildTopCap = function(gl, shape, vertexType) {
+    CylinderBuilder.prototype._buildTopCap = function(shape, vertexType) {
         if (!Common.eq(this.topRadius, 0, 0.00001)) {
             shape.pos.add(this.x, this.y+this.topHeight, this.z);
             if (vertexType&Const.NORM) {
@@ -168,11 +176,10 @@ define(function(require) {
         
     /**
      * Builds the bottom cap of the cylinder.
-     * @param  {WebGLRenderingContext} gl  The graphical object.
      * @param  {Shape} shape  The shape being built.
      * @param  {Number} vertexType  The type of vertices the cylinder should have.
      */
-    CylinderBuilder.prototype._buildBottomCap = function(gl, shape, vertexType) {
+    CylinderBuilder.prototype._buildBottomCap = function(shape, vertexType) {
         if (!Common.eq(this.bottomRadius, 0, 0.00001)) {
             shape.pos.add(this.x, this.y+this.bottomHeight, this.z);
             if (vertexType&Const.NORM) {
@@ -227,11 +234,10 @@ define(function(require) {
         
     /**
      * Builds the sides of the cylinder.
-     * @param  {WebGLRenderingContext} gl  The graphical object.
      * @param  {Shape} shape  The shape being built.
      * @param  {Number} vertexType  The type of vertices the cylinder should have.
      */
-    CylinderBuilder.prototype._buildSides = function(gl, shape, vertexType) {
+    CylinderBuilder.prototype._buildSides = function(shape, vertexType) {
         var i, j;
         var index = shape.pos.count();
         for (i = 0; i <= this.divCount; i++) {
@@ -272,8 +278,6 @@ define(function(require) {
             }
             index += (this.sideCount+1);
         }
-        
-        return shape.build(gl);
     };
 
     return CylinderBuilder;

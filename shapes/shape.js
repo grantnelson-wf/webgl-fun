@@ -432,16 +432,48 @@ define(function(require) {
     
     // TODO: Create to points, to lines, to degenerate points, to degenerate lines.
  
+    /**
+     * TODO: Comment
+     * @return {[type]} [description]
+     */
+    ShapeBuilder.prototype.wireFrame = function() {
+        var vertexData = this._validateVertices();
+        this._validateIndices(vertexData.length);
 
+        // Copy all the data over to the builder, twice.
+        var builder = new ShapeBuilder();
+        for (var i = this.data.length - 1; i >= 0; i--) {
+            var src = this.data[i].data;
+            var srcLen = src.length;
+            var dest = [];
+            for (var j = srcLen - 1; j >= 0; j--) {
+                dest[j] = src[j];
+            };
+            builder.data[i].data = dest;
+        };
+        
+        // Collect all edges in the shape.
+        var edges = new Buffers.LineIndexSet();
+        for (var i = this.indices.length - 1; i >= 0; i--) {
+            this.indices[i].eachLine(function(index1, index2) {
+                edges.insert(index1, index2);
+            });
+        };
+        
+        // Foreach edge create a quad with the first and second copy.
+        edges.eachLine(function(index1, index2) {
+            builder.lines.add(index1, index2);
+        });
 
-
+        return builder;
+    };
 
     /**
      * TODO: Comment
      * @return {[type]} [description]
      */
     ShapeBuilder.prototype.degenerateLines = function() {
-        var vertexData = this._validateVertices(vertexType);
+        var vertexData = this._validateVertices();
         this._validateIndices(vertexData.length);
 
         // Copy all the data over to the builder, twice.
@@ -467,11 +499,19 @@ define(function(require) {
         for (var i = count - 1; i >= 0; i--) {
             builder.wght.add(1.0);
         };
-
+        
+        // Collect all edges in the shape.
+        var edges = new Buffers.LineIndexSet();
+        for (var i = this.indices.length - 1; i >= 0; i--) {
+            this.indices[i].eachLine(function(index1, index2) {
+                edges.insert(index1, index2);
+            });
+        };
+        
         // Foreach edge create a quad with the first and second copy.
-
-
-
+        edges.eachLine(function(index1, index2) {
+            builder.quads.add(index1, index1+count, index2+count, index2);
+        });
 
         return builder;
     };
