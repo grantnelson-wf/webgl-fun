@@ -48,7 +48,8 @@ define(function(require) {
             return false;
         }
         this.outlineShader.use();
-        this.outlineShader.setLightVec(-0.5, 0.5, -1.0);
+        this.outlineShader.setColor(0.0, 0.0, 0.0);
+        this.outlineShader.setThickness(0.01);
 
         // Setup controls.
         item = this;
@@ -70,10 +71,16 @@ define(function(require) {
             item.degenShape = degenBuilder.build(gl, item.outlineShader.requiredType);
             item.degenShape.posAttr.set(item.outlineShader.posAttrLoc);
             item.degenShape.normAttr.set(item.outlineShader.normAttrLoc);
-            item.degenShape.txtAttr.set(item.outlineShader.txtAttrLoc);
-        }, "Toroid");  
-        this.controls.addFloat("Ambient", this.sketchShader.setAmbient, 0.0, 1.0, 0.3);
-        this.controls.addFloat("Diffuse", this.sketchShader.setDiffuse, 0.0, 1.0, 0.5);
+            item.degenShape.wghtAttr.set(item.outlineShader.wghtAttrLoc);
+        }, "Cube");  
+        this.controls.addFloat("Ambient", function(value) {
+            item.sketchShader.use();
+            item.sketchShader.setAmbient(value);
+        }, 0.0, 1.0, 0.3);
+        this.controls.addFloat("Diffuse", function(value) {
+            item.sketchShader.use();
+            item.sketchShader.setDiffuse(value);
+        }, 0.0, 1.0, 0.5);
         
         this.txt2D = new Txt2D(gl);
         this.txt2D.index = 0;
@@ -110,10 +117,12 @@ define(function(require) {
 
         // Draw outline.
         this.outlineShader.use();
+        gl.disable(gl.CULL_FACE);
         this.outlineShader.setProjMat(this.projMover.matrix());
         this.outlineShader.setViewMat(Matrix.identity());
         this.outlineShader.setObjMat(this.objMover.matrix());
         this.degenShape.draw();
+        gl.enable(gl.CULL_FACE);
         return true;
     };
     

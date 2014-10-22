@@ -27,52 +27,41 @@ define(function(require) {
      * @type {String}
      */
     DirectionalBuilder.prototype.vsSource =
-        'uniform mat4 objMat;                                       \n'+
-        'uniform mat4 viewMat;                                      \n'+
-        'uniform mat4 projMat;                                      \n'+
-        'uniform vec3 lightVec;                                     \n'+
-        '                                                           \n'+
-        'attribute vec3 posAttr;                                    \n'+
-        'attribute vec3 normAttr;                                   \n'+
-        'attribute vec2 txtAttr;                                    \n'+
-        '                                                           \n'+
-        'varying vec3 normal;                                       \n'+
-        'varying vec3 litVec;                                       \n'+
-        'varying vec2 vTxt;                                         \n'+
-        '                                                           \n'+
-        'void main()                                                \n'+
-        '{                                                          \n'+
-        '  normal = normalize(objMat*vec4(normAttr, 0.0)).xyz;      \n'+
-        '  litVec = normalize((viewMat*vec4(lightVec, 0.0)).xyz);   \n'+
-        '  gl_Position = projMat*viewMat*objMat*vec4(posAttr, 1.0); \n'+
-        '  vTxt = txtAttr;                                          \n'+
-        '}                                                          \n';
+        'uniform mat4 objMat;                                            \n'+
+        'uniform mat4 viewMat;                                           \n'+
+        'uniform mat4 projMat;                                           \n'+
+        'uniform float thickness;                                        \n'+
+        '                                                                \n'+
+        'attribute vec3 posAttr;                                         \n'+
+        'attribute vec3 normAttr;                                        \n'+
+        'attribute float wghtAttr;                                       \n'+
+        '                                                                \n'+
+        'void main()                                                     \n'+
+        '{                                                               \n'+
+        '  vec4 vPos = viewMat*objMat*vec4(posAttr, 1.0);                \n'+
+        '  if (wghtAttr > 0.5) {                                         \n'+
+        '    vec4 vNorm = viewMat*objMat*vec4(normAttr, 0.0);            \n'+
+        '    float size = abs(dot(normalize(vPos.xyz), normalize(vNorm.xyz))); \n'+
+        '    if (size < 0.2) {                                           \n'+
+        '      vPos = vPos + normalize(vNorm)*thickness;                 \n'+
+        '    }                                                           \n'+
+        '  }                                                             \n'+
+        '  gl_Position = projMat*vPos;                                   \n'+
+        '}                                                               \n';
 
     /**
      * The fragment shader program.
      * @type {String}
      */
     DirectionalBuilder.prototype.fsSource =
-        'precision mediump float;                                      \n'+
-        '                                                              \n'+
-        'uniform float ambient;                                        \n'+
-        'uniform float diffuse;                                        \n'+
-        '                                                              \n'+
-        'varying vec3 normal;                                          \n'+
-        'varying vec3 litVec;                                          \n'+
-        'varying vec2 vTxt;                                            \n'+
-        '                                                              \n'+
-        'uniform sampler2D txtSampler;                                 \n'+
-        '                                                              \n'+
-        'void main()                                                   \n'+
-        '{                                                             \n'+
-        '   vec3 norm = normalize(normal);                             \n'+
-        '   float diff = diffuse*max(dot(norm, litVec), 0.0);          \n'+
-        '   float shade = 1.0 - clamp(ambient + diff, 0.0, 1.0);       \n'+
-        '   vec4 clr = texture2D(txtSampler, vTxt);                    \n'+
-        '   clr = vec4(clamp((clr.xyz-shade)*2.0, 0.0, 1.0), clr.w);   \n'+
-        '   gl_FragColor = clr;                                        \n'+
-        '}                                                             \n';
+        'precision mediump float;            \n'+
+        '                                    \n'+
+        'uniform vec3 color;                 \n'+
+        '                                    \n'+
+        'void main()                         \n'+
+        '{                                   \n'+
+        '   gl_FragColor = vec4(color, 1.0); \n'+
+        '}                                   \n';
     
     /**
      * Initializes the shader.
