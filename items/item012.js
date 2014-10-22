@@ -5,9 +5,11 @@ define(function(require) {
     var ProjMover = require('movers/projection');
     var ObjMover = require('movers/userFocus');
     var SketchBuilder = require('shaders/sketch');
+    var OutlineBuilder = require('shaders/outliner');
     var Txt2DBuilder = require('shaders/texture2d');
     var Controls = require('tools/controls');
     var Txt2D = require('tools/texture2d');
+    var ShapeBuilder = require('shapes/shape');
     
     /**
      * Creates an item for rendering.
@@ -29,15 +31,24 @@ define(function(require) {
      * @return  {Boolean}  True if successfully started, false otherwise.
      */
     Item.prototype.start = function(gl, driver) {
-        // Build and set the shader.
+        gl.clearColor(1.0, 1.0, 1.0, 1.0);
+
+        // Build and set the shaders.
         var sketchBuilder = new SketchBuilder();
-        this.shader = sketchBuilder.build(gl);
-        if (!this.shader) {
+        this.sketchShader = sketchBuilder.build(gl);
+        if (!this.sketchShader) {
             return false;
         }
-        this.shader.use();
-        this.shader.setLightVec(-0.5, 0.5, -1.0);
-        gl.clearColor(1.0, 1.0, 1.0, 1.0);
+        this.sketchShader.use();
+        this.sketchShader.setLightVec(-0.5, 0.5, -1.0);
+
+        var outlineBuilder = new OutlineBuilder();
+        this.outlineShader = outlineBuilder.build(gl);
+        if (!this.outlineShader) {
+            return false;
+        }
+        this.outlineShader.use();
+        this.outlineShader.setLightVec(-0.5, 0.5, -1.0);
 
         // Setup controls.
         item = this;
@@ -46,14 +57,23 @@ define(function(require) {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addShapeSelect("Shape", function(shapeBuilder){
-            item.shape = shapeBuilder.build(gl, item.shader.requiredType);
-            item.shape.posAttr.set(item.shader.posAttrLoc);
-            item.shape.normAttr.set(item.shader.normAttrLoc);
-            item.shape.txtAttr.set(item.shader.txtAttrLoc);
+        this.controls.addShapeSelect("Shape", function(shapeBuilder) {
+            var builder = new ShapeBuilder();
+            shapeBuilder.prepare(builder, item.sketchShader.requiredType|item.outlineShader.requiredType);
+            var degenBuilder = builder.createDegenerateLines();
+
+            item.shape = builder.build(gl, item.sketchShader.requiredType);
+            item.shape.posAttr.set(item.sketchShader.posAttrLoc);
+            item.shape.normAttr.set(item.sketchShader.normAttrLoc);
+            item.shape.txtAttr.set(item.sketchShader.txtAttrLoc);
+
+            item.degenShape = degenBuilder.build(gl, item.outlineShader.requiredType);
+            item.degenShape.posAttr.set(item.outlineShader.posAttrLoc);
+            item.degenShape.normAttr.set(item.outlineShader.normAttrLoc);
+            item.degenShape.txtAttr.set(item.outlineShader.txtAttrLoc);
         }, "Toroid");  
-        this.controls.addFloat("Ambient", this.shader.setAmbient, 0.0, 1.0, 0.3);
-        this.controls.addFloat("Diffuse", this.shader.setDiffuse, 0.0, 1.0, 0.5);
+        this.controls.addFloat("Ambient", this.sketchShader.setAmbient, 0.0, 1.0, 0.3);
+        this.controls.addFloat("Diffuse", this.sketchShader.setDiffuse, 0.0, 1.0, 0.5);
         
         this.txt2D = new Txt2D(gl);
         this.txt2D.index = 0;
@@ -76,18 +96,24 @@ define(function(require) {
         this.controls.setFps(fps);
         this.projMover.update();
         this.objMover.update();
-        this.shader.setProjMat(this.projMover.matrix());
-        this.shader.setViewMat(Matrix.identity());
-        this.shader.setObjMat(this.objMover.matrix());
         
         // Clear color buffer.
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
-        // Bind texture.
+        // Draw sketch.
+        this.sketchShader.use();
+        this.sketchShader.setProjMat(this.projMover.matrix());
+        this.sketchShader.setViewMat(Matrix.identity());
+        this.sketchShader.setObjMat(this.objMover.matrix());
         this.txt2D.bind();
-
-        // Draw shape.
         this.shape.draw();
+
+        // Draw outline.
+        this.outlineShader.use();
+        this.outlineShader.setProjMat(this.projMover.matrix());
+        this.outlineShader.setViewMat(Matrix.identity());
+        this.outlineShader.setObjMat(this.objMover.matrix());
+        this.degenShape.draw();
         return true;
     };
     

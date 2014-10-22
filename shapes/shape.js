@@ -429,14 +429,48 @@ define(function(require) {
     };
     
     //======================================================================
-    
-    // TODO: Create to points, to lines, to degenerate points, to degenerate lines.
  
     /**
      * TODO: Comment
      * @return {[type]} [description]
      */
-    ShapeBuilder.prototype.wireFrame = function() {
+    ShapeBuilder.prototype.createPoints = function() {
+        var vertexData = this._validateVertices();
+        this._validateIndices(vertexData.length);
+
+        // Copy all the data over to the builder, twice.
+        var builder = new ShapeBuilder();
+        for (var i = this.data.length - 1; i >= 0; i--) {
+            var src = this.data[i].data;
+            var srcLen = src.length;
+            var dest = [];
+            for (var j = srcLen - 1; j >= 0; j--) {
+                dest[j] = src[j];
+            };
+            builder.data[i].data = dest;
+        };
+        
+        // Collect all points in the shape.
+        var points = new Buffers.PointIndexSet();
+        for (var i = this.indices.length - 1; i >= 0; i--) {
+            this.indices[i].eachPoint(function(index) {
+                points.insert(index);
+            });
+        };
+        
+        // Foreach point create a quad with the first and second copy.
+        points.eachLine(function(index) {
+            builder.points.add(index);
+        });
+
+        return builder;
+    };
+
+    /**
+     * TODO: Comment
+     * @return {[type]} [description]
+     */
+    ShapeBuilder.prototype.createWireFrame = function() {
         var vertexData = this._validateVertices();
         this._validateIndices(vertexData.length);
 
@@ -472,7 +506,55 @@ define(function(require) {
      * TODO: Comment
      * @return {[type]} [description]
      */
-    ShapeBuilder.prototype.degenerateLines = function() {
+    ShapeBuilder.prototype.createDegeneratePoints = function() {
+        var vertexData = this._validateVertices();
+        this._validateIndices(vertexData.length);
+
+        // Copy all the data over to the builder, twice.
+        var builder = new ShapeBuilder();
+        for (var i = this.data.length - 1; i >= 0; i--) {
+            var src = this.data[i].data;
+            var srcLen = src.length;
+            var dest = [];
+            for (var j = srcLen - 1; j >= 0; j--) {
+                var value = src[j];
+                dest[j] = value;
+                dest[j+srcLen] = value;
+            };
+            builder.data[i].data = dest;
+        };
+
+        // Set the weight data for the first copy to zero, the second copy to one.
+        var count = this.pos.count();
+        builder.wght.data = [];
+        for (var i = count - 1; i >= 0; i--) {
+            builder.wght.add(0.0);
+        };
+        for (var i = count - 1; i >= 0; i--) {
+            builder.wght.add(1.0);
+        };
+        
+        // Collect all points in the shape.
+        var points = new Buffers.PointIndexSet();
+        for (var i = this.indices.length - 1; i >= 0; i--) {
+            this.indices[i].eachPoint(function(index) {
+                points.insert(index);
+            });
+        };
+        
+        // Foreach edge create a quad with the first and second copy.
+        points.eachLine(function(index) {
+            builder.lines.add(index, index+count);
+        });
+
+        return builder;
+    };
+
+    /**
+     * TODO: Comment
+     * @return {[type]} [description]
+     */
+    ShapeBuilder.prototype.createDegenerateLines = function() {
         var vertexData = this._validateVertices();
         this._validateIndices(vertexData.length);
 

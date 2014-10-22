@@ -14,13 +14,13 @@ define(function(require) {
      * The name for this shader.
      * @type {String}
      */
-    DirectionalBuilder.prototype.name = 'Sketch';
+    DirectionalBuilder.prototype.name = 'Outliner';
     
     /**
      * The required vertex information.
      * @type {Number}
      */
-    DirectionalBuilder.prototype.requiredTypes = Const.POS|Const.NORM|Const.TXT;
+    DirectionalBuilder.prototype.requiredTypes = Const.POS|Const.NORM|Const.WGHT;
     
     /**
      * The vertex shader program.

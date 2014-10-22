@@ -1274,6 +1274,31 @@ define(function(require) {
     /**
      * TODO: Comment
      */
+    function PointIndexSet() {
+        this._set = {};
+    }
+    
+    /**
+     * TODO: Comment
+     */
+    PointIndexSet.prototype.insert = function(index) {
+        this._set[Number(index)] = true;
+    };
+    
+    /**
+     * TODO: Comment
+     */
+    PointIndexSet.prototype.eachPoint = function(callBack) {
+        for (var index in this._set) {
+            callBack(Number(index));
+        }
+    };
+
+    //======================================================================
+
+    /**
+     * TODO: Comment
+     */
     function LineIndexSet() {
         this._set = {};
     }
@@ -1282,6 +1307,9 @@ define(function(require) {
      * TODO: Comment
      */
     LineIndexSet.prototype.insert = function(index1, index2) {
+        index1 = Number(index1);
+        index2 = Number(index2);
+
         if (index1 > index2) {
             var temp = index1;
             index1 = index2;
@@ -1303,7 +1331,7 @@ define(function(require) {
         for (var index1 in this._set) {
             var lines = this._set[index1];
             for (var index2 in lines) {
-                callBack(index1, index2);
+                callBack(Number(index1), Number(index2));
             }
         }
     };
@@ -1328,6 +1356,7 @@ define(function(require) {
         QuadIndices:      QuadIndices,
         TriStripIndices:  TriStripIndices,
         TriFanIndices:    TriFanIndices,
+        PointIndexSet:    PointIndexSet,
         LineIndexSet:     LineIndexSet
     };
     
