@@ -187,7 +187,7 @@ define(function(require) {
         shape.norm.add(1.0, 0.0, 0.0);
         shape.txt.add(0.0, 0.0);
         shape.binm.add(0.0, 0.0, 1.0);
-        shape.addPointIndex(0);
+        shape.points.add(0);
         this.fireFlyShape = shape.build(gl);
         this.fireFlyShape.posAttr.set(this.shader.posAttrLoc);
         this.fireFlyShape.normAttr.set(this.shader.normAttrLoc);

@@ -32,18 +32,26 @@ define(function(require) {
     /**
      * Adds a vertex data to the shape.
      * @param  {Number} x  The x component of this vertex data.
+     *                     Or a single element array with the x component.
      */
     Vertex1.prototype.add = function(x) {
+        if (Common.isArray(x)) {
+            x = x[0];
+        }
         this.data.push(Number(x));
     };
 
     /**
      * Finds the the vertex data in the shape.
      * @param  {Number} x          The x component of this vertex data.
+     *                             Or a single element array with the x component.
      * @param  {Number} [epsilon]  The epsilon comparison.
      * @return  {Number}  The index found or -1 if not found.
      */
     Vertex1.prototype.find = function(x, epsilon) {
+        if (Common.isArray(x)) {
+            x = x[0];
+        }
         epsilon = epsilon || 0.000001;
         for (var i = 0; i < this.data.length; i++) {
             if (Common.eq(this.data[i], x, epsilon)) {
@@ -57,8 +65,12 @@ define(function(require) {
      * Sets vertex data to the shape.
      * @param  {Number} index  The index to set.
      * @param  {Number} x      The x component of this vertex data.
+     *                         Or a single element array with the x component.
      */
     Vertex1.prototype.set = function(index, x) {
+        if (Common.isArray(x)) {
+            x = x[0];
+        }
         this.data[index] = Number(x);
     };
 
@@ -111,20 +123,32 @@ define(function(require) {
     /**
      * Adds a vertex data to the shape.
      * @param  {Number} x  The x component of this vertex data.
+     *                     Or a two element array with the x and y component.
      * @param  {Number} y  The y component of this vertex data.
      */
     Vertex2.prototype.add = function(x, y) {
+        if (Common.isArray(x)) {
+            y = x[1];
+            x = x[0];
+        }
         this.data.push(Number(x), Number(y));
     };
 
     /**
      * Finds the the vertex data in the shape.
      * @param  {Number} x          The x component of this vertex data.
+     *                             Or a two element array with the x and y component.
      * @param  {Number} y          The y component of this vertex data.
+     *                             Or if first parameter was an array then this is the epsilon.
      * @param  {Number} [epsilon]  The epsilon comparison.
      * @return  {Number}  The index found or -1 if not found.
      */
     Vertex2.prototype.find = function(x, y, epsilon) {
+        if (Common.isArray(x)) {
+            epsilon = y;
+            y = x[1];
+            x = x[0];
+        }
         epsilon = epsilon || 0.000001;
         for (var i = 0; i < this.data.length; i += 2) {
             if (Common.eq(this.data[i  ], x, epsilon) &&
@@ -139,9 +163,14 @@ define(function(require) {
      * Sets vertex data to the shape.
      * @param  {Number} index  The index to set.
      * @param  {Number} x      The x component of this vertex data.
+     *                         Or a two element array with the x and y component.
      * @param  {Number} y      The y component of this vertex data.
      */
     Vertex2.prototype.set = function(index, x, y) {
+        if (Common.isArray(x)) {
+            y = x[1];
+            x = x[0];
+        }
         this.data[index*2  ] = Number(x);
         this.data[index*2+1] = Number(y);
     };
@@ -195,22 +224,36 @@ define(function(require) {
     /**
      * Adds a vertex data to the shape.
      * @param  {Number} x  The x component of this vertex data.
+     *                     Or a two element array with the x, y, and z component.
      * @param  {Number} y  The y component of this vertex data.
      * @param  {Number} z  The z component of this vertex data.
      */
     Vertex3.prototype.add = function(x, y, z) {
+        if (Common.isArray(x)) {
+            z = x[2];
+            y = x[1];
+            x = x[0];
+        }
         this.data.push(Number(x), Number(y), Number(z));
     };
 
     /**
      * Finds the the vertex data in the shape.
      * @param  {Number} x          The x component of this vertex data.
+     *                             Or a two element array with the x, y, and z component.
      * @param  {Number} y          The y component of this vertex data.
+     *                             Or if first parameter was an array then this is the epsilon.
      * @param  {Number} z          The z component of this vertex data.
      * @param  {Number} [epsilon]  The epsilon comparison.
      * @return  {Number}  The index found or -1 if not found.
      */
     Vertex3.prototype.find = function(x, y, z, epsilon) {
+        if (Common.isArray(x)) {
+            epsilon = y;
+            z = x[2];
+            y = x[1];
+            x = x[0];
+        }
         epsilon = epsilon || 0.000001;
         for (var i = 0; i < this.data.length; i += 3) {
             if (Common.eq(this.data[i  ], x, epsilon) &&
@@ -226,10 +269,16 @@ define(function(require) {
      * Sets vertex data to the shape.
      * @param  {Number} index  The index to set.
      * @param  {Number} x      The x component of this vertex data.
+     *                         Or a two element array with the x, y, and z component.
      * @param  {Number} y      The y component of this vertex data.
      * @param  {Number} z      The z component of this vertex data.
      */
     Vertex3.prototype.set = function(index, x, y, z) {
+        if (Common.isArray(x)) {
+            z = x[2];
+            y = x[1];
+            x = x[0];
+        }
         this.data[index*3  ] = Number(x);
         this.data[index*3+1] = Number(y);
         this.data[index*3+2] = Number(z);
@@ -284,24 +333,40 @@ define(function(require) {
     /**
      * Adds a vertex data to the shape.
      * @param  {Number} x  The x component of this vertex data.
+     *                     Or a two element array with the x, y, z, and w component.
      * @param  {Number} y  The y component of this vertex data.
      * @param  {Number} z  The z component of this vertex data.
      * @param  {Number} w  The w component of this vertex data.
      */
     Vertex4.prototype.add = function(x, y, z, w) {
+        if (Common.isArray(x)) {
+            w = x[3];
+            z = x[2];
+            y = x[1];
+            x = x[0];
+        }
         this.data.push(Number(x), Number(y), Number(z), Number(w));
     };
 
     /**
      * Finds the the vertex data in the shape.
      * @param  {Number} x          The x component of this vertex data.
+     *                             Or a two element array with the x, y, z, and w component.
      * @param  {Number} y          The y component of this vertex data.
+     *                             Or if first parameter was an array then this is the epsilon.
      * @param  {Number} z          The z component of this vertex data.
      * @param  {Number} w          The w component of this vertex data.
      * @param  {Number} [epsilon]  The epsilon comparison.
      * @return  {Number}  The index found or -1 if not found.
      */
     Vertex4.prototype.find = function(x, y, z, w, epsilon) {
+        if (Common.isArray(x)) {
+            epsilon = y;
+            w = x[3];
+            z = x[2];
+            y = x[1];
+            x = x[0];
+        }
         epsilon = epsilon || 0.000001;
         for (var i = 0; i < this.data.length; i += 4) {
             if (Common.eq(this.data[i  ], x, epsilon) &&
@@ -318,15 +383,22 @@ define(function(require) {
      * Sets vertex data to the shape.
      * @param  {Number} index  The index to set.
      * @param  {Number} x      The x component of this vertex data.
+     *                         Or a two element array with the x, y, z, and w component.
      * @param  {Number} y      The y component of this vertex data.
      * @param  {Number} z      The z component of this vertex data.
      * @param  {Number} w      The w component of this vertex data.
      */
     Vertex4.prototype.set = function(index, x, y, z, w) {
+        if (Common.isArray(x)) {
+            w = x[3];
+            z = x[2];
+            y = x[1];
+            x = x[0];
+        }
         this.data[index*4  ] = Number(x);
         this.data[index*4+1] = Number(y);
         this.data[index*4+2] = Number(z);
-        this.data[index*4+3] = Number(z);
+        this.data[index*4+3] = Number(w);
     };
 
     /**
@@ -1340,6 +1412,68 @@ define(function(require) {
     
     /**
      * TODO: Comment
+     */
+    function EdgeIndexSet() {
+        this._set = {};
+    }
+    
+    /**
+     * TODO: Comment
+     */
+    EdgeIndexSet.prototype.insert = function(i1, i2, i3) {
+        this._insertPart(i1, i2, i3);
+        this._insertPart(i3, i1, i2);
+        this._insertPart(i2, i3, i1);
+    };
+    
+    /**
+     * TODO: Comment
+     */
+    EdgeIndexSet.prototype._insertPart = function(i1, i2, i3) {
+        i1 = Number(i1);
+        i2 = Number(i2);
+        i3 = Number(i3);
+        var sign = 1;
+        if (i1 > i2) {
+            var t = i1;
+            i1 = i2;
+            i2 = t;
+            sign = -1;
+        }
+        var edges = this._set[i1];
+        if (!edges) {
+            edges = {};
+        }
+        var adjs = edges[i2];
+        if (!adjs) {
+            adjs = {};
+        }
+        adjs[i3] = sign;
+        edges[i2] = adjs;
+        this._set[i1] = edges;
+    };
+    
+    /**
+     * TODO: Comment
+     */
+    EdgeIndexSet.prototype.foreach = function(callBack) {
+        for (var i1 in this._set) {
+            var edges = this._set[i1];
+            for (var i2 in edges) {
+                var adjs = edges[i2];
+                var parts = []
+                for (var i3 in adjs) {
+                    parts.push([Number(i3), Number(adjs[i3])]);
+                }
+                callBack(Number(i1), Number(i2), parts);
+            }
+        }
+    };
+    
+    //======================================================================
+    
+    /**
+     * TODO: Comment
      * @type {Object}
      */
     var Buffers = {
@@ -1357,7 +1491,8 @@ define(function(require) {
         TriStripIndices:  TriStripIndices,
         TriFanIndices:    TriFanIndices,
         PointIndexSet:    PointIndexSet,
-        LineIndexSet:     LineIndexSet
+        LineIndexSet:     LineIndexSet,
+        EdgeIndexSet:     EdgeIndexSet
     };
     
     return Buffers;

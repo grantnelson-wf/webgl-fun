@@ -6,7 +6,7 @@ define(function(require) {
      * The set of common methods.
      */
     var Common = {
-
+    
         /**
          * This checks is the two values are equal.
          * @param  {Number} a        The first value.
@@ -49,6 +49,12 @@ define(function(require) {
             if (type&Const.WGHT) {
                 size += 1;
             }
+            if (type&Const.ADJ1) {
+                size += 3;
+            }
+            if (type&Const.ADJ2) {
+                size += 3;
+            }
             return size;
         },
 
@@ -83,6 +89,12 @@ define(function(require) {
             if (type&Const.WGHT) {
                 names.push('WGHT');
             }
+            if (type&Const.ADJ1) {
+                names.push('ADJ1');
+            }
+            if (type&Const.ADJ2) {
+                names.push('ADJ2');
+            }
             return names.join('|');
         },
 
@@ -110,6 +122,15 @@ define(function(require) {
                 ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
                 return ctx.getImageData(0, 0, canvas.width, canvas.height);
             }
+        },
+        
+        /**
+         * This checks if the given object is an array.
+         * @param  {Object} obj  The object to check.
+         * @return  True if the object is an array, false otherwise.
+         */
+        isArray: function(obj) {
+            return Object.prototype.toString.call( obj ) === '[object Array]';
         }
 
     };

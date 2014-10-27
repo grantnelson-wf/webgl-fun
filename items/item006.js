@@ -75,7 +75,7 @@ define(function(require) {
             item.txtCube = new TxtCube(gl);
             item.txtCube.index = 0;
             item.txtCube.loadFromPath(path);
-        }, 'Glacier', {
+        }, 'Beach', {
             'Glacier': './data/cubemaps/glacier/',
             'Beach':   './data/cubemaps/beach/',
             'Forest':  './data/cubemaps/forest/',

@@ -90,7 +90,7 @@ define(function(require) {
             item.txtBump = new Txt2D(gl);
             item.txtBump.index = 1;
             item.txtBump.loadFromFile(path);
-        }, 'Scales', {
+        }, 'Bump', {
             'Bark':     './data/bumpmaps/bark.jpg',
             'Bump':     './data/bumpmaps/bump.jpg',
             'Cloth':    './data/bumpmaps/cloth.jpg',

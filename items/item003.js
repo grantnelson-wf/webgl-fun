@@ -51,9 +51,9 @@ define(function(require) {
             item.shape.posAttr.set(item.shader.posAttrLoc);
             item.shape.normAttr.set(item.shader.normAttrLoc);
         }, "Toroid");  
-        this.controls.addRGB("Ambient",     this.shader.setAmbientClr,  0.0, 0.0, 1.0);
-        this.controls.addRGB("Diffuse",     this.shader.setDiffuseClr,  1.0, 0.0, 0.0);
-        this.controls.addRGB("Specular",    this.shader.setSpecularClr, 1.0, 1.0, 1.0);
+        this.controls.addRGB("Ambient",     this.shader.setAmbientClr,  0.0, 0.0, 0.3);
+        this.controls.addRGB("Diffuse",     this.shader.setDiffuseClr,  0.0, 0.0, 1.0);
+        this.controls.addRGB("Specular",    this.shader.setSpecularClr, 0.5, 0.5, 1.0);
         this.controls.addFloat("Shininess", this.shader.setShininess, 0.1, 50.0, 20.0);
         
         // Initialize movers.

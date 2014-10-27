@@ -57,7 +57,19 @@ define(function(require) {
          * Indicates that a shape vertex contains a weight value.
          * @type {Number}
          */
-        WGHT: 0x0080
+        WGHT: 0x0080, 
+
+        /**
+         * Indicates that a shape vertex contains the first 3D adjunct value.
+         * @type {Number}
+         */
+        ADJ1: 0x0100, 
+
+        /**
+         * Indicates that a shape vertex contains the second 3D adjunct value.
+         * @type {Number}
+         */
+        ADJ2: 0x0200
     };
 
     return Const;

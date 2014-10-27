@@ -178,11 +178,11 @@ define(function(require) {
         //                      +--   F-----B   --------+
         //                      
         //                               nx  ny  nz bix biy biz
-        this._addFace(shape, vertexType,  1,  0,  0,  0,  1,  0); // x+
-        this._addFace(shape, vertexType, -1,  0,  0,  0,  1,  0); // X-
-        this._addFace(shape, vertexType,  0,  1,  0,  0,  0,  1); // Y+
-        this._addFace(shape, vertexType,  0, -1,  0,  0,  0, -1); // Y-
-        this._addFace(shape, vertexType,  0,  0,  1,  0,  1,  0); // Z+
+        this._addFace(shape, vertexType,  1,  0,  0,  0,  0, -1); // x+
+        this._addFace(shape, vertexType, -1,  0,  0,  0,  0,  1); // X-
+        this._addFace(shape, vertexType,  0,  1,  0, -1,  0,  0); // Y+
+        this._addFace(shape, vertexType,  0, -1,  0,  1,  0,  0); // Y-
+        this._addFace(shape, vertexType,  0,  0,  1,  0, -1,  0); // Z+
         this._addFace(shape, vertexType,  0,  0, -1,  0,  1,  0); // Z-
     };
     

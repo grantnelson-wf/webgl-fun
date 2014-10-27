@@ -140,6 +140,8 @@ define(function(require) {
         offset = setAttr(this, 'cubeAttr', Const.CUBE, offset);
         offset = setAttr(this, 'binmAttr', Const.BINM, offset);
         offset = setAttr(this, 'wghtAttr', Const.WGHT, offset);
+        offset = setAttr(this, 'adj1Attr', Const.ADJ1, offset);
+        offset = setAttr(this, 'adj2Attr', Const.ADJ2, offset);
     }
 
     /**
@@ -237,10 +239,23 @@ define(function(require) {
         this.wght = new Buffers.Vertex1(Const.WGHT);
 
         /**
+         * The buffer of x, y, z in-line values of vertex first adjunct data.
+         * @type {Array}
+         */
+        this.adj1 = new Buffers.Vertex1(Const.ADJ1);
+
+        /**
+         * The buffer of x, y, z in-line values of vertex second adjunct data.
+         * @type {Array}
+         */
+        this.adj2 = new Buffers.Vertex1(Const.ADJ2);
+
+        /**
          * The list of all vertex data buffers.
          * @type {Array}
          */
-        this.data = [ this.pos, this.clr3, this.clr4, this.norm, this.txt, this.cube, this.binm, this.wght ];
+        this.data = [ this.pos, this.clr3, this.clr4, this.norm, this.txt,
+                      this.cube, this.binm, this.wght, this.adj1, this.adj2 ];
         
         /**
          * The list of indices for points.
@@ -597,6 +612,6 @@ define(function(require) {
 
         return builder;
     };
-
+    
     return ShapeBuilder;
 });
