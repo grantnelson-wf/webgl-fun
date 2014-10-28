@@ -1,5 +1,7 @@
-define(function() {
+define(function(require) {
 
+    var Common = require('tools/common');
+    
     /**
      * Tools for creating and manipulating (3x1) vectors.
      */
@@ -89,6 +91,14 @@ define(function() {
          */
         dot: function(vecA, vecB) {
             return vecA[0]*vecB[0] + vecA[1]*vecB[1] + vecA[2]*vecB[2];
+        },
+        
+        // TODO: Comment
+        eq: function(vecA, vecB, epsilon) {
+            epsilon = epsilon || 0.000001;
+            return Common.eq(vecA[0], vecB[0], epsilon) &&
+                   Common.eq(vecA[1], vecB[1], epsilon) &&
+                   Common.eq(vecA[2], vecB[2], epsilon);
         }
     };
 

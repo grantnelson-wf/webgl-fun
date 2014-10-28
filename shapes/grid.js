@@ -90,7 +90,7 @@ define(function(require) {
                 var y = this.y+this.height(x, z);
                 shape.pos.add(x, y, z);
                 if (vertexType&Const.NORM) {
-                    shape.norm.add(0, 1, 0);
+                    shape.norm.add(0, -1, 0);
                 }
                 if (vertexType&Const.BINM) {
                     shape.binm.add(0, 0, 1);

@@ -15,6 +15,7 @@ define(function(require) {
          * @return  {Boolean}  True if they are equal, false otherwise.
          */
         eq: function(a, b, epsilon) {
+            epsilon = epsilon || 0.000001;
             return Math.abs(a - b) <= epsilon;
         },
 

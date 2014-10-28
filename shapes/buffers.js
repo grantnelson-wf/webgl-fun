@@ -432,7 +432,13 @@ define(function(require) {
      * TODO: Comment
      */
     IndicesBuilder.prototype.push = function(index) {
-        this._indices.push(index)
+        if (index === undefined) {
+            throw 'Error: The point index, '+index+', was undefined.';
+        } else if (isNaN(index)) {
+            throw 'Error: The point index, '+index+', was NAN.';
+        } else {
+            this._indices.push(Number(index));
+        }
     };
 
     /**
@@ -1205,8 +1211,14 @@ define(function(require) {
     TriStripIndices.prototype.eachTri = function(callBack) {
         for (var i = 0; i < this._indicesTriStrips.length; i++) {
             var triStrip = this._indicesTriStrips[i];
-            for (var j = 2; j < triStrip.length; j += 2) {
-                callBack(triStrip[j-2], triStrip[j-1], triStrip[j]);
+            var flip = false;
+            for (var j = 2; j < triStrip.length; j++) {
+                if (flip) {
+                    callBack(triStrip[j-1], triStrip[j-2], triStrip[j]);
+                } else {
+                    callBack(triStrip[j-2], triStrip[j-1], triStrip[j]);
+                }
+                flip = !flip;
             }
         }
     };
@@ -1335,7 +1347,7 @@ define(function(require) {
     TriFanIndices.prototype.eachTri = function(callBack) {
         for (var i = 0; i < this._indicesTriFans.length; i++) {
             var triFan = this._indicesTriFans[i];
-            for (var j = 2; j < triFan.length; j += 2) {
+            for (var j = 2; j < triFan.length; j++) {
                 callBack(triFan[0], triFan[j-1], triFan[j]);
             }
         }

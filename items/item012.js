@@ -51,7 +51,6 @@ define(function(require) {
         }
         this.outlineShader.use();
         this.outlineShader.setColor(0.0, 0.0, 0.0);
-        this.outlineShader.setThickness(0.05);
 
         // Setup controls.
         item = this;
@@ -85,6 +84,10 @@ define(function(require) {
             item.sketchShader.use();
             item.sketchShader.setDiffuse(value);
         }, 0.0, 1.0, 0.5);
+        this.controls.addFloat("Thickness", function(value) {
+            item.outlineShader.use();
+            item.outlineShader.setThickness(value);
+        }, 0.0, 0.1, 0.01);
         
         this.txt2D = new Txt2D(gl);
         this.txt2D.index = 0;
@@ -161,7 +164,7 @@ define(function(require) {
             var i3 = adjs[0][0];
             var sign3 = adjs[0][1];
             var i4 = i3;
-            var sign4 = sign3;
+            var sign4 = -sign3;
             if (adjs.length > 1) {
                 i4 = adjs[1][0];
                 sign4 = adjs[1][1];
@@ -173,7 +176,7 @@ define(function(require) {
             var pos3 = shape.pos.get(i3);
             var pos4 = shape.pos.get(i4);
             var dpos2 = Vector.sub(pos2, pos1);
-            var dpos3 = Vector.scale(Vector.sub(pos3, pos1), sign3);
+            var dpos3 = Vector.scale(Vector.sub(pos3, pos1), -sign3);
             var dpos4 = Vector.scale(Vector.sub(pos4, pos1), -sign4);
             var norm1 = Vector.normal(shape.norm.get(i1));
             var norm2 = Vector.normal(shape.norm.get(i2));
@@ -183,32 +186,34 @@ define(function(require) {
             //console.log("("+i1+"), ("+i2+"), ("+i3+":"+sign3+"), ("+i4+":"+sign4+") : ("+
             //    pos1+"), ("+pos2+"), ("+norm1+"), ("+norm2+"), ("+norm3+"), ("+norm4+")");
             
-            builder.pos.add(pos1);
-            builder.norm.add(norm1);
-            builder.adj1.add(norm3);
-            builder.adj2.add(norm4);
-            builder.wght.add(0.0);
+            if (!Vector.eq(norm3, norm4)) {    
+                builder.pos.add(pos1);
+                builder.norm.add(norm1);
+                builder.adj1.add(norm3);
+                builder.adj2.add(norm4);
+                builder.wght.add(0.0);
+                
+                builder.pos.add(pos2);
+                builder.norm.add(norm2);
+                builder.adj1.add(norm3);
+                builder.adj2.add(norm4);
+                builder.wght.add(0.0);
+                
+                builder.pos.add(pos2);
+                builder.norm.add(norm2);
+                builder.adj1.add(norm3);
+                builder.adj2.add(norm4);
+                builder.wght.add(1.0);
+                
+                builder.pos.add(pos1);
+                builder.norm.add(norm1);
+                builder.adj1.add(norm3);
+                builder.adj2.add(norm4);
+                builder.wght.add(1.0);
             
-            builder.pos.add(pos2);
-            builder.norm.add(norm2);
-            builder.adj1.add(norm3);
-            builder.adj2.add(norm4);
-            builder.wght.add(0.0);
-            
-            builder.pos.add(pos2);
-            builder.norm.add(norm2);
-            builder.adj1.add(norm3);
-            builder.adj2.add(norm4);
-            builder.wght.add(1.0);
-            
-            builder.pos.add(pos1);
-            builder.norm.add(norm1);
-            builder.adj1.add(norm3);
-            builder.adj2.add(norm4);
-            builder.wght.add(1.0);
-        
-            builder.quads.add(index, index+1, index+2, index+3);
-            index += 4;
+                builder.quads.add(index, index+1, index+2, index+3);
+                index += 4;
+            }
         });
         return builder;
     };

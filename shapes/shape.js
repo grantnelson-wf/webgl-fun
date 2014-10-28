@@ -242,13 +242,13 @@ define(function(require) {
          * The buffer of x, y, z in-line values of vertex first adjunct data.
          * @type {Array}
          */
-        this.adj1 = new Buffers.Vertex1(Const.ADJ1);
+        this.adj1 = new Buffers.Vertex3(Const.ADJ1);
 
         /**
          * The buffer of x, y, z in-line values of vertex second adjunct data.
          * @type {Array}
          */
-        this.adj2 = new Buffers.Vertex1(Const.ADJ2);
+        this.adj2 = new Buffers.Vertex3(Const.ADJ2);
 
         /**
          * The list of all vertex data buffers.
