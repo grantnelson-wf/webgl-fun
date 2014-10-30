@@ -1354,135 +1354,6 @@ define(function(require) {
     };
 
     //======================================================================
-
-    /**
-     * TODO: Comment
-     */
-    function PointIndexSet() {
-        this._set = {};
-    }
-    
-    /**
-     * TODO: Comment
-     */
-    PointIndexSet.prototype.insert = function(index) {
-        this._set[Number(index)] = true;
-    };
-    
-    /**
-     * TODO: Comment
-     */
-    PointIndexSet.prototype.eachPoint = function(callBack) {
-        for (var index in this._set) {
-            callBack(Number(index));
-        }
-    };
-
-    //======================================================================
-
-    /**
-     * TODO: Comment
-     */
-    function LineIndexSet() {
-        this._set = {};
-    }
-    
-    /**
-     * TODO: Comment
-     */
-    LineIndexSet.prototype.insert = function(index1, index2) {
-        index1 = Number(index1);
-        index2 = Number(index2);
-
-        if (index1 > index2) {
-            var temp = index1;
-            index1 = index2;
-            index2 = temp;
-        }
-        
-        var lines = this._set[index1];
-        if (!lines) {
-            lines = {};
-        }
-        lines[index2] = true;
-        this._set[index1] = lines;
-    };
-    
-    /**
-     * TODO: Comment
-     */
-    LineIndexSet.prototype.eachLine = function(callBack) {
-        for (var index1 in this._set) {
-            var lines = this._set[index1];
-            for (var index2 in lines) {
-                callBack(Number(index1), Number(index2));
-            }
-        }
-    };
-    
-    //======================================================================
-    
-    /**
-     * TODO: Comment
-     */
-    function EdgeIndexSet() {
-        this._set = {};
-    }
-    
-    /**
-     * TODO: Comment
-     */
-    EdgeIndexSet.prototype.insert = function(i1, i2, i3) {
-        this._insertPart(i1, i2, i3);
-        this._insertPart(i3, i1, i2);
-        this._insertPart(i2, i3, i1);
-    };
-    
-    /**
-     * TODO: Comment
-     */
-    EdgeIndexSet.prototype._insertPart = function(i1, i2, i3) {
-        i1 = Number(i1);
-        i2 = Number(i2);
-        i3 = Number(i3);
-        var sign = 1;
-        if (i1 > i2) {
-            var t = i1;
-            i1 = i2;
-            i2 = t;
-            sign = -1;
-        }
-        var edges = this._set[i1];
-        if (!edges) {
-            edges = {};
-        }
-        var adjs = edges[i2];
-        if (!adjs) {
-            adjs = {};
-        }
-        adjs[i3] = sign;
-        edges[i2] = adjs;
-        this._set[i1] = edges;
-    };
-    
-    /**
-     * TODO: Comment
-     */
-    EdgeIndexSet.prototype.foreach = function(callBack) {
-        for (var i1 in this._set) {
-            var edges = this._set[i1];
-            for (var i2 in edges) {
-                var adjs = edges[i2];
-                var parts = []
-                for (var i3 in adjs) {
-                    parts.push([Number(i3), Number(adjs[i3])]);
-                }
-                callBack(Number(i1), Number(i2), parts);
-            }
-        }
-    };
-    
-    //======================================================================
     
     /**
      * TODO: Comment
@@ -1501,10 +1372,7 @@ define(function(require) {
         TriIndices:       TriIndices,
         QuadIndices:      QuadIndices,
         TriStripIndices:  TriStripIndices,
-        TriFanIndices:    TriFanIndices,
-        PointIndexSet:    PointIndexSet,
-        LineIndexSet:     LineIndexSet,
-        EdgeIndexSet:     EdgeIndexSet
+        TriFanIndices:    TriFanIndices
     };
     
     return Buffers;

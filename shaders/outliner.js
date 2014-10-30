@@ -6,7 +6,7 @@ define(function(require) {
     /**
      * Creates a directional light shader.
      */
-    function DirectionalBuilder() {
+    function OutlinerBuilder() {
         // Do Nothing
     }
 
@@ -14,20 +14,20 @@ define(function(require) {
      * The name for this shader.
      * @type {String}
      */
-    DirectionalBuilder.prototype.name = 'Outliner';
+    OutlinerBuilder.prototype.name = 'Outliner';
     
     /**
      * The required vertex information.
      * @type {Number}
      */
-    DirectionalBuilder.prototype.requiredTypes =
+    OutlinerBuilder.prototype.requiredTypes =
         Const.POS|Const.NORM|Const.WGHT|Const.ADJ1|Const.ADJ2;
     
     /**
      * The vertex shader program.
      * @type {String}
      */
-    DirectionalBuilder.prototype.vsSource =
+    OutlinerBuilder.prototype.vsSource =
         'uniform mat4 objMat;                                     \n'+
         'uniform mat4 viewMat;                                    \n'+
         'uniform mat4 projMat;                                    \n'+
@@ -51,15 +51,20 @@ define(function(require) {
         '    vec4 faceNorm1 = viewObjMat*vec4(adj1Attr, 0.0);     \n'+
         '    vec4 faceNorm2 = viewObjMat*vec4(adj2Attr, 0.0);     \n'+
         '                                                         \n'+
-        '    // Compute angle from cam vector to norm.            \n'+
-        '    // Cam is at 0 and the desination of the vector is   \n'+
-        '    // pos so cam vector is pos.                         \n'+
-        '    float dot1 = dot(pos, faceNorm1);                    \n'+
-        '    float dot2 = dot(pos, faceNorm2);                    \n'+
+        '    // Check if the edge is sharp enough to put a line.  \n'+
+        '    if (dot(faceNorm1, faceNorm2) <= 0.0001) {           \n'+
+        '      pos += norm*thickness;                             \n'+
+        '    } else {                                             \n'+
+        '      // Compute angle from cam vector to norm.          \n'+
+        '      // Cam is at 0 and the desination of the vector    \n'+
+        '      // is pos so cam vector is pos.                    \n'+
+        '      float dot1 = dot(pos, faceNorm1);                  \n'+
+        '      float dot2 = dot(pos, faceNorm2);                  \n'+
         '                                                         \n'+
-        '    // test angles, are they different signs?            \n'+
-        '    if ((dot1 * dot2) < 0.0) {                           \n'+
-        '       pos += norm*thickness;                            \n'+
+        '      // test angles, are they different signs?          \n'+
+        '      if ((dot1 * dot2) < 0.0) {                         \n'+
+        '         pos += norm*thickness;                          \n'+
+        '      }                                                  \n'+
         '    }                                                    \n'+
         '                                                         \n'+
         '    // set output.                                       \n'+
@@ -71,7 +76,7 @@ define(function(require) {
      * The fragment shader program.
      * @type {String}
      */
-    DirectionalBuilder.prototype.fsSource =
+    OutlinerBuilder.prototype.fsSource =
         'precision mediump float;            \n'+
         '                                    \n'+
         'uniform vec3 color;                 \n'+
@@ -86,12 +91,12 @@ define(function(require) {
      * @param  {WebGLRenderingContext} gl  The graphical object.
      * @return  {Shader}  The built directional light shader.
      */
-    DirectionalBuilder.prototype.build = function(gl) {
+    OutlinerBuilder.prototype.build = function(gl) {
         var builder = new ShaderBuilder(
             this.vsSource, this.fsSource,
             this.name, this.requiredTypes);
         return builder.build(gl);
     };
     
-    return DirectionalBuilder;
+    return OutlinerBuilder;
 });

@@ -6,7 +6,7 @@ define(function(require) {
     /**
      * Creates a directional light shader.
      */
-    function DirectionalBuilder() {
+    function CartoonBuilder() {
         // Do Nothing
     }
 
@@ -14,19 +14,19 @@ define(function(require) {
      * The name for this shader.
      * @type {String}
      */
-    DirectionalBuilder.prototype.name = 'Sketch';
+    CartoonBuilder.prototype.name = 'Cartoon';
     
     /**
      * The required vertex information.
      * @type {Number}
      */
-    DirectionalBuilder.prototype.requiredTypes = Const.POS|Const.NORM|Const.TXT;
+    CartoonBuilder.prototype.requiredTypes = Const.POS|Const.NORM;
     
     /**
      * The vertex shader program.
      * @type {String}
      */
-    DirectionalBuilder.prototype.vsSource =
+    CartoonBuilder.prototype.vsSource =
         'uniform mat4 objMat;                                       \n'+
         'uniform mat4 viewMat;                                      \n'+
         'uniform mat4 projMat;                                      \n'+
@@ -34,57 +34,53 @@ define(function(require) {
         '                                                           \n'+
         'attribute vec3 posAttr;                                    \n'+
         'attribute vec3 normAttr;                                   \n'+
-        'attribute vec2 txtAttr;                                    \n'+
         '                                                           \n'+
         'varying vec3 normal;                                       \n'+
         'varying vec3 litVec;                                       \n'+
-        'varying vec2 vTxt;                                         \n'+
         '                                                           \n'+
         'void main()                                                \n'+
         '{                                                          \n'+
         '  normal = normalize(objMat*vec4(normAttr, 0.0)).xyz;      \n'+
         '  litVec = normalize((viewMat*vec4(lightVec, 0.0)).xyz);   \n'+
         '  gl_Position = projMat*viewMat*objMat*vec4(posAttr, 1.0); \n'+
-        '  vTxt = txtAttr;                                          \n'+
         '}                                                          \n';
 
     /**
      * The fragment shader program.
      * @type {String}
      */
-    DirectionalBuilder.prototype.fsSource =
-        'precision mediump float;                                      \n'+
-        '                                                              \n'+
-        'uniform float ambient;                                        \n'+
-        'uniform float diffuse;                                        \n'+
-        '                                                              \n'+
-        'varying vec3 normal;                                          \n'+
-        'varying vec3 litVec;                                          \n'+
-        'varying vec2 vTxt;                                            \n'+
-        '                                                              \n'+
-        'uniform sampler2D txtSampler;                                 \n'+
-        '                                                              \n'+
-        'void main()                                                   \n'+
-        '{                                                             \n'+
-        '   vec3 norm = normalize(normal);                             \n'+
-        '   float diff = diffuse*max(dot(norm, litVec), 0.0);          \n'+
-        '   float shade = 1.0 - clamp(ambient + diff, 0.0, 1.0);       \n'+
-        '   vec4 clr = texture2D(txtSampler, vTxt);                    \n'+
-        '   clr = vec4(clamp((clr.xyz-shade)*2.0, 0.0, 1.0), clr.w);   \n'+
-        '   gl_FragColor = clr;                                        \n'+
-        '}                                                             \n';
+    CartoonBuilder.prototype.fsSource =
+        'precision mediump float;                                        \n'+
+        '                                                                \n'+
+        'uniform float ambient;                                          \n'+
+        'uniform float diffuse;                                          \n'+
+        'uniform vec3 lightClr;                                          \n'+
+        'uniform vec3 darkClr;                                           \n'+
+        'uniform float slices;                                           \n'+
+        '                                                                \n'+
+        'varying vec3 normal;                                            \n'+
+        'varying vec3 litVec;                                            \n'+
+        '                                                                \n'+
+        'void main()                                                     \n'+
+        '{                                                               \n'+
+        '   vec3 norm = normalize(normal);                               \n'+
+        '   float diff = diffuse*max(dot(norm, litVec), 0.0);            \n'+
+        '   float shade = 1.0 - clamp(ambient + diff, 0.0, 1.0);         \n'+
+        '   shade = floor(shade * (slices+1.0)) / (slices+1.0);          \n'+
+        '   gl_FragColor = vec4(mix(lightClr, darkClr, shade), 1.0);     \n'+
+        '}                                                               \n';
     
     /**
      * Initializes the shader.
      * @param  {WebGLRenderingContext} gl  The graphical object.
      * @return  {Shader}  The built directional light shader.
      */
-    DirectionalBuilder.prototype.build = function(gl) {
+    CartoonBuilder.prototype.build = function(gl) {
         var builder = new ShaderBuilder(
             this.vsSource, this.fsSource,
             this.name, this.requiredTypes);
         return builder.build(gl);
     };
     
-    return DirectionalBuilder;
+    return CartoonBuilder;
 });
