@@ -83,6 +83,27 @@ define(function(require) {
     };
 
     /**
+     * Adds a integer value control.
+     * @param  {String}   name      The name of the value to store.
+     * @param  {Function} callback  The method to call on change.
+     *                              It will have one parameter, the new integer value.
+     * @param  {Number}   min       The minimum allowed value.
+     * @param  {Number}   max       The maximum allowed value.
+     * @param  {Number}   initial   The initial value to set.
+     */
+    Controls.prototype.addInt = function(name, callback, min, max, initial) {
+        if (max < min) {
+            var temp = max;
+            max = min;
+            min = temp;
+        }
+        this[name] = Math.min(max, Math.max(min, initial));
+        var ctrl = this._gui.add(this, name, min, max);
+        ctrl.onChange(callback);
+        callback(initial);
+    };
+
+    /**
      * Adds a boolean state control.
      * @param  {String}   name      The name of the state to store.
      * @param  {Function} callback  The method to call on change.

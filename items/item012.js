@@ -35,15 +35,14 @@ define(function(require) {
 
         // Build and set the shaders.
         var cartoonBuilder = new CartoonBuilder();
-        this.cartoonBuilder = cartoonBuilder.build(gl);
-        if (!this.cartoonBuilder) {
+        this.cartoonShader = cartoonBuilder.build(gl);
+        if (!this.cartoonShader) {
             return false;
         }
-        this.cartoonBuilder.use();
-        this.cartoonBuilder.setLightVec(-0.5, 0.5, -1.0);
-        this.cartoonBuilder.setLightClr(1.0, 0.5, 1.0);
-        this.cartoonBuilder.setDarkClr(0.25, 0.0, 0.25);
-        this.cartoonBuilder.setSlices(3);
+        this.cartoonShader.use();
+        this.cartoonShader.setLightVec(-0.5, 0.5, -1.0);
+        this.cartoonShader.setLightClr(1.0, 0.5, 1.0);
+        this.cartoonShader.setDarkClr(0.25, 0.0, 0.25);
 
         var outlineBuilder = new OutlineBuilder();
         this.outlineShader = outlineBuilder.build(gl);
@@ -52,6 +51,7 @@ define(function(require) {
         }
         this.outlineShader.use();
         this.outlineShader.setColor(0.0, 0.0, 0.0);
+        this.outlineShader.setEdgeLimit(0.0001);
 
         // Setup controls.
         item = this;
@@ -62,12 +62,12 @@ define(function(require) {
         this.controls.setFps(0.0);
         this.controls.addShapeSelect("Shape", function(shapeBuilder) {
             var builder = new ShapeBuilder();
-            shapeBuilder.prepare(builder, item.cartoonBuilder.requiredType|item.outlineShader.requiredType);
+            shapeBuilder.prepare(builder, item.cartoonShader.requiredType|item.outlineShader.requiredType);
             var degenBuilder = item._createAdjunctShape(builder);
 
-            item.shape = builder.build(gl, item.cartoonBuilder.requiredType);
-            item.shape.posAttr.set(item.cartoonBuilder.posAttrLoc);
-            item.shape.normAttr.set(item.cartoonBuilder.normAttrLoc);
+            item.shape = builder.build(gl, item.cartoonShader.requiredType);
+            item.shape.posAttr.set(item.cartoonShader.posAttrLoc);
+            item.shape.normAttr.set(item.cartoonShader.normAttrLoc);
 
             item.degenShape = degenBuilder.build(gl, item.outlineShader.requiredType);
             item.degenShape.posAttr.set(item.outlineShader.posAttrLoc);
@@ -77,13 +77,17 @@ define(function(require) {
             item.degenShape.adj2Attr.set(item.outlineShader.adj2AttrLoc);
         }, "Cube");
         this.controls.addFloat("Ambient", function(value) {
-            item.cartoonBuilder.use();
-            item.cartoonBuilder.setAmbient(value);
+            item.cartoonShader.use();
+            item.cartoonShader.setAmbient(value);
         }, 0.0, 1.0, 0.3);
         this.controls.addFloat("Diffuse", function(value) {
-            item.cartoonBuilder.use();
-            item.cartoonBuilder.setDiffuse(value);
+            item.cartoonShader.use();
+            item.cartoonShader.setDiffuse(value);
         }, 0.0, 1.0, 0.5);
+        this.controls.addFloat("Slices", function(value) {
+            item.cartoonShader.use();
+            item.cartoonShader.setSlices(value);
+        }, 1, 50, 3);
         this.controls.addFloat("Thickness", function(value) {
             item.outlineShader.use();
             item.outlineShader.setThickness(value);
@@ -111,10 +115,10 @@ define(function(require) {
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
         // Draw sketch.
-        this.cartoonBuilder.use();
-        this.cartoonBuilder.setProjMat(this.projMover.matrix());
-        this.cartoonBuilder.setViewMat(Matrix.identity());
-        this.cartoonBuilder.setObjMat(this.objMover.matrix());
+        this.cartoonShader.use();
+        this.cartoonShader.setProjMat(this.projMover.matrix());
+        this.cartoonShader.setViewMat(Matrix.identity());
+        this.cartoonShader.setObjMat(this.objMover.matrix());
         this.shape.draw();
 
         // Draw outline.
@@ -146,11 +150,12 @@ define(function(require) {
     Item.prototype._createAdjunctShape = function(shape) {
         // Collect all edges in the shape.
         var edges = new AdjSet();
+        for (var i = shape.pos.count() - 1; i >= 0; i--) {
+            edges.insertPoint(shape.pos.get(i), shape.norm.get(i));
+        };
         for (var i = shape.indices.length - 1; i >= 0; i--) {
             shape.indices[i].eachTri(function(i1, i2, i3) {
-                edges.insert(shape.pos.get(i1), shape.norm.get(i1),
-                             shape.pos.get(i2), shape.norm.get(i2),
-                             shape.pos.get(i3), shape.norm.get(i3));
+                edges.insertTri(shape.pos.get(i1), shape.pos.get(i2), shape.pos.get(i3));
             });
         };
         
@@ -214,17 +219,6 @@ define(function(require) {
     /**
      * TODO: Comment
      */
-    AdjPoint.prototype.merge = function(other, epsilon) {
-        if (Vector.eq(this.pos, other.pos, epsilon)) {
-            this.norm = Vector.add(this.norm, other.norm);
-            return true;
-        }
-        return false;
-    };
-    
-    /**
-     * TODO: Comment
-     */
     function AdjEdge(index1, index2, faceNorm) {
         this.index1 = index1;
         this.index2 = index2;
@@ -264,16 +258,34 @@ define(function(require) {
     /**
      * TODO: Comment
      */
-    AdjSet.prototype.insert = function(pos1, norm1, pos2, norm2, pos3, norm3) {
-        norm1 = Vector.normal(norm1);
-        norm2 = Vector.normal(norm2);
-        norm3 = Vector.normal(norm3);
+    AdjSet.prototype.insertPoint = function(pos, norm, epsilon) {
+        norm = Vector.normal(norm);
+        var i = this._findPoint(pos, epsilon);
+        if (i < 0) {
+            var adj = new AdjPoint(pos, norm);
+            this._points.push(adj);
+            console.log("add: "+(this._points.length-1)+") "+pos);
+        } else {
+            var adj = this._points[i];
+            adj.norm = Vector.add(adj.norm, norm);
+            this._points[i] = adj;
+            console.log("update: "+i+") "+pos);
+        }
+    };
+    
+    /**
+     * TODO: Comment
+     */
+    AdjSet.prototype.insertTri = function(pos1, pos2, pos3, epsilon) {
         var dpos2 = Vector.sub(pos1, pos2);
         var dpos3 = Vector.sub(pos3, pos2);
         var faceNorm = Vector.normal(Vector.cross(dpos2, dpos3));
-        var index1 = this._insertPoint(pos1, norm1);
-        var index2 = this._insertPoint(pos2, norm2);
-        var index3 = this._insertPoint(pos3, norm3);
+        var index1 = this._findPoint(pos1, epsilon);
+        var index2 = this._findPoint(pos2, epsilon);
+        var index3 = this._findPoint(pos3, epsilon);
+        console.log(pos1+" => "+index1);
+        console.log(pos2+" => "+index2);
+        console.log(pos3+" => "+index3);
         this._insertEdge(index1, index2, faceNorm);
         this._insertEdge(index2, index3, faceNorm);
         this._insertEdge(index3, index1, faceNorm);
@@ -282,15 +294,13 @@ define(function(require) {
     /**
      * TODO: Comment
      */
-    AdjSet.prototype._insertPoint = function(pos, norm) {
-        var adj = new AdjPoint(pos, norm);
+    AdjSet.prototype._findPoint = function(pos, epsilon) {
         for (var i = 0; i < this._points.length; i++) {
-            if (this._points[i].merge(adj)) {
+            if (Vector.eq(this._points[i].pos, pos, epsilon)) {
                 return i;
             }
         }
-        this._points.push(adj);
-        return this._points.length-1;
+        return -1;
     };
     
     /**

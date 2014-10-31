@@ -32,6 +32,7 @@ define(function(require) {
         'uniform mat4 viewMat;                                    \n'+
         'uniform mat4 projMat;                                    \n'+
         'uniform float thickness;                                 \n'+
+        'uniform float edgeLimit;                                 \n'+
         '                                                         \n'+
         'attribute vec3 posAttr;                                  \n'+
         'attribute vec3 normAttr;                                 \n'+
@@ -52,7 +53,7 @@ define(function(require) {
         '    vec4 faceNorm2 = viewObjMat*vec4(adj2Attr, 0.0);     \n'+
         '                                                         \n'+
         '    // Check if the edge is sharp enough to put a line.  \n'+
-        '    if (dot(faceNorm1, faceNorm2) <= 0.0001) {           \n'+
+        '    if (dot(faceNorm1, faceNorm2) <= edgeLimit) {        \n'+
         '      pos += norm*thickness;                             \n'+
         '    } else {                                             \n'+
         '      // Compute angle from cam vector to norm.          \n'+
