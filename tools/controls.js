@@ -9,6 +9,8 @@ define(function(require) {
     var SphereBuilder   = require('shapes/sphere');
     var ToroidBuilder   = require('shapes/toroid');
     var WlogoBuilder    = require('shapes/wlogo');
+    var RipplesBuilder  = require('shapes/ripples');
+    var BumpsBuilder    = require('shapes/bumps');
 
     /**
      * This is the controls interface.
@@ -43,7 +45,9 @@ define(function(require) {
                          new GridBuilder(),
                          new SphereBuilder(),
                          new ToroidBuilder(),
-                         new WlogoBuilder() ];
+                         new WlogoBuilder(),
+                         new RipplesBuilder(),
+                         new BumpsBuilder() ];
         var names = [];
         for (var i = builders.length - 1; i >= 0; i--) {
             names[i] = builders[i].name;

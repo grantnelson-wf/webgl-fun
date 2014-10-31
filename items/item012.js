@@ -41,8 +41,6 @@ define(function(require) {
         }
         this.cartoonShader.use();
         this.cartoonShader.setLightVec(-0.5, 0.5, -1.0);
-        this.cartoonShader.setLightClr(1.0, 0.5, 1.0);
-        this.cartoonShader.setDarkClr(0.25, 0.0, 0.25);
 
         var outlineBuilder = new OutlineBuilder();
         this.outlineShader = outlineBuilder.build(gl);
@@ -50,7 +48,6 @@ define(function(require) {
             return false;
         }
         this.outlineShader.use();
-        this.outlineShader.setColor(0.0, 0.0, 0.0);
         this.outlineShader.setEdgeLimit(0.0001);
 
         // Setup controls.
@@ -88,10 +85,22 @@ define(function(require) {
             item.cartoonShader.use();
             item.cartoonShader.setSlices(value);
         }, 1, 50, 3);
+        this.controls.addRGB("Light Color", function(r, g, b) {
+            item.cartoonShader.use();
+            item.cartoonShader.setLightClr(r, g, b);
+        }, 0.5, 1.0, 1.0);
+        this.controls.addRGB("Dark Color", function(r, g, b) {
+            item.cartoonShader.use();
+            item.cartoonShader.setDarkClr(r, g, b);
+        }, 0.0, 0.25, 0.25);
         this.controls.addFloat("Thickness", function(value) {
             item.outlineShader.use();
             item.outlineShader.setThickness(value);
         }, 0.0, 0.1, 0.01);
+        this.controls.addRGB("Outline", function(r, g, b) {
+            item.outlineShader.use();
+            item.outlineShader.setColor(r, g, b);
+        }, 0.0, 0.0, 0.0);
         
         // Initialize movers.
         this.projMover = new ProjMover();
@@ -173,8 +182,6 @@ define(function(require) {
                 norm1 = Vector.normal(norm1);
                 norm2 = Vector.normal(norm2);
             
-                //console.log("("+pos1+") ("+pos2+") ("+faceNorm1+") ("+faceNorm2+")");
-        
                 builder.pos.add(pos1);
                 builder.norm.add(norm1);
                 builder.adj1.add(faceNorm1);
@@ -264,12 +271,10 @@ define(function(require) {
         if (i < 0) {
             var adj = new AdjPoint(pos, norm);
             this._points.push(adj);
-            console.log("add: "+(this._points.length-1)+") "+pos);
         } else {
             var adj = this._points[i];
             adj.norm = Vector.add(adj.norm, norm);
             this._points[i] = adj;
-            console.log("update: "+i+") "+pos);
         }
     };
     
@@ -283,9 +288,6 @@ define(function(require) {
         var index1 = this._findPoint(pos1, epsilon);
         var index2 = this._findPoint(pos2, epsilon);
         var index3 = this._findPoint(pos3, epsilon);
-        console.log(pos1+" => "+index1);
-        console.log(pos2+" => "+index2);
-        console.log(pos3+" => "+index3);
         this._insertEdge(index1, index2, faceNorm);
         this._insertEdge(index2, index3, faceNorm);
         this._insertEdge(index3, index1, faceNorm);

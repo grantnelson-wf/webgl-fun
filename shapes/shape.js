@@ -2,7 +2,8 @@ define(function(require) {
 
     var Const = require('tools/const');
     var Common = require('tools/common');
-    var Buffers = require('shapes/buffers')
+    var Buffers = require('shapes/buffers');
+    var Vector = require('tools/vector');
 
     /**
      * A graphical shape object.
@@ -444,6 +445,62 @@ define(function(require) {
     };
     
     //======================================================================
+    
+    // TODO: implement findConnectedEdges
+    
+    /**
+     * TODO: Comment
+     */
+    ShapeBuilder.prototype.findConnectedTris = function(index) {
+        var self = this;
+        var tri = [];
+        var addTri = function(i1, i2, i3) {
+            for (var i = 0; i < tri.length; ++i) {
+                if ((tri[i][0] === i1) &&
+                    (tri[i][1] === i2) &&
+                    (tri[i][2] === i3)) {
+                    return;
+                }
+            }
+            tri.push([i1, i2, i3]);
+        };
+        
+        for (var i = self.indices.length - 1; i >= 0; i--) {
+            self.indices[i].eachTri(function(i1, i2, i3) {
+                if (i1 === index) {
+                    addTri(i1, i2, i3);
+                } else if (i2 === index) {
+                    addTri(i2, i3, i1);
+                } else if (i3 === index) {
+                    addTri(i3, i1, i2);
+                }
+            });
+        };
+        
+        return tri;
+    };
+
+    /**
+     * TODO: Comment
+     */
+    ShapeBuilder.prototype.calculateNormals = function() {
+        for (var i = this.pos.count() - 1; i >= 0; i--) {
+            var tri = this.findConnectedTris(i);
+            var norm = [0.0, 0.0, 0.0];
+            for (var j = 0; j < tri.length; j++) {
+                var pos1 = this.pos.get(tri[j][0]);
+                var pos2 = this.pos.get(tri[j][1]);
+                var pos3 = this.pos.get(tri[j][2]);
+                var dpos2 = Vector.sub(pos1, pos2);
+                var dpos3 = Vector.sub(pos3, pos2);
+                var faceNorm = Vector.normal(Vector.cross(dpos2, dpos3));
+                norm = Vector.add(norm, faceNorm);
+            }
+            this.norm.set(i, Vector.normal(norm));
+        };
+    };
+    
+    //======================================================================
  
     /**
      * TODO: Comment
@@ -560,54 +617,6 @@ define(function(require) {
         // Foreach edge create a quad with the first and second copy.
         points.eachLine(function(index) {
             builder.lines.add(index, index+count);
-        });
-
-        return builder;
-    };
-
-    /**
-     * TODO: Comment
-     * @return {[type]} [description]
-     */
-    ShapeBuilder.prototype.createDegenerateLines = function() {
-        var vertexData = this._validateVertices();
-        this._validateIndices(vertexData.length);
-
-        // Copy all the data over to the builder, twice.
-        var builder = new ShapeBuilder();
-        for (var i = this.data.length - 1; i >= 0; i--) {
-            var src = this.data[i].data;
-            var srcLen = src.length;
-            var dest = [];
-            for (var j = srcLen - 1; j >= 0; j--) {
-                var value = src[j];
-                dest[j] = value;
-                dest[j+srcLen] = value;
-            };
-            builder.data[i].data = dest;
-        };
-
-        // Set the weight data for the first copy to zero, the second copy to one.
-        var count = this.pos.count();
-        builder.wght.data = [];
-        for (var i = count - 1; i >= 0; i--) {
-            builder.wght.add(0.0);
-        };
-        for (var i = count - 1; i >= 0; i--) {
-            builder.wght.add(1.0);
-        };
-        
-        // Collect all edges in the shape.
-        var edges = new Buffers.LineIndexSet();
-        for (var i = this.indices.length - 1; i >= 0; i--) {
-            this.indices[i].eachLine(function(index1, index2) {
-                edges.insert(index1, index2);
-            });
-        };
-        
-        // Foreach edge create a quad with the first and second copy.
-        edges.eachLine(function(index1, index2) {
-            builder.quads.add(index1, index1+count, index2+count, index2);
         });
 
         return builder;
