@@ -10,16 +10,18 @@ define(function(require) {
     function CylinderBuilder() {
         
         /**
-         * The radius of the top of the cylinder.
-         * @type {Number}
+         * The calculation of the location for sides.
+         * @type {Function}
+         * @param  {Number} i  The division of the height.
+         * @param  {Number} j  The division of the side.
+         * @return  {Array}  The resulting position.
          */
         this.sideFunction = function(i, j) {
-        
-        
-            // TODO: Fill out.
-        
-        
-            return [x, y, z];
+            var height = (i/this.divCount) - 0.5;
+            var angle = j*Math.PI*2.0/this.sideCount;
+            var cos = Math.cos(angle);
+            var sin = Math.sin(angle);
+            return [cos*0.5, height, sin*0.5];
         };
 
         /**
@@ -54,163 +56,17 @@ define(function(require) {
      * @param  {Number} vertexType  The vertex type to build.
      */
     CylinderBuilder.prototype.prepare = function(shape, vertexType) {
-        if (this.closedTop) {
-            this._buildTopCap(shape, vertexType);
-        }
-        if (this.closedBottom) {
-            this._buildBottomCap(shape, vertexType);
-        }
-        this._buildSides(shape, vertexType);
-    };
-    
-    /**
-     * Creates a cylinder.
-     * @param  {WebGLRenderingContext} gl  The graphical object.
-     * @param  {Number} vertexType  The type of vertices the cylinder should have.
-     * @returns  {Shape}  The created cylinder.
-     */
-    CylinderBuilder.prototype.build = function(gl, vertexType) {
-        var shape = new ShapeBuilder();
-        this.prepare(shape, vertexType);
-        return shape.build(gl, vertexType);
-    };
-
-    /**
-     * Builds the top cap of the cylinder.
-     * @param  {Shape} shape  The shape being built.
-     * @param  {Number} vertexType  The type of vertices the cylinder should have.
-     */
-    CylinderBuilder.prototype._buildTopCap = function(shape, vertexType) {
-        if (!Common.eq(this.topRadius, 0, 0.00001)) {
-            shape.pos.add(this.x, this.y+this.topHeight, this.z);
-            if (vertexType&Const.NORM) {
-                shape.norm.add(0, 1, 0);
-            }
-            if (vertexType&Const.CLR3) {
-                shape.clr3.add(1, 1, 1);
-            }
-            if (vertexType&Const.CLR4) {
-                shape.clr4.add(1, 1, 1, 1);
-            }
-            if (vertexType&Const.TXT) {
-                shape.txt.add(0.5, 0.5);
-            }
-            if (vertexType&Const.CUBE) {
-                shape.cube.add(0, 1, 0);
-            }
-            if (vertexType&Const.BINM) {
-                shape.binm.add(0, 0, -1)
-            }
-            var index = shape.pos.count();
-            shape.triFans.start(index-1, index+this.sideCount-1);
-            
-            for (var i = 0; i < this.sideCount; i++) {
-                var angle = i*Math.PI*2.0/this.sideCount;
-                var cos = Math.cos(angle);
-                var sin = Math.sin(angle);
-                shape.pos.add(cos*this.topRadius + this.x,
-                    this.y+this.topHeight, sin*this.topRadius + this.z);
-                if (vertexType&Const.NORM) {
-                    shape.norm.add(0, 1, 0);
-                }
-                if (vertexType&Const.CLR3) {
-                    shape.clr3.add(0, 1, 0);
-                }
-                if (vertexType&Const.CLR4) {
-                    shape.clr4.add(0, 1, 0, 1);
-                }
-                if (vertexType&Const.TXT) {
-                    shape.txt.add(cos*0.5+0.5, sin*0.5+0.5);
-                }
-                if (vertexType&Const.CUBE) {
-                    shape.cube.add(cos*Math.SQRT2, Math.SQRT2, sin*Math.SQRT2);
-                }
-                if (vertexType&Const.BINM) {
-                    shape.binm.add(0, 0, -1)
-                }
-                shape.triFans.add(index+i);
-            }
-        }
-    };
-        
-    /**
-     * Builds the bottom cap of the cylinder.
-     * @param  {Shape} shape  The shape being built.
-     * @param  {Number} vertexType  The type of vertices the cylinder should have.
-     */
-    CylinderBuilder.prototype._buildBottomCap = function(shape, vertexType) {
-        if (!Common.eq(this.bottomRadius, 0, 0.00001)) {
-            shape.pos.add(this.x, this.y+this.bottomHeight, this.z);
-            if (vertexType&Const.NORM) {
-                shape.norm.add(0, -1, 0);
-            }
-            if (vertexType&Const.CLR3) {
-                shape.clr3.add(0, 0, 0);
-            }
-            if (vertexType&Const.CLR4) {
-                shape.clr4.add(0, 0, 0, 1);
-            }
-            if (vertexType&Const.TXT) {
-                shape.txt.add(0.5, 0.5);
-            }
-            if (vertexType&Const.CUBE) {
-                shape.cube.add(0, -1, 0);
-            }
-            if (vertexType&Const.BINM) {
-                shape.binm.add(0, 0, 1)
-            }
-            var index = shape.pos.count();
-            shape.triFans.start(index-1, index);
-            
-            for (var i = 0; i < this.sideCount; i++) {
-                var angle = i*Math.PI*2.0/this.sideCount;
-                var cos = Math.cos(angle);
-                var sin = Math.sin(angle);
-                shape.pos.add(cos*this.bottomRadius + this.x,
-                    this.y+this.bottomHeight, sin*this.bottomRadius + this.z);
-                if (vertexType&Const.NORM) {
-                    shape.norm.add(0, -1, 0);
-                }
-                if (vertexType&Const.CLR3) {
-                    shape.clr3.add(0, 1, 0);
-                }
-                if (vertexType&Const.CLR4) {
-                    shape.clr4.add(0, 1, 0, 1);
-                }
-                if (vertexType&Const.TXT) {
-                    shape.txt.add(cos*0.5+0.5, sin*0.5+0.5);
-                }
-                if (vertexType&Const.CUBE) {
-                    shape.cube.add(cos*Math.SQRT2, -Math.SQRT2, sin*Math.SQRT2);
-                }
-                if (vertexType&Const.BINM) {
-                    shape.binm.add(0, 0, 1)
-                }
-                shape.triFans.add(index+this.sideCount-1-i);
-            }
-        }
-    };
-        
-    /**
-     * Builds the sides of the cylinder.
-     * @param  {Shape} shape  The shape being built.
-     * @param  {Number} vertexType  The type of vertices the cylinder should have.
-     */
-    CylinderBuilder.prototype._buildSides = function(shape, vertexType) {
         var i, j;
         var index = shape.pos.count();
         for (i = 0; i <= this.divCount; i++) {
             var tu = i/this.divCount;
-            var height = this.y+tu*(this.topHeight-this.bottomHeight)+this.bottomHeight;
             for (j = 0; j <= this.sideCount; j++) {
+                var pnt = this.sideFunction(i, j);
+                shape.pos.add(pnt[0], pnt[1], pnt[2]);
+
                 var angle = j*Math.PI*2.0/this.sideCount;
                 var cos = Math.cos(angle);
                 var sin = Math.sin(angle);
-                shape.pos.add(cos*this.bottomRadius + this.x,
-                    height, sin*this.bottomRadius + this.z);
-                if (vertexType&Const.NORM) {
-                    shape.norm.add(cos, 0, sin);
-                }
                 if (vertexType&Const.CLR3) {
                     shape.clr3.add(cos, 0, sin);
                 }
@@ -237,6 +93,19 @@ define(function(require) {
             }
             index += (this.sideCount+1);
         }
+        shape.calculateNormals();
+    };
+    
+    /**
+     * Creates a cylinder.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Number} vertexType  The type of vertices the cylinder should have.
+     * @returns  {Shape}  The created cylinder.
+     */
+    CylinderBuilder.prototype.build = function(gl, vertexType) {
+        var shape = new ShapeBuilder();
+        this.prepare(shape, vertexType);
+        return shape.build(gl, vertexType);
     };
 
     return CylinderBuilder;

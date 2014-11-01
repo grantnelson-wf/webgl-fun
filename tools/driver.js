@@ -100,7 +100,7 @@ define(function(require) {
         // Set some graphics defaults.
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
         this.gl.clearDepth(1.0);
-        this.gl.enable(this.gl.CULL_FACE);
+        this.gl.disable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.depthFunc(this.gl.LESS);
 
