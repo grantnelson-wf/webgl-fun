@@ -111,6 +111,20 @@ define(function(require) {
         },
 
         /**
+         * TODO: Comment
+         * Multiplies the two given matrices.
+         * @param  {Array} a  The left matrix in the multiplication.
+         * @param  {Array} b  The right matrix in the multiplication.
+         * @returns  {Array}  The created matrix.
+         */
+        vecMul: function(v, m) {
+            return [ v[ 0]*m[ 0] + v[ 1]*m[ 4] + v[ 2]*m[ 8] + v[ 3]*m[12],
+                     v[ 0]*m[ 1] + v[ 1]*m[ 5] + v[ 2]*m[ 9] + v[ 3]*m[13],
+                     v[ 0]*m[ 2] + v[ 1]*m[ 6] + v[ 2]*m[10] + v[ 3]*m[14],
+                     v[ 0]*m[ 3] + v[ 1]*m[ 7] + v[ 2]*m[11] + v[ 3]*m[15] ];
+        },
+
+        /**
          * Creates a translation matrix.
          * @param  {Number} x  The x offset component.
          * @param  {Number} y  The y offset component.

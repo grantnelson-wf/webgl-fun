@@ -132,6 +132,45 @@ define(function(require) {
          */
         isArray: function(obj) {
             return Object.prototype.toString.call( obj ) === '[object Array]';
+        },
+        
+        /**
+         * TODO: Comment
+         * @param  {[type]} a [description]
+         * @param  {[type]} b [description]
+         * @param  {[type]} i [description]
+         * @return {[type]}   [description]
+         */
+        lerp: function(a, b, i) {
+            if (i <= 0.0) {
+                return a;
+            } else if (i >= 1.0) {
+                return b;
+            } else {
+                return (b-a)*i + a;
+            }
+        },
+        
+        /**
+         * TODO: Comment
+         */
+        multiLerp: function(a, b, i) {
+            var a0 = a[0];
+            var b0 = b[0];
+            if (i <= a0) {
+                return b0;
+            }
+            for (var j = 0; j < a.length; j++) {
+                var a1 = a[j];
+                var b1 = b[j];
+                if (i <= a1) {
+                    var k = (i-a0)/(a1-a0);
+                    return this.lerp(b0, b1, k);
+                }
+                a0 = a1;
+                b0 = b1;
+            }
+            return b0;
         }
 
     };

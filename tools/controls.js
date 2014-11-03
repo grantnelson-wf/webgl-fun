@@ -12,6 +12,7 @@ define(function(require) {
     var RipplesBuilder  = require('shapes/ripples');
     var BumpsBuilder    = require('shapes/bumps');
     var GlassBuilder    = require('shapes/glass');
+    var KnotBuilder     = require('shapes/knot');
 
     /**
      * This is the controls interface.
@@ -49,7 +50,8 @@ define(function(require) {
                          new WlogoBuilder(),
                          new RipplesBuilder(),
                          new BumpsBuilder(),
-                         new GlassBuilder() ];
+                         new GlassBuilder(),
+                         new KnotBuilder() ];
         var names = [];
         for (var i = builders.length - 1; i >= 0; i--) {
             names[i] = builders[i].name;

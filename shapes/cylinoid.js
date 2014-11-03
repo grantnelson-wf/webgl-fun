@@ -35,6 +35,38 @@ define(function(require) {
          * @type {Number}
          */
         this.divCount = 20;
+ 
+        /**
+         * Indicates the ends are joined.
+         * @type {Boolean}
+         */
+        this.joinEnds = false;
+        
+        /**
+         * Indicates the top is closed.
+         * @type {Boolean}
+         */
+        this.closedTop = false;
+ 
+        /**
+         * Indicates the bottom is closed.
+         * @type {Boolean}
+         */
+        this.closedBottom = true;
+        
+        /**
+         * TODO: Comment
+         * Indicates the top is closed.
+         * @type {Boolean}
+         */
+        this.topPos = [0, 0.5, 0];
+ 
+        /**
+         * TODO: Comment
+         * Indicates the bottom is closed.
+         * @type {Boolean}
+         */
+        this.bottomPos = [0, -0.5, 0];
     }
     
     /**
@@ -86,6 +118,7 @@ define(function(require) {
                 }
             }
         }
+        
         for (i = 1; i <= this.divCount; i++) {
             shape.triStrips.start();
             for (j = 0; j <= this.sideCount; j++) {
@@ -93,6 +126,65 @@ define(function(require) {
             }
             index += (this.sideCount+1);
         }
+        
+        if (this.closedTop) {
+            shape.pos.add(this.topPos[0], this.topPos[1], this.topPos[2]);
+            if (vertexType&Const.CLR3) {
+                shape.clr3.add(1, 1, 1);
+            }
+            if (vertexType&Const.CLR4) {
+                shape.clr4.add(1, 1, 1, 1);
+            }
+            if (vertexType&Const.TXT) {
+                shape.txt.add(0, 1);
+            }
+            if (vertexType&Const.CUBE) {
+                shape.cube.add(0, 1, 0);
+            }
+            if (vertexType&Const.BINM) {
+                shape.binm.add(0, 0, 1);
+            }
+            
+            shape.triFans.start(shape.pos.count()-1);
+            var index = (this.sideCount+1)*(this.divCount+1)-1;
+            for (j = this.sideCount; j >= 0; j--) {
+                shape.triFans.add(index-j);
+            }
+        }
+        
+        if (this.closedBottom) {
+            shape.pos.add(this.bottomPos[0], this.bottomPos[1], this.bottomPos[2]);
+            if (vertexType&Const.CLR3) {
+                shape.clr3.add(0, 0, 0);
+            }
+            if (vertexType&Const.CLR4) {
+                shape.clr4.add(0, 0, 0, 1);
+            }
+            if (vertexType&Const.TXT) {
+                shape.txt.add(0, 0);
+            }
+            if (vertexType&Const.CUBE) {
+                shape.cube.add(0, -1, 0);
+            }
+            if (vertexType&Const.BINM) {
+                shape.binm.add(0, 0, -1);
+            }
+        
+            shape.triFans.start(shape.pos.count()-1);
+            for (j = this.sideCount; j >= 0; j--) {
+                shape.triFans.add(j);
+            }
+        }
+        
+        if (this.joinEnds) {
+            shape.triStrips.start();
+            var index = (this.sideCount+1)*(this.divCount+1)-1;
+            for (j = 0; j <= this.sideCount; j++) {
+                shape.triStrips.add(index-j);
+                shape.triStrips.add(j);
+            }
+        }
+       
         shape.calculateNormals();
     };
     

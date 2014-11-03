@@ -451,7 +451,7 @@ define(function(require) {
     /**
      * TODO: Comment
      */
-    ShapeBuilder.prototype.findConnectedTris = function(index) {
+    ShapeBuilder.prototype.findConnectedTris = function(pos) {
         var self = this;
         var tri = [];
         var addTri = function(i1, i2, i3) {
@@ -467,11 +467,11 @@ define(function(require) {
         
         for (var i = self.indices.length - 1; i >= 0; i--) {
             self.indices[i].eachTri(function(i1, i2, i3) {
-                if (i1 === index) {
+                if (Vector.eq(self.pos.get(i1), pos)) {
                     addTri(i1, i2, i3);
-                } else if (i2 === index) {
+                } else if (Vector.eq(self.pos.get(i2), pos)) {
                     addTri(i2, i3, i1);
-                } else if (i3 === index) {
+                } else if (Vector.eq(self.pos.get(i3), pos)) {
                     addTri(i3, i1, i2);
                 }
             });
@@ -485,7 +485,7 @@ define(function(require) {
      */
     ShapeBuilder.prototype.calculateNormals = function() {
         for (var i = this.pos.count() - 1; i >= 0; i--) {
-            var tri = this.findConnectedTris(i);
+            var tri = this.findConnectedTris(this.pos.get(i));
             var norm = [0.0, 0.0, 0.0];
             for (var j = 0; j < tri.length; j++) {
                 var pos1 = this.pos.get(tri[j][0]);
