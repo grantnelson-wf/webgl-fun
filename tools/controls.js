@@ -107,6 +107,7 @@ define(function(require) {
         }
         this[name] = Math.min(max, Math.max(min, initial));
         var ctrl = this._gui.add(this, name, min, max);
+        ctrl.step(1);
         ctrl.onChange(callback);
         callback(initial);
     };

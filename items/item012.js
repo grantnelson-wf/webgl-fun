@@ -81,7 +81,7 @@ define(function(require) {
             item.cartoonShader.use();
             item.cartoonShader.setDiffuse(value);
         }, 0.0, 1.0, 0.5);
-        this.controls.addFloat("Slices", function(value) {
+        this.controls.addInt("Slices", function(value) {
             item.cartoonShader.use();
             item.cartoonShader.setSlices(value);
         }, 1, 50, 3);

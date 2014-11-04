@@ -531,7 +531,7 @@ define(function(require) {
         };
         
         // Foreach point create a quad with the first and second copy.
-        points.eachLine(function(index) {
+        points.eachPoint(function(index) {
             builder.points.add(index);
         });
 
@@ -566,7 +566,7 @@ define(function(require) {
             });
         };
         
-        // Foreach edge create a quad with the first and second copy.
+        // For each edge create a quad with the first and second copy.
         edges.eachLine(function(index1, index2) {
             builder.lines.add(index1, index2);
         });
@@ -615,7 +615,7 @@ define(function(require) {
         };
         
         // Foreach edge create a quad with the first and second copy.
-        points.eachLine(function(index) {
+        points.eachPoint(function(index) {
             builder.lines.add(index, index+count);
         });
 

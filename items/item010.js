@@ -215,10 +215,10 @@ define(function(require) {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addFloat("Tree Count", function(value) {
+        this.controls.addInt("Tree Count", function(value) {
             item.treeCount = value;
         }, 0, MaxTreeCount, 10);
-        this.controls.addFloat("FireFly Count", function(value) {
+        this.controls.addInt("FireFly Count", function(value) {
             item.fireFlyCount = value;
         }, 0, MaxFireFlyCount, 30);
         this.controls.addFloat("Light Radius", function(value) {
