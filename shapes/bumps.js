@@ -109,7 +109,12 @@ define(function(require) {
                    Math.cos(z*self.zFrequency)*self.zMagnitude;
         };
         grid.prepare(shape, vertexType);
-        shape.calculateNormals();
+        if ((vertexType&Const.NORM) || (vertexType&Const.CUBE)) {
+            shape.calculateNormals();
+            if (vertexType&Const.CUBE) {
+                shape.copyNormToCube();
+            }
+        }
     };
     
     /**

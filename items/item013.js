@@ -5,7 +5,6 @@ define(function(require) {
     var Vector = require('tools/vector');
     var ProjMover = require('movers/projection');
     var ViewMover = require('movers/userFocus');
-    var ObjMover = require('movers/tumble');
     var Controls = require('tools/controls');
     var ShapeBuilder = require('shapes/shape');
     var ShaderBuilder = require('shaders/frame');
@@ -43,6 +42,7 @@ define(function(require) {
         this.shader.setFogClr(0.0, 0.0, 0.0);
         this.shader.setFogStart(0.5);
         this.shader.setFogStop(3.5);
+        this.shader.setObjMat(Matrix.identity());
         
         // Setup controls.
         item = this;
@@ -92,10 +92,8 @@ define(function(require) {
         // Initialize movers.
         this.projMover = new ProjMover();
         this.viewMover = new ViewMover();
-        this.objMover = new ObjMover();
         this.projMover.start(gl);
         this.viewMover.start(gl);
-        this.objMover.start(gl);
         return true;
     };
 
@@ -215,10 +213,8 @@ define(function(require) {
         this.controls.setFps(fps);
         this.projMover.update();
         this.viewMover.update();
-        this.objMover.update();
         this.shader.setProjMat(this.projMover.matrix());
         this.shader.setViewMat(this.viewMover.matrix());
-        this.shader.setObjMat(this.objMover.matrix());
         
         // Clear color buffer.
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);

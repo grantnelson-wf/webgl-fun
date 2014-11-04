@@ -499,6 +499,18 @@ define(function(require) {
             this.norm.set(i, Vector.normal(norm));
         };
     };
+
+    /**
+     * TODO: Comment
+     */
+    ShapeBuilder.prototype.copyNormToCube = function() {
+        var src = this.norm.data;
+        var dest = [];
+        for (var i = src.length - 1; i >= 0; i--) {
+            dest[i] = src[i];
+        };
+        this.cube.data = dest;
+    };
     
     //======================================================================
  

@@ -97,7 +97,12 @@ define(function(require) {
             return Math.cos(r*self.frequency)*self.magnitude;
         };
         grid.prepare(shape, vertexType);
-        shape.calculateNormals();
+        if ((vertexType&Const.NORM) || (vertexType&Const.CUBE)) {
+            shape.calculateNormals();
+            if (vertexType&Const.CUBE) {
+                shape.copyNormToCube();
+            }
+        }
     };
     
     /**
