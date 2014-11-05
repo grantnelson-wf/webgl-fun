@@ -68,6 +68,8 @@ define(function(require) {
         });
         this.controls.addFloat("Flatten",
             this.shader.setFlatten, 0.0, 1.0, 0.0);
+        this.controls.addFloat("Magnifier",
+            this.shader.setMagnifier, 0.0, 5.0, 2.5);
         
         // Initialize movers.
         this.projMover = new ProjMover();
@@ -107,7 +109,6 @@ define(function(require) {
     Item.prototype.stop = function(gl) {
         this.projMover.stop(gl);
         this.viewMover.stop(gl);
-        this.objMover.stop(gl);
         this.controls.destroy();
     };
      
