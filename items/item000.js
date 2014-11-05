@@ -22,6 +22,7 @@ define(function(require) {
     var Item012 = require('items/item012');
     var Item013 = require('items/item013');
     var Item014 = require('items/item014');
+    var Item015 = require('items/item015');
     
     /**
      * Creates an item for rendering.
@@ -80,7 +81,8 @@ define(function(require) {
             new Item011(),
             new Item012(),
             new Item013(),
-            new Item014() ];
+            new Item014(),
+            new Item015() ];
 
         // Setup controls.
         this.controls = new Controls();

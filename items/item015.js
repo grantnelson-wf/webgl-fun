@@ -4,9 +4,10 @@ define(function(require) {
     var Matrix = require('tools/matrix');
     var ProjMover = require('movers/projection');
     var ViewMover = require('movers/userFocus');
-    var ShaderBuilder = require('shaders/txt2dFlatten');
+    var ShaderBuilder = require('shaders/heightMap');
     var Txt2D = require('tools/texture2d');
     var Controls = require('tools/controls');
+    var GridBuilder = require('shapes/grid');
     
     /**
      * Creates an item for rendering.
@@ -19,7 +20,7 @@ define(function(require) {
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = 'Texture Flatten';
+    Item.prototype.name = 'Height Map';
     
     /**
      * Starts this item for rendering.
@@ -38,6 +39,15 @@ define(function(require) {
         this.shader.setTxtSampler(0);
         this.shader.setObjMat(Matrix.identity());
         
+        // Create Shape.
+        var shapeBuilder = new GridBuilder();
+        shapeBuilder.widthDiv = 100;
+        shapeBuilder.depthDiv = 100;
+        this.shape = shapeBuilder.build(gl, this.shader.requiredType);
+        this.shape.posAttr.set(this.shader.posAttrLoc);
+        this.shape.txtAttr.set(this.shader.txtAttrLoc);
+        this.shape.normAttr.set(this.shader.normAttrLoc);
+        
         // Setup controls.
         item = this;
         this.controls = new Controls();
@@ -45,29 +55,19 @@ define(function(require) {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addShapeSelect("Shape", function(shapeBuilder){
-            item.shape = shapeBuilder.build(gl, item.shader.requiredType);
-            item.shape.posAttr.set(item.shader.posAttrLoc);
-            item.shape.txtAttr.set(item.shader.txtAttrLoc);
-            item.shape.normAttr.set(item.shader.normAttrLoc);
-        }, "Toroid");
-        this.controls.addDic("Texture", function(path) {
-            item.txt2D = new Txt2D(gl);
-            item.txt2D.index = 0;
-            item.txt2D.loadFromFile(path);
-        }, 'Fire', {
-            'Bark':    './data/textures/bark.jpg',
-            'Brick':   './data/textures/brick.jpg',
-            'Fire':    './data/textures/fire.jpg',
-            'Grass':   './data/textures/grass.jpg',
-            'Metal':   './data/textures/metal.jpg',
-            'Moon':    './data/textures/moon.jpg',
-            'Paper':   './data/textures/paper.jpg',
-            'Scratch': './data/textures/scratch.jpg',
-            'Wood':    './data/textures/wood.jpg'
+        this.controls.addDic("Height Map", function(path) {
+            item.txtHeight = new Txt2D(gl);
+            item.txtHeight.index = 0;
+            item.txtHeight.loadFromFile(path);
+        }, 'Mountains', {
+            'Edge':      './data/highmaps/edge.jpg',
+            'Floor':     './data/highmaps/floor.jpg',
+            'Mountains': './data/highmaps/mountains.jpg',
+            'Peak':      './data/highmaps/peak.jpg',
+            'World':     './data/highmaps/world.jpg',
         });
-        this.controls.addFloat("Flatten",
-            this.shader.setFlatten, 0.0, 1.0, 0.0);
+        this.controls.addFloat("Max Height", this.shader.setMaxHeight, 0.0, 1.0, 0.4);
+        
         
         // Initialize movers.
         this.projMover = new ProjMover();
@@ -93,7 +93,7 @@ define(function(require) {
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
         // Bind texture.
-        this.txt2D.bind();
+        this.txtHeight.bind();
 
         // Draw shape.
         this.shape.draw();

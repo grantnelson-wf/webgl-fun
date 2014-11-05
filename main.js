@@ -8,7 +8,7 @@ require.config({
     }
 });
 
-require(['tools/driver', 'items/item000', 'items/item014'],
+require(['tools/driver', 'items/item000', 'items/item015'],
     function(Driver, MenuItem, InitItem) {
         var driver = new Driver();
         driver.setup('targetCanvas');

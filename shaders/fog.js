@@ -33,12 +33,12 @@ define(function(require) {
         '                                                \n'+
         'attribute vec3 posAttr;                         \n'+
         '                                                \n'+
-        'varying vec3 position;                          \n'+
+        'varying float depth;                            \n'+
         '                                                \n'+
         'void main()                                     \n'+
         '{                                               \n'+
         '  vec4 pos = viewMat*objMat*vec4(posAttr, 1.0); \n'+
-        '  position = pos.xyz;                           \n'+
+        '  depth = pos.z;                                \n'+
         '  gl_Position = projMat*pos;                    \n'+
         '}                                               \n';
 
@@ -47,21 +47,21 @@ define(function(require) {
      * @type {String}
      */
     FogBuilder.prototype.fsSource =
-        'precision mediump float;                                   \n'+
-        '                                                           \n'+
-        'uniform vec3 objClr;                                       \n'+
-        'uniform vec3 fogClr;                                       \n'+
-        'uniform float fogStart;                                    \n'+
-        'uniform float fogStop;                                     \n'+
-        '                                                           \n'+
-        'varying vec3 position;                                     \n'+
-        '                                                           \n'+
-        'void main()                                                \n'+
-        '{                                                          \n'+
-        '   float factor = (position.z-fogStop)/(fogStart-fogStop); \n'+
-        '   factor = clamp(factor, 0.0, 1.0);                       \n'+
-        '   gl_FragColor = vec4(mix(fogClr, objClr, factor), 1.0);  \n'+
-        '}                                                          \n';
+        'precision mediump float;                                  \n'+
+        '                                                          \n'+
+        'uniform vec3 objClr;                                      \n'+
+        'uniform vec3 fogClr;                                      \n'+
+        'uniform float fogStart;                                   \n'+
+        'uniform float fogStop;                                    \n'+
+        '                                                          \n'+
+        'varying float depth;                                      \n'+
+        '                                                          \n'+
+        'void main()                                               \n'+
+        '{                                                         \n'+
+        '   float factor = (depth-fogStop)/(fogStart-fogStop);     \n'+
+        '   factor = clamp(factor, 0.0, 1.0);                      \n'+
+        '   gl_FragColor = vec4(mix(fogClr, objClr, factor), 1.0); \n'+
+        '}                                                         \n';
     
     /**
      * Initializes the shader.
