@@ -65,6 +65,7 @@ define(function(require) {
             'Mountains': './data/highmaps/mountains.jpg',
             'Peak':      './data/highmaps/peak.jpg',
             'World':     './data/highmaps/world.jpg',
+            'Bruce':     './data/highmaps/bruce.jpg',
         });
         this.controls.addFloat("Max Height", this.shader.setMaxHeight, 0.0, 1.0, 0.4);
         
@@ -107,7 +108,6 @@ define(function(require) {
     Item.prototype.stop = function(gl) {
         this.projMover.stop(gl);
         this.viewMover.stop(gl);
-        this.objMover.stop(gl);
         this.controls.destroy();
     };
      

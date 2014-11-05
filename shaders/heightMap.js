@@ -27,26 +27,27 @@ define(function(require) {
      * @type {String}
      */
     DirectionalBuilder.prototype.vsSource =
-        'uniform mat4 objMat;                              \n'+
-        'uniform mat4 viewMat;                             \n'+
-        'uniform mat4 projMat;                             \n'+
-        'uniform float maxHeight;                          \n'+
-        '                                                  \n'+
-        'attribute vec3 posAttr;                           \n'+
-        'attribute vec3 normAttr;                          \n'+
-        'attribute vec2 txtAttr;                           \n'+
-        '                                                  \n'+
-        'varying vec4 height;                              \n'+
-        '                                                  \n'+
-        'uniform sampler2D txtSampler;                     \n'+
-        '                                                  \n'+
-        'void main()                                       \n'+
-        '{                                                 \n'+
-        '  height = texture2D(txtSampler, txtAttr);        \n'+
-        '  vec4 pos = height*vec4(normAttr, 1.0)*maxHeight \n'+
-        '             + vec4(posAttr, 1.0);                \n'+
-        '  gl_Position = projMat*viewMat*objMat*pos;       \n'+
-        '}                                                 \n';
+        'uniform mat4 objMat;                                \n'+
+        'uniform mat4 viewMat;                               \n'+
+        'uniform mat4 projMat;                               \n'+
+        'uniform float maxHeight;                            \n'+
+        '                                                    \n'+
+        'attribute vec3 posAttr;                             \n'+
+        'attribute vec3 normAttr;                            \n'+
+        'attribute vec2 txtAttr;                             \n'+
+        '                                                    \n'+
+        'varying vec4 color;                                 \n'+
+        '                                                    \n'+
+        'uniform sampler2D txtSampler;                       \n'+
+        '                                                    \n'+
+        'void main()                                         \n'+
+        '{                                                   \n'+
+        '  color = texture2D(txtSampler, txtAttr);           \n'+
+        '  float height = (color.x + color.y + color.z)/3.0; \n'+
+        '  vec4 pos = height*vec4(normAttr, 0.0)*maxHeight   \n'+
+        '             + vec4(posAttr, 1.0);                  \n'+
+        '  gl_Position = projMat*viewMat*objMat*pos;         \n'+
+        '}                                                   \n';
 
     /**
      * The fragment shader program.
@@ -55,11 +56,11 @@ define(function(require) {
     DirectionalBuilder.prototype.fsSource =
         'precision mediump float;  \n'+
         '                          \n'+
-        'varying vec4 height;      \n'+
+        'varying vec4 color;      \n'+
         '                          \n'+
         'void main()               \n'+
         '{                         \n'+
-        '   gl_FragColor = height; \n'+
+        '   gl_FragColor = color; \n'+
         '}                         \n';
     
     /**

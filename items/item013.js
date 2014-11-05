@@ -278,7 +278,6 @@ define(function(require) {
     Item.prototype.stop = function(gl) {
         this.projMover.stop(gl);
         this.viewMover.stop(gl);
-        this.objMover.stop(gl);
         this.controls.destroy();
     };
      
