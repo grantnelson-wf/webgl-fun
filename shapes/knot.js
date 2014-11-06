@@ -3,6 +3,7 @@ define(function(require) {
     var Const = require('tools/const');
     var Common = require('tools/common');
     var Matrix = require('tools/matrix');
+    var Vector = require('tools/vector');
     var ShapeBuilder = require('shapes/shape');
     var CylinderBuilder = require('shapes/cylinoid');
 
@@ -43,6 +44,7 @@ define(function(require) {
      * @param  {Number} vertexType  The vertex type to build.
      */
     KnotBuilder.prototype.prepare = function(shape, vertexType) {
+        var self = this;
         var cylinder = new CylinderBuilder();
         cylinder.sideCount    = this.sideCount;
         cylinder.divCount     = this.divCount;
@@ -50,28 +52,46 @@ define(function(require) {
         cylinder.closedBottom = false;
         cylinder.joinEnds     = true;
         cylinder.sideFunction = function(i, j) {
-            var majorScale = i/this.divCount;
-            var minorScale = j/this.sideCount;
-            var majorAngle = 2.0*Math.PI*majorScale;
-            var minorAngle = 2.0*Math.PI*minorScale+majorAngle*3.0;
-        
-            var majorRadius = 0.5+Math.cos(majorAngle)*0.15;
-            var minorRadius = 0.1;
-            var y = Math.sin(majorAngle)*0.25;
-            
-            var majorCos = Math.cos(majorAngle*3.0);
-            var majorSin = Math.sin(majorAngle*3.0);
-            var minorCos = Math.cos(minorAngle);
-            var minorSin = Math.sin(minorAngle);
-
-            var pr = majorRadius + minorCos*minorRadius;
-            var px = majorSin*pr;
-            var py = minorSin*minorRadius + y;
-            var pz = majorCos*pr;
-           
-            return [px, py, pz];
+            return self.sideFunction(i, j);
         };
         cylinder.prepare(shape, vertexType);
+    };
+    
+    /**
+     * TODO: Comment
+     */
+    KnotBuilder.prototype.sideFunction = function(i, j) {
+        var t = 2.0*Math.PI*(i/this.divCount);
+        var knot = function(t) {
+            var scalar = 2.0 + Math.cos(3.0*t);
+            return [ scalar*Math.cos(2.0*t)/4.5,
+                     scalar*Math.sin(2.0*t)/4.5,
+                     Math.sin(3.0*t)/4.5 ];
+        };
+        var cur = knot(t);
+        var next = knot(t + 0.5/this.divCount);
+        var heading = Vector.sub(next, cur);
+        return Vector.add(cur, this.sideRing(j, heading));
+    };
+    
+    /**
+     * TODO: Comment
+     */
+    KnotBuilder.prototype.sideRing = function(j, heading) {
+        heading = Vector.normal(heading);
+        var other = Vector.create(1.0, 0.0, 0.0);
+        if (!Vector.eq(heading, other)) {
+            other = Vector.create(0.0, 0.0, 1.0)
+        }
+        var cross = Vector.normal(Vector.cross(heading, other));
+        other = Vector.normal(Vector.cross(cross, heading));
+        
+        var minorAngle = 2.0*Math.PI*(j/this.sideCount);
+        var minorCos = Math.cos(minorAngle)*-0.15;
+        var minorSin = Math.sin(minorAngle)*0.15;
+        return Vector.add(
+            Vector.scale(other, minorCos),
+            Vector.scale(cross, minorSin));
     };
     
     /**

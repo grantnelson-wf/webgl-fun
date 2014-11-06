@@ -28,19 +28,13 @@ define(function(require) {
          * The side count of the cylinder.
          * @type {Number}
          */
-        this.sideCount = 40;
+        this.sideCount = 50;
         
         /**
          * The divisions of the side of the cylinder.
          * @type {Number}
          */
         this.divCount = 20;
- 
-        /**
-         * Indicates the ends are joined.
-         * @type {Boolean}
-         */
-        this.joinEnds = false;
         
         /**
          * Indicates the top is closed.
@@ -176,15 +170,6 @@ define(function(require) {
             }
         }
         
-        if (this.joinEnds) {
-            shape.triStrips.start();
-            var index = (this.sideCount+1)*(this.divCount+1)-1;
-            for (j = 0; j <= this.sideCount; j++) {
-                shape.triStrips.add(index-j);
-                shape.triStrips.add(j);
-            }
-        }
-       
         if ((vertexType&Const.NORM) || (vertexType&Const.CUBE)) {
             shape.calculateNormals();
             if (vertexType&Const.CUBE) {
