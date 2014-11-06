@@ -41,8 +41,8 @@ define(function(require) {
         
         // Create Shape.
         var shapeBuilder = new GridBuilder();
-        shapeBuilder.widthDiv = 100;
-        shapeBuilder.depthDiv = 100;
+        shapeBuilder.widthDiv = 200;
+        shapeBuilder.depthDiv = 200;
         this.shape = shapeBuilder.build(gl, this.shader.requiredType);
         this.shape.posAttr.set(this.shader.posAttrLoc);
         this.shape.txtAttr.set(this.shader.txtAttrLoc);
@@ -66,6 +66,7 @@ define(function(require) {
             'Peak':      './data/highmaps/peak.jpg',
             'World':     './data/highmaps/world.jpg',
             'Bruce':     './data/highmaps/bruce.jpg',
+            'Skull':     './data/highmaps/skull.jpg',
         });
         this.controls.addFloat("Max Height", this.shader.setMaxHeight, 0.0, 1.0, 0.4);
         
