@@ -54,14 +54,14 @@ define(function(require) {
      * @type {String}
      */
     DirectionalBuilder.prototype.fsSource =
-        'precision mediump float;  \n'+
-        '                          \n'+
+        'precision mediump float; \n'+
+        '                         \n'+
         'varying vec4 color;      \n'+
-        '                          \n'+
-        'void main()               \n'+
-        '{                         \n'+
+        '                         \n'+
+        'void main()              \n'+
+        '{                        \n'+
         '   gl_FragColor = color; \n'+
-        '}                         \n';
+        '}                        \n';
     
     /**
      * Initializes the shader.

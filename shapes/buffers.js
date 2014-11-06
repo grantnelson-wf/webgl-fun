@@ -1198,7 +1198,7 @@ define(function(require) {
         for (var i = 0; i < this._indicesTriStrips.length; i++) {
             var triStrip = this._indicesTriStrips[i];
             callBack(triStrip[0], triStrip[1]);
-            for (var j = 2; j < triStrip.length; j += 2) {
+            for (var j = 2; j < triStrip.length; j++) {
                 callBack(triStrip[j-1], triStrip[j]);
                 callBack(triStrip[j-2], triStrip[j]);
             }
