@@ -152,9 +152,9 @@ define(function(require) {
     };
     
     /**
-     * TODO: Comment
-     * @param  {Shape} shape  The shape
-     * @return {[type]} [description]
+     * Creates an adjunt shape with degenerate edges of the given stape.
+     * @param  {Shape} shape  The shape to create the adjunct shape of.
+     * @return  {Shape}  The created adjunct shape.
      */
     Item.prototype._createAdjunctShape = function(shape) {
         // Collect all edges in the shape.
@@ -216,7 +216,9 @@ define(function(require) {
     //======================================================================
     
     /**
-     * TODO: Comment
+     * Creates a point for the adjunct shape.
+     * @param  {Array} pos  The position of the point.
+     * @param  {Array} norm  The normal vector of the point.
      */
     function AdjPoint(pos, norm) {
         this.pos = pos;
@@ -224,7 +226,10 @@ define(function(require) {
     }
     
     /**
-     * TODO: Comment
+     * Creates an edge for the adjunct shape.
+     * @param  {Number} index1  The index of the start point.
+     * @param  {Number} index2  The index of the end point.
+     * @param  {Array} faceNorm  The normal for the face this edge belongs to.
      */
     function AdjEdge(index1, index2, faceNorm) {
         this.index1 = index1;
@@ -233,7 +238,9 @@ define(function(require) {
     }
     
     /**
-     * TODO: Comment
+     * This merges two edges if they overlap.
+     * @param  {AdjEdge} other  The other edge to merge.
+     * @return  {Boolean}  True if merged, false if not.
      */
     AdjEdge.prototype.merge = function(other) {
         if (this.index1 === other.index1) {
@@ -255,7 +262,7 @@ define(function(require) {
     };
     
     /**
-     * TODO: Comment
+     * Creates the set of data for an adjunct shape.
      */
     function AdjSet() {
         this._points = [];
@@ -263,7 +270,10 @@ define(function(require) {
     }
     
     /**
-     * TODO: Comment
+     * This inserts a point into the adjunct shape.
+     * @param  {Array} pos  The position for the point.
+     * @param  {Array} norm  The normal vector for the point.
+     * @param  {Number} [epsilon]  The epsilon comparison to comparing points.
      */
     AdjSet.prototype.insertPoint = function(pos, norm, epsilon) {
         norm = Vector.normal(norm);
@@ -279,7 +289,11 @@ define(function(require) {
     };
     
     /**
-     * TODO: Comment
+     * This inserts a triangle into the adjunct shape.
+     * @param  {Array} pos1  The first point in the triangle.
+     * @param  {Array} pos2  The second point in the triangle.
+     * @param  {Array} pos3  The third point in the triangle.
+     * @param  {Number} [epsilon]  The epsilon comparison to comparing points.
      */
     AdjSet.prototype.insertTri = function(pos1, pos2, pos3, epsilon) {
         var dpos2 = Vector.sub(pos1, pos2);
@@ -294,7 +308,10 @@ define(function(require) {
     };
     
     /**
-     * TODO: Comment
+     * This finds a point in the adjunct shape.
+     * @param  {Array} pos  The point to find the index of.
+     * @param  {Number} [epsilon]  The epsilon comparison to comparing points.
+     * @return  {Number}  The index of the point or -1 if not found.
      */
     AdjSet.prototype._findPoint = function(pos, epsilon) {
         for (var i = 0; i < this._points.length; i++) {
@@ -306,7 +323,11 @@ define(function(require) {
     };
     
     /**
-     * TODO: Comment
+     * This inserts an edge into the adjunct shape.
+     * @param  {Number} index1  The index of the start point.
+     * @param  {Number} index2  The index of the end point.
+     * @param  {Array} faceNorm  The normal for the face this edge belongs to.
+     * @return  {Number}  The index of the edge.
      */
     AdjSet.prototype._insertEdge = function(index1, index2, faceNorm) {
         var adj = new AdjEdge(index1, index2, faceNorm);
@@ -320,7 +341,12 @@ define(function(require) {
     };
     
     /**
-     * TODO: Comment
+     * This calls the given function for each edge in the adjunct edge.
+     * @param  {Function} callBack  This is the method called for each edge.
+     *         It takes four arrays and an array of arrays. The first arrays
+     *         are the start position, the normal vector for the start point,
+     *         the end position, and the normal vector for the end point. The
+     *         array of arrays is an array of normal faces adjacent to the edge.
      */
     AdjSet.prototype.foreach = function(callBack) {
         for (var i = 0; i < this._edges.length; i++) {

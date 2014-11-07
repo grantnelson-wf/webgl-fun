@@ -98,7 +98,9 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This creates all the shapes used for rendering.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {ShapeBuilder} shapeBuilder  The builder for the shape to create.
      */
     Item.prototype._createShapes = function(gl, shapeBuilder) {
         // Solid shape.

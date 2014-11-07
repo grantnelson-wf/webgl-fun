@@ -421,7 +421,7 @@ define(function(require) {
     //======================================================================
 
     /**
-     * TODO: Comment
+     * Creates an index builder.
      */
     function IndicesBuilder() {
         this._indices = [];
@@ -429,7 +429,8 @@ define(function(require) {
     }
 
     /**
-     * TODO: Comment
+     * This pushes an index into the builder.
+     * @param  {Number} index  The index to push.
      */
     IndicesBuilder.prototype.push = function(index) {
         if (index === undefined) {
@@ -442,7 +443,9 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This packs all the currently pushed indices into a buffer.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {Number} type  The type elements in the buffer.
      */
     IndicesBuilder.prototype.pack = function(gl, type) {
         var indexBuf  = gl.createBuffer();
@@ -457,7 +460,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * All the packed index objects.
+     * @return  {Array}  The array of index objects.
      */
     IndicesBuilder.prototype.objs = function() {
         return this._indexObjs;
@@ -466,7 +470,7 @@ define(function(require) {
     //======================================================================
     
     /**
-     * TODO: Comment
+     * Creates a container for point list indices.
      */
     function PointIndices() {
 
@@ -480,7 +484,8 @@ define(function(require) {
     }
 
     /**
-     * TODO: Comment
+     * Determines if the indices are empty.
+     * @return  {Boolean}  True if empty, false if not.
      */
     PointIndices.prototype.empty = function() {
         return this._indicesPoints.length <= 0;
@@ -497,8 +502,8 @@ define(function(require) {
     };
 
     /**
-     * Check the point indices and range.
-     * @return {[type]} [description]
+     * Validates the indices and range.
+     * @param  {Number} len  The expected length.
      */
     PointIndices.prototype.validate = function(len) {
         if (this._indicesPoints.length > 0) {
@@ -512,9 +517,9 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * Copy the point indices.
-     * @param  {[type]} builder [description]
+     * This copies the indices into the given builder.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {IndicesBuilder} builder  The builder to add to.
      */
     PointIndices.prototype.build = function(gl, builder) {        
         if (this._indicesPoints.length > 0) {
@@ -526,7 +531,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the point indices.
+     * @param  {Function} callBack  The call back function.
      */
     PointIndices.prototype.eachPoint = function(callBack) {
         for (var i = 0; i < this._indicesPoints.length; i++) {
@@ -535,14 +541,16 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the lines indices.
+     * @param  {Function} callBack  The call back function.
      */
     PointIndices.prototype.eachLine = function(callBack) {
         // Do Nothing
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the triangles indices.
+     * @param  {Function} callBack  The call back function.
      */
     PointIndices.prototype.eachTri = function(callBack) {
         // Do Nothing
@@ -551,7 +559,7 @@ define(function(require) {
     //======================================================================
 
     /**
-     * TODO: Comment
+     * Creates a container for line list indices.
      */
     function LineIndices() {
 
@@ -565,7 +573,8 @@ define(function(require) {
     }
 
     /**
-     * TODO: Comment
+     * Determines if the indices are empty.
+     * @return  {Boolean}  True if empty, false if not.
      */
     LineIndices.prototype.empty = function() {
         return this._indicesLines.length <= 0;
@@ -581,8 +590,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * Check the line indices and range.
+     * Validates the indices and range.
+     * @param  {Number} len  The expected length.
      */
     LineIndices.prototype.validate = function(len) {
         if (this._indicesLines.length > 0) {
@@ -599,9 +608,9 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * Copy the line indices.
-     * @param  {[type]} builder [description]
+     * This copies the indices into the given builder.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {IndicesBuilder} builder  The builder to add to.
      */
     LineIndices.prototype.build = function(gl, builder) {  
         if (this._indicesLines.length > 0) {
@@ -613,7 +622,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the point indices.
+     * @param  {Function} callBack  The call back function.
      */
     LineIndices.prototype.eachPoint = function(callBack) {
         for (var i = 0; i < this._indicesLines.length; i++) {
@@ -622,7 +632,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the lines indices.
+     * @param  {Function} callBack  The call back function.
      */
     LineIndices.prototype.eachLine = function(callBack) {
         for (var i = 0; i < this._indicesLines.length; i += 2) {
@@ -631,7 +642,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the triangles indices.
+     * @param  {Function} callBack  The call back function.
      */
     LineIndices.prototype.eachTri = function(callBack) {
         // Do Nothing
@@ -640,7 +652,7 @@ define(function(require) {
     //======================================================================
 
     /**
-     * TODO: Comment
+     * Creates a container for line strip indices.
      */
     function LineStripIndices() {
         
@@ -661,7 +673,8 @@ define(function(require) {
     }
 
     /**
-     * TODO: Comment
+     * Determines if the indices are empty.
+     * @return  {Boolean}  True if empty, false if not.
      */
     LineStripIndices.prototype.empty = function() {
         return ((!this._curLineStrips) || (this._curLineStrips.length <= 0)) &&
@@ -698,8 +711,8 @@ define(function(require) {
     };
     
     /**
-     * TODO: Comment
-     * Check the line strips indices and range.
+     * Validates the indices and range.
+     * @param  {Number} len  The expected length.
      */
     LineStripIndices.prototype.validate = function(len) {
         for (var i = 0; i < this._indicesLineStrips.length; i++) {
@@ -717,9 +730,9 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * Copy the line strips indices.
-     * @param  {[type]} builder [description]
+     * This copies the indices into the given builder.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {IndicesBuilder} builder  The builder to add to.
      */
     LineStripIndices.prototype.build = function(gl, builder) {
         for (var i = 0; i < this._indicesLineStrips.length; i++) {
@@ -732,7 +745,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the point indices.
+     * @param  {Function} callBack  The call back function.
      */
     LineStripIndices.prototype.eachPoint = function(callBack) {
         for (var i = 0; i < this._indicesLineStrips.length; i++) {
@@ -744,7 +758,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the lines indices.
+     * @param  {Function} callBack  The call back function.
      */
     LineStripIndices.prototype.eachLine = function(callBack) {
         for (var i = 0; i < this._indicesLineStrips.length; i++) {
@@ -756,7 +771,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the triangles indices.
+     * @param  {Function} callBack  The call back function.
      */
     LineStripIndices.prototype.eachTri = function(callBack) {
         // Do Nothing
@@ -765,7 +781,7 @@ define(function(require) {
     //======================================================================
 
     /**
-     * TODO: Comment
+     * Creates a container for line loop indices.
      */
     function LineLoopIndices() {
 
@@ -787,7 +803,8 @@ define(function(require) {
     }
 
     /**
-     * TODO: Comment
+     * Determines if the indices are empty.
+     * @return  {Boolean}  True if empty, false if not.
      */
     LineLoopIndices.prototype.empty = function() {
         return ((!this._curLineLoops) || (this._curLineLoops.length <= 0)) &&
@@ -823,8 +840,8 @@ define(function(require) {
     };
         
     /**
-     * TODO: Comment
-     * Check the line loops indices and range.
+     * Validates the indices and range.
+     * @param  {Number} len  The expected length.
      */
     LineLoopIndices.prototype.validate = function(len) {
         if (this._indicesLineLoops.length > 0) {
@@ -844,9 +861,9 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * Copy the line loops indices.
-     * @param  {[type]} builder [description]
+     * This copies the indices into the given builder.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {IndicesBuilder} builder  The builder to add to.
      */
     LineLoopIndices.prototype.build = function(gl, builder) {
         if (this._indicesLineLoops.length > 0) {
@@ -861,7 +878,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the point indices.
+     * @param  {Function} callBack  The call back function.
      */
     LineLoopIndices.prototype.eachPoint = function(callBack) {
         for (var i = 0; i < this._indicesLineLoops.length; i++) {
@@ -873,7 +891,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the lines indices.
+     * @param  {Function} callBack  The call back function.
      */
     LineLoopIndices.prototype.eachLine = function(callBack) {
         for (var i = 0; i < this._indicesLineLoops.length; i++) {
@@ -886,7 +905,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the triangles indices.
+     * @param  {Function} callBack  The call back function.
      */
     LineLoopIndices.prototype.eachTri = function(callBack) {
         // Do Nothing
@@ -895,7 +915,7 @@ define(function(require) {
     //======================================================================
 
     /**
-     * TODO: Comment
+     * Creates a container for triangle list indices.
      */
     function TriIndices() {
 
@@ -908,7 +928,8 @@ define(function(require) {
     }
 
     /**
-     * TODO: Comment
+     * Determines if the indices are empty.
+     * @return  {Boolean}  True if empty, false if not.
      */
     TriIndices.prototype.empty = function() {
         return this._indicesTris.length <= 0;
@@ -925,8 +946,8 @@ define(function(require) {
     };
         
     /**
-     * TODO: Comment
-     * Check the triangles and range.
+     * Validates the indices and range.
+     * @param  {Number} len  The expected length.
      */
     TriIndices.prototype.validate = function(len) {
         if (this._indicesTris.length > 0) {
@@ -943,9 +964,9 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * Copy the triangles.
-     * @param  {[type]} builder [description]
+     * This copies the indices into the given builder.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {IndicesBuilder} builder  The builder to add to.
      */
     TriIndices.prototype.build = function(gl, builder) {
         if (this._indicesTris.length > 0) {
@@ -957,7 +978,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the point indices.
+     * @param  {Function} callBack  The call back function.
      */
     TriIndices.prototype.eachPoint = function(callBack) {
         for (var i = 0; i < this._indicesTris.length; i++) {
@@ -966,7 +988,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the lines indices.
+     * @param  {Function} callBack  The call back function.
      */
     TriIndices.prototype.eachLine = function(callBack) {
         for (var i = 0; i < this._indicesTris.length; i += 3) {
@@ -977,7 +1000,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the triangles indices.
+     * @param  {Function} callBack  The call back function.
      */
     TriIndices.prototype.eachTri = function(callBack) {
         for (var i = 0; i < this._indicesTris.length; i += 3) {
@@ -988,7 +1012,7 @@ define(function(require) {
     //======================================================================
 
     /**
-     * TODO: Comment
+     * Creates a container for quad list indices.
      */
     function QuadIndices() {
 
@@ -1001,7 +1025,8 @@ define(function(require) {
     }
 
     /**
-     * TODO: Comment
+     * Determines if the indices are empty.
+     * @return  {Boolean}  True if empty, false if not.
      */
     QuadIndices.prototype.empty = function() {
         return this._indicesQuads.length <= 0;
@@ -1019,8 +1044,8 @@ define(function(require) {
     };
         
     /**
-     * TODO: Comment
-     * Check the quads and range.
+     * Validates the indices and range.
+     * @param  {Number} len  The expected length.
      */
     QuadIndices.prototype.validate = function(len) {
         if (this._indicesQuads.length > 0) {
@@ -1039,9 +1064,9 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * Copy the quads.
-     * @param  {[type]} builder [description]
+     * This copies the indices into the given builder.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {IndicesBuilder} builder  The builder to add to.
      */
     QuadIndices.prototype.build = function(gl, builder) {
         if (this._indicesQuads.length > 0) {
@@ -1055,7 +1080,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the point indices.
+     * @param  {Function} callBack  The call back function.
      */
     QuadIndices.prototype.eachPoint = function(callBack) {
         for (var i = 0; i < this._indicesQuads.length; i += 4) {
@@ -1066,7 +1092,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the lines indices.
+     * @param  {Function} callBack  The call back function.
      */
     QuadIndices.prototype.eachLine = function(callBack) {
         for (var i = 0; i < this._indicesQuads.length; i += 4) {
@@ -1078,7 +1105,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the triangles indices.
+     * @param  {Function} callBack  The call back function.
      */
     QuadIndices.prototype.eachTri = function(callBack) {
         for (var i = 0; i < this._indicesQuads.length; i += 4) {
@@ -1090,7 +1118,7 @@ define(function(require) {
     //======================================================================
 
     /**
-     * TODO: Comment
+     * Creates a container for triangle strip indices.
      */
     function TriStripIndices() {
 
@@ -1110,7 +1138,8 @@ define(function(require) {
     }
 
     /**
-     * TODO: Comment
+     * Determines if the indices are empty.
+     * @return  {Boolean}  True if empty, false if not.
      */
     TriStripIndices.prototype.empty = function() {
         return ((!this._curTriStrips) || (this._curTriStrips.length <= 0)) &&
@@ -1146,8 +1175,8 @@ define(function(require) {
     };
         
     /**
-     * TODO: Comment
-     * Check the triangle strips indices and range.
+     * Validates the indices and range.
+     * @param  {Number} len  The expected length.
      */
     TriStripIndices.prototype.validate = function(len) {
         for (var i = 0; i < this._indicesTriStrips.length; i++) {
@@ -1165,9 +1194,9 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * Copy the triangle strips indices.
-     * @param  {[type]} builder [description]
+     * This copies the indices into the given builder.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {IndicesBuilder} builder  The builder to add to.
      */
     TriStripIndices.prototype.build = function(gl, builder) {
         for (var i = 0; i < this._indicesTriStrips.length; i++) {
@@ -1180,7 +1209,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the point indices.
+     * @param  {Function} callBack  The call back function.
      */
     TriStripIndices.prototype.eachPoint = function(callBack) {
         for (var i = 0; i < this._indicesTriStrips.length; i++) {
@@ -1192,7 +1222,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the lines indices.
+     * @param  {Function} callBack  The call back function.
      */
     TriStripIndices.prototype.eachLine = function(callBack) {
         for (var i = 0; i < this._indicesTriStrips.length; i++) {
@@ -1206,7 +1237,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the triangles indices.
+     * @param  {Function} callBack  The call back function.
      */
     TriStripIndices.prototype.eachTri = function(callBack) {
         for (var i = 0; i < this._indicesTriStrips.length; i++) {
@@ -1226,7 +1258,7 @@ define(function(require) {
     //======================================================================
 
     /**
-     * TODO: Comment
+     * Creates a container for triangle fan indices.
      */
     function TriFanIndices() {
         
@@ -1246,7 +1278,8 @@ define(function(require) {
     }
 
     /**
-     * TODO: Comment
+     * Determines if the indices are empty.
+     * @return  {Boolean}  True if empty, false if not.
      */
     TriFanIndices.prototype.empty = function() {
         return ((!this._curTriFans) || (this._curTriFans.length <= 0)) &&
@@ -1282,8 +1315,8 @@ define(function(require) {
     };
         
     /**
-     * TODO: Comment
-     * Check the triangle fan indices and range.
+     * Validates the indices and range.
+     * @param  {Number} len  The expected length.
      */
     TriFanIndices.prototype.validate = function(len) {
         for (var i = 0; i < this._indicesTriFans.length; i++) {
@@ -1301,9 +1334,9 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * Copy the triangle fan indices.
-     * @param  {[type]} builder [description]
+     * This copies the indices into the given builder.
+     * @param  {WebGLRenderingContext} gl  The graphical object.
+     * @param  {IndicesBuilder} builder  The builder to add to.
      */
     TriFanIndices.prototype.build = function(gl, builder) {
         for (var i = 0; i < this._indicesTriFans.length; i++) {
@@ -1316,7 +1349,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the point indices.
+     * @param  {Function} callBack  The call back function.
      */
     TriFanIndices.prototype.eachPoint = function(callBack) {
         for (var i = 0; i < this._indicesTriFans.length; i++) {
@@ -1328,7 +1362,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the lines indices.
+     * @param  {Function} callBack  The call back function.
      */
     TriFanIndices.prototype.eachLine = function(callBack) {
         for (var i = 0; i < this._indicesTriFans.length; i++) {
@@ -1342,7 +1377,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calls back all the triangles indices.
+     * @param  {Function} callBack  The call back function.
      */
     TriFanIndices.prototype.eachTri = function(callBack) {
         for (var i = 0; i < this._indicesTriFans.length; i++) {
@@ -1356,21 +1392,23 @@ define(function(require) {
     //======================================================================
 
     /**
-     * TODO: Comment
+     * Creates a set for unique indices of points.
      */
     function PointIndexSet() {
         this._set = {};
     }
     
     /**
-     * TODO: Comment
+     * This inserts a new index into this set.
+     * @param  {Number} index  The point index to insert.
      */
     PointIndexSet.prototype.insert = function(index) {
         this._set[Number(index)] = true;
     };
     
     /**
-     * TODO: Comment
+     * This calls the given function for each point.
+     * @param  {Function} callBack  The function to send each point index into.
      */
     PointIndexSet.prototype.eachPoint = function(callBack) {
         for (var index in this._set) {
@@ -1381,14 +1419,16 @@ define(function(require) {
     //======================================================================
 
     /**
-     * TODO: Comment
+     * Creates a set for unique indices of lines.
      */
     function LineIndexSet() {
         this._set = {};
     }
     
     /**
-     * TODO: Comment
+     * This inserts a new index into this set.
+     * @param  {Number} index1  The first point index to insert.
+     * @param  {Number} index2  The second point index to insert.
      */
     LineIndexSet.prototype.insert = function(index1, index2) {
         index1 = Number(index1);
@@ -1409,7 +1449,8 @@ define(function(require) {
     };
     
     /**
-     * TODO: Comment
+     * This calls the given function for each line.
+     * @param  {Function} callBack  The function to send each line indices into.
      */
     LineIndexSet.prototype.eachLine = function(callBack) {
         for (var index1 in this._set) {
@@ -1423,7 +1464,7 @@ define(function(require) {
     //======================================================================
     
     /**
-     * TODO: Comment
+     * This is the container of buffer object types.
      * @type {Object}
      */
     var Buffers = {

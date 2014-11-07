@@ -363,7 +363,8 @@ define(function(require) {
     }
 
     /**
-     * TODO: Comment
+     * Draws the ground lit by a firefly's light.
+     * @param  {FireFly} fireFly  The firefly to light the ground with.
      */
     Item.prototype._drawGround = function(fireFly) {
         if (fireFly) {
