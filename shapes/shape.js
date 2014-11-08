@@ -30,8 +30,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * @param {[type]} attr [description]
+     * This sets the shader's attribute identifier for the shape's attribute.
+     * @param  {Number} attr  The shader's attribute identifier.
      */
     ShapeAttr.prototype.set = function(attr) {
         this._attr = attr;
@@ -105,7 +105,7 @@ define(function(require) {
         this._indexObjs  = indexObjs;
 
         /**
-         * TODO: Comment
+         * The list of attribute objects for the shape.
          * @private
          * @type {Array}
          */
@@ -333,11 +333,9 @@ define(function(require) {
     };
     
     /**
-     * TODO: Comment
-     * Builds the vertices for a shape.
-     * @param  {Number} [vertexType]  The vertex type to build.
+     * Validates the vertices for the shape.
+     * @param  {Number} [vertexType]  The vertex type to validate.
      *                                If not provided, all the defined types are used.
-     * @returns  {Object}  The buffer length, vertex type, and vertex size.
      */
     ShapeBuilder.prototype._validateVertices = function(vertexType) {
         vertexType = vertexType || (Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.BINM|Const.WGHT);
@@ -387,8 +385,8 @@ define(function(require) {
     };
     
     /**
-     * TODO: Comment
-     * Build the indices for the shape.
+     * Validates the indices for the shape.
+     * @param  {Number} len  The maximum allowed length.
      */
     ShapeBuilder.prototype._validateIndices = function(len) {
         var hasIndexObjs = false;
@@ -446,10 +444,14 @@ define(function(require) {
     
     //======================================================================
     
-    // TODO: implement findConnectedEdges
+    // TODO: Implement findConnectedEdges
+    // TODO: Implement calculateBinormals
+    // TODO: Implement normalizeBinormals.
     
     /**
-     * TODO: Comment
+     * This finds the triangles connected to the given point.
+     * @param  {Array} pos  The position for the point.
+     * @return  {Array}  The array of arrays of three triangle indices.
      */
     ShapeBuilder.prototype.findConnectedTris = function(pos) {
         var self = this;
@@ -481,7 +483,7 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This calculates the normals for this shape.
      */
     ShapeBuilder.prototype.calculateNormals = function() {
         for (var i = this.pos.count() - 1; i >= 0; i--) {
@@ -501,7 +503,7 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
+     * This copies the normal vectors to the cube texture vectors.
      */
     ShapeBuilder.prototype.copyNormToCube = function() {
         var src = this.norm.data;
@@ -515,8 +517,8 @@ define(function(require) {
     //======================================================================
  
     /**
-     * TODO: Comment
-     * @return {[type]} [description]
+     * Creates a shape containing only points.
+     * @return  {Shape}  The point shape.
      */
     ShapeBuilder.prototype.createPoints = function() {
         var vertexData = this._validateVertices();
@@ -551,8 +553,8 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * @return {[type]} [description]
+     * Creates a shape containing only lines.
+     * @return  {Shape}  The line shape.
      */
     ShapeBuilder.prototype.createWireFrame = function() {
         var vertexData = this._validateVertices();
@@ -587,8 +589,9 @@ define(function(require) {
     };
 
     /**
-     * TODO: Comment
-     * @return {[type]} [description]
+     * Creates degenerate points shape. A list of lines for each
+     * point which are degenerate and weighted.
+     * @return  {Shape}  The degenerate point shape.
      */
     ShapeBuilder.prototype.createDegeneratePoints = function() {
         var vertexData = this._validateVertices();

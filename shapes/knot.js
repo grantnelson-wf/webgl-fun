@@ -58,7 +58,10 @@ define(function(require) {
     };
     
     /**
-     * TODO: Comment
+     * Determining the path of the knot.
+     * @param  {Number} i  The division count current index.
+     * @param  {Number} j  The side count current index.
+     * @return  {Array}  The position of the side point.
      */
     KnotBuilder.prototype.sideFunction = function(i, j) {
         var t = 2.0*Math.PI*(i/this.divCount);
@@ -75,7 +78,10 @@ define(function(require) {
     };
     
     /**
-     * TODO: Comment
+     * Determining the side of the knot on the path.
+     * @param  {Number} j  The side count current index.
+     * @param  {Array} heading  The heading of the path.
+     * @return  {Array}  The position of the side point.
      */
     KnotBuilder.prototype.sideRing = function(j, heading) {
         heading = Vector.normal(heading);

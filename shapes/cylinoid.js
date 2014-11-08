@@ -49,16 +49,14 @@ define(function(require) {
         this.closedBottom = true;
         
         /**
-         * TODO: Comment
-         * Indicates the top is closed.
-         * @type {Boolean}
+         * The top cap center point.
+         * @type {Array}
          */
         this.topPos = [0, 0.5, 0];
  
         /**
-         * TODO: Comment
-         * Indicates the bottom is closed.
-         * @type {Boolean}
+         * The bottom cap center point.
+         * @type {Array}
          */
         this.bottomPos = [0, -0.5, 0];
     }

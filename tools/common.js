@@ -135,11 +135,11 @@ define(function(require) {
         },
         
         /**
-         * TODO: Comment
-         * @param  {[type]} a [description]
-         * @param  {[type]} b [description]
-         * @param  {[type]} i [description]
-         * @return {[type]}   [description]
+         * This linear interpolates between two values.
+         * @param  {Number} a  The lowest value.
+         * @param  {Number} b  The highest value. 
+         * @param  {Number} i  The interpolation value between 0 (low) and 1 (high).
+         * @return  {Number}  The linear interpolated value.
          */
         lerp: function(a, b, i) {
             if (i <= 0.0) {
@@ -152,7 +152,11 @@ define(function(require) {
         },
         
         /**
-         * TODO: Comment
+         * Thi linear interpolates between a set of values.
+         * @param  {Array} a  The set of incrementing offset values.
+         * @param  {Array} b  The set of values to interpolate between.
+         * @param  {Number} i  The interpolation value of the offsets.
+         * @return  {Number}  The linear interpolated value.
          */
         multiLerp: function(a, b, i) {
             var a0 = a[0];

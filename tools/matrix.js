@@ -111,10 +111,9 @@ define(function(require) {
         },
 
         /**
-         * TODO: Comment
-         * Multiplies the two given matrices.
-         * @param  {Array} a  The left matrix in the multiplication.
-         * @param  {Array} b  The right matrix in the multiplication.
+         * Multiplies a vertex with the given matrices.
+         * @param  {Array} a  The vertex in the multiplication.
+         * @param  {Array} b  The matrix in the multiplication.
          * @returns  {Array}  The created matrix.
          */
         vecMul: function(v, m) {

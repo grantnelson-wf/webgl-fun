@@ -93,7 +93,13 @@ define(function(require) {
             return vecA[0]*vecB[0] + vecA[1]*vecB[1] + vecA[2]*vecB[2];
         },
         
-        // TODO: Comment
+        /**
+         * Check if the two given vectors are equal.
+         * @param  {Array} vecA  The first vector in the component.
+         * @param  {Array} vecB  The second vector in the component.
+         * @param  {Number} epsilon  The comparison value for determining acceptable range.
+         * @return  {Boolean}  True if they are equal, false if not.
+         */
         eq: function(vecA, vecB, epsilon) {
             epsilon = epsilon || 0.000001;
             return Common.eq(vecA[0], vecB[0], epsilon) &&
