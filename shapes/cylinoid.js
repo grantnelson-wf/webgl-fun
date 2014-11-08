@@ -138,7 +138,7 @@ define(function(require) {
             }
             
             shape.triFans.start(shape.pos.count()-1);
-            var index = (this.sideCount+1)*(this.divCount+1)-1;
+            index = (this.sideCount+1)*(this.divCount+1)-1;
             for (j = this.sideCount; j >= 0; j--) {
                 shape.triFans.add(index-j);
             }

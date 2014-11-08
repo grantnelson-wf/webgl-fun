@@ -27,7 +27,7 @@ define(function(require) {
      * @param  {Number} fps  The FPS to show.
      */
     Controls.prototype.setFps = function(fps) {
-        this["FPS"] = fps;
+        this.FPS = fps;
         if (!this.ctrlFps) {
             this.ctrlFps = this._gui.add(this, "FPS", 0, 100).listen();
         }

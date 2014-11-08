@@ -103,13 +103,16 @@ define(function(require) {
      * @param  {ShapeBuilder} shapeBuilder  The builder for the shape to create.
      */
     Item.prototype._createShapes = function(gl, shapeBuilder) {
+        var builder;
+        var i;
+
         // Solid shape.
-        var builderSolid = new ShapeBuilder();
-        shapeBuilder.prepare(builderSolid, Const.POS);
-        for (var i = builderSolid.pos.count() - 1; i >= 0; i--) {
-            builderSolid.clr3.add(0.8, 0.8, 0.8);
+        builder = new ShapeBuilder();
+        shapeBuilder.prepare(builder, Const.POS);
+        for (i = builder.pos.count() - 1; i >= 0; i--) {
+            builder.clr3.add(0.8, 0.8, 0.8);
         }
-        this.shapeSolid = builderSolid.build(gl, this.shader.requiredType)
+        this.shapeSolid = builder.build(gl, this.shader.requiredType);
         this.shapeSolid.posAttr.set(this.shader.posAttrLoc);
         this.shapeSolid.clr3Attr.set(this.shader.clr3AttrLoc);
 
@@ -119,89 +122,89 @@ define(function(require) {
         this.shapeClr.clr3Attr.set(this.shader.clr3AttrLoc);
 
         // 2D texture shape.
-        var builderTxt = new ShapeBuilder();
-        shapeBuilder.prepare(builderTxt, Const.POS|Const.TXT);
-        for (var i = 0; i < builderTxt.pos.count(); i++) {
-            var txt = builderTxt.txt.get(i);
-            builderTxt.clr3.add(txt[0], 0.5, txt[1]);
+        builder = new ShapeBuilder();
+        shapeBuilder.prepare(builder, Const.POS|Const.TXT);
+        for (i = 0; i < builder.pos.count(); i++) {
+            var txt = builder.txt.get(i);
+            builder.clr3.add(txt[0], 0.5, txt[1]);
         }
-        this.shapeTxt = builderTxt.build(gl, this.shader.requiredType);
+        this.shapeTxt = builder.build(gl, this.shader.requiredType);
         this.shapeTxt.posAttr.set(this.shader.posAttrLoc);
         this.shapeTxt.clr3Attr.set(this.shader.clr3AttrLoc);
 
         // Wire-frame shape.
-        var builderFrame = new ShapeBuilder();
-        shapeBuilder.prepare(builderFrame, Const.POS);
-        for (var i = builderFrame.pos.count() - 1; i >= 0; i--) {
-            builderFrame.clr3.add(1.0, 1.0, 1.0);
+        builder = new ShapeBuilder();
+        shapeBuilder.prepare(builder, Const.POS);
+        for (i = builder.pos.count() - 1; i >= 0; i--) {
+            builder.clr3.add(1.0, 1.0, 1.0);
         }
-        builderFrame = builderFrame.createWireFrame();
-        this.shapeFrame = builderFrame.build(gl, this.shader.requiredType);
+        builder = builder.createWireFrame();
+        this.shapeFrame = builder.build(gl, this.shader.requiredType);
         this.shapeFrame.posAttr.set(this.shader.posAttrLoc);
         this.shapeFrame.clr3Attr.set(this.shader.clr3AttrLoc);
 
         // Points shape.
-        var builderPnts = new ShapeBuilder();
-        shapeBuilder.prepare(builderPnts, Const.POS);
-        for (var i = builderPnts.pos.count() - 1; i >= 0; i--) {
-            builderPnts.clr3.add(1.0, 1.0, 1.0);
+        builder = new ShapeBuilder();
+        shapeBuilder.prepare(builder, Const.POS);
+        for (i = builder.pos.count() - 1; i >= 0; i--) {
+            builder.clr3.add(1.0, 1.0, 1.0);
         }
-        builderPnts = builderPnts.createPoints();
-        this.shapePnts = builderPnts.build(gl, this.shader.requiredType);
+        builder = builder.createPoints();
+        this.shapePnts = builder.build(gl, this.shader.requiredType);
         this.shapePnts.posAttr.set(this.shader.posAttrLoc);
         this.shapePnts.clr3Attr.set(this.shader.clr3AttrLoc);
 
         // Normal shape.
-        var builderNorm = new ShapeBuilder();
-        shapeBuilder.prepare(builderNorm, Const.POS|Const.NORM);
-        for (var i = 0; i < builderNorm.pos.count(); i++) {
-            //builderNorm.clr3.add(builderNorm.norm.get(i));
-            builderNorm.clr3.add(1.0, 1.0, 1.0);
+        builder = new ShapeBuilder();
+        shapeBuilder.prepare(builder, Const.POS|Const.NORM);
+        for (i = 0; i < builder.pos.count(); i++) {
+            //builder.clr3.add(builder.norm.get(i));
+            builder.clr3.add(1.0, 1.0, 1.0);
         }
-        builderNorm = builderNorm.createDegeneratePoints();
-        for (var i = builderNorm.pos.count() - 1; i >= 0; i--) {
-            if (builderNorm.wght.get(i) > 0.5) {
-                builderNorm.pos.set(i, Vector.add(builderNorm.pos.get(i),
-                    Vector.scale(builderNorm.norm.get(i), 0.05)));
+        builder = builder.createDegeneratePoints();
+        for (i = builder.pos.count() - 1; i >= 0; i--) {
+            if (builder.wght.get(i) > 0.5) {
+                builder.pos.set(i, Vector.add(builder.pos.get(i),
+                    Vector.scale(builder.norm.get(i), 0.05)));
             }
         }
-        this.shapeNorm = builderNorm.build(gl, this.shader.requiredType);
+        this.shapeNorm = builder.build(gl, this.shader.requiredType);
         this.shapeNorm.posAttr.set(this.shader.posAttrLoc);
         this.shapeNorm.clr3Attr.set(this.shader.clr3AttrLoc);
 
         // Bi-normal shape.
-        var builderBinm = new ShapeBuilder();
-        shapeBuilder.prepare(builderBinm, Const.POS|Const.BINM);
-        for (var i = 0; i < builderBinm.pos.count(); i++) {
-            //builderBinm.clr3.add(builderBinm.binm.get(i));
-            builderBinm.clr3.add(1.0, 1.0, 1.0);
+        builder = new ShapeBuilder();
+        shapeBuilder.prepare(builder, Const.POS|Const.BINM);
+        for (i = 0; i < builder.pos.count(); i++) {
+            //builder.clr3.add(builder.binm.get(i));
+            builder.clr3.add(1.0, 1.0, 1.0);
         }
-        builderBinm = builderBinm.createDegeneratePoints();
-        for (var i = builderBinm.pos.count() - 1; i >= 0; i--) {
-            if (builderBinm.wght.get(i) > 0.5) {
-                builderBinm.pos.set(i, Vector.add(builderBinm.pos.get(i),
-                    Vector.scale(builderBinm.binm.get(i), 0.05)));
+        builder = builder.createDegeneratePoints();
+        for (i = builder.pos.count() - 1; i >= 0; i--) {
+            if (builder.wght.get(i) > 0.5) {
+                builder.pos.set(i, Vector.add(builder.pos.get(i),
+                    Vector.scale(builder.binm.get(i), 0.05)));
             }
         }
-        this.shapeBinm = builderBinm.build(gl, this.shader.requiredType);
+        this.shapeBinm = builder.build(gl, this.shader.requiredType);
         this.shapeBinm.posAttr.set(this.shader.posAttrLoc);
         this.shapeBinm.clr3Attr.set(this.shader.clr3AttrLoc);
 
         // Cube texture map shape.
-        var builderCube = new ShapeBuilder();
-        shapeBuilder.prepare(builderCube, Const.POS|Const.CUBE);
-        for (var i = 0; i < builderCube.pos.count(); i++) {
-            //builderCube.clr3.add(builderCube.cube.get(i));
-            builderCube.clr3.add(1.0, 1.0, 1.0);
+        builder = new ShapeBuilder();
+        shapeBuilder.prepare(builder, Const.POS|Const.CUBE);
+        for (i = 0; i < builder.pos.count(); i++) {
+            //builder.clr3.add(builder.cube.get(i));
+            builder.clr3.add(1.0, 1.0, 1.0);
         }
-        builderCube = builderCube.createDegeneratePoints();
-        for (var i = builderCube.pos.count() - 1; i >= 0; i--) {
-            if (builderCube.wght.get(i) > 0.5) {
-                builderCube.pos.set(i, Vector.add(builderCube.pos.get(i),
-                    Vector.scale(builderCube.cube.get(i), 0.05)));
+        builder = builder.createDegeneratePoints();
+        for (i = builder.pos.count() - 1; i >= 0; i--) {
+            if (builder.wght.get(i) > 0.5) {
+                builder.pos.set(i, Vector.add(builder.pos.get(i),
+                    Vector.scale(builder.cube.get(i), 0.05)));
             }
         }
-        this.shapeCube = builderCube.build(gl, this.shader.requiredType);
+        this.shapeCube = builder.build(gl, this.shader.requiredType);
         this.shapeCube.posAttr.set(this.shader.posAttrLoc);
         this.shapeCube.clr3Attr.set(this.shader.clr3AttrLoc);
     };

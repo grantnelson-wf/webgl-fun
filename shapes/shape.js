@@ -35,7 +35,7 @@ define(function(require) {
      */
     ShapeAttr.prototype.set = function(attr) {
         this._attr = attr;
-    }
+    };
 
     /**
      * Binds the attribute for the vertex before a draw.
@@ -165,20 +165,21 @@ define(function(require) {
      * Draws the shape to the graphical object.
      */
     Shape.prototype.draw = function() {
+        var i;
         this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._vertexBuf);
 
-        for (var i = this._attrs.length - 1; i >= 0; i--) {
+        for (i = this._attrs.length - 1; i >= 0; i--) {
             this._attrs[i].bind();
         }
 
         var objCount = this._indexObjs.length;
-        for (var i = 0; i < objCount; i++) {
+        for (i = 0; i < objCount; i++) {
             var indexObj = this._indexObjs[i];
             this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, indexObj.buffer);
             this._gl.drawElements(indexObj.type, indexObj.count, this._gl.UNSIGNED_SHORT, 0);
         }
 
-        for (var i = this._attrs.length - 1; i >= 0; i--) {
+        for (i = this._attrs.length - 1; i >= 0; i--) {
             this._attrs[i].unbind();
         }
         this._gl.bindBuffer(this._gl.ARRAY_BUFFER, null);
@@ -339,10 +340,11 @@ define(function(require) {
      */
     ShapeBuilder.prototype._validateVertices = function(vertexType) {
         vertexType = vertexType || (Const.POS|Const.CLR3|Const.CLR4|Const.NORM|Const.TXT|Const.CUBE|Const.BINM|Const.WGHT);
+        var i;
         if (vertexType === undefined) {
             if (this.data.length) {
                 vertexType = this.data[0].type;
-                for (var i = this.data.length - 1; i >= 1; i--) {
+                for (i = this.data.length - 1; i >= 1; i--) {
                     vertexType |= this.data[i].type;
                 }
             }
@@ -360,7 +362,7 @@ define(function(require) {
         }
 
         // Determine prepared types.
-        var i, datum;
+        var datum;
         var hasData = new Array(this.data.length);
         for (i = this.data.length - 1; i >= 0; i--) {
             datum = this.data[i];
@@ -466,18 +468,18 @@ define(function(require) {
             }
             tri.push([i1, i2, i3]);
         };
-        
-        for (var i = self.indices.length - 1; i >= 0; i--) {
-            self.indices[i].eachTri(function(i1, i2, i3) {
-                if (Vector.eq(self.pos.get(i1), pos)) {
-                    addTri(i1, i2, i3);
-                } else if (Vector.eq(self.pos.get(i2), pos)) {
-                    addTri(i2, i3, i1);
-                } else if (Vector.eq(self.pos.get(i3), pos)) {
-                    addTri(i3, i1, i2);
-                }
-            });
+        var findPos = function(i1, i2, i3) {
+            if (Vector.eq(self.pos.get(i1), pos)) {
+                addTri(i1, i2, i3);
+            } else if (Vector.eq(self.pos.get(i2), pos)) {
+                addTri(i2, i3, i1);
+            } else if (Vector.eq(self.pos.get(i3), pos)) {
+                addTri(i3, i1, i2);
+            }
         };
+        for (var i = self.indices.length - 1; i >= 0; i--) {
+            self.indices[i].eachTri(findPos);
+        }
         
         return tri;
     };
@@ -499,7 +501,7 @@ define(function(require) {
                 norm = Vector.add(norm, faceNorm);
             }
             this.norm.set(i, Vector.normal(norm));
-        };
+        }
     };
 
     /**
@@ -510,7 +512,7 @@ define(function(require) {
         var dest = [];
         for (var i = src.length - 1; i >= 0; i--) {
             dest[i] = src[i];
-        };
+        }
         this.cube.data = dest;
     };
     
@@ -521,28 +523,30 @@ define(function(require) {
      * @return  {Shape}  The point shape.
      */
     ShapeBuilder.prototype.createPoints = function() {
+        var i;
         var vertexData = this._validateVertices();
         this._validateIndices(vertexData.length);
 
         // Copy all the data over to the builder, twice.
         var builder = new ShapeBuilder();
-        for (var i = this.data.length - 1; i >= 0; i--) {
+        for (i = this.data.length - 1; i >= 0; i--) {
             var src = this.data[i].data;
             var srcLen = src.length;
             var dest = [];
             for (var j = srcLen - 1; j >= 0; j--) {
                 dest[j] = src[j];
-            };
+            }
             builder.data[i].data = dest;
-        };
+        }
         
         // Collect all points in the shape.
         var points = new Buffers.PointIndexSet();
-        for (var i = this.indices.length - 1; i >= 0; i--) {
-            this.indices[i].eachPoint(function(index) {
-                points.insert(index);
-            });
+        var insertIndex = function(index) {
+            points.insert(index);
         };
+        for (i = this.indices.length - 1; i >= 0; i--) {
+            this.indices[i].eachPoint(insertIndex);
+        }
         
         // Foreach point create a quad with the first and second copy.
         points.eachPoint(function(index) {
@@ -557,28 +561,30 @@ define(function(require) {
      * @return  {Shape}  The line shape.
      */
     ShapeBuilder.prototype.createWireFrame = function() {
+        var i;
         var vertexData = this._validateVertices();
         this._validateIndices(vertexData.length);
 
         // Copy all the data over to the builder, twice.
         var builder = new ShapeBuilder();
-        for (var i = this.data.length - 1; i >= 0; i--) {
+        for (i = this.data.length - 1; i >= 0; i--) {
             var src = this.data[i].data;
             var srcLen = src.length;
             var dest = [];
             for (var j = srcLen - 1; j >= 0; j--) {
                 dest[j] = src[j];
-            };
+            }
             builder.data[i].data = dest;
-        };
+        }
         
         // Collect all edges in the shape.
         var edges = new Buffers.LineIndexSet();
-        for (var i = this.indices.length - 1; i >= 0; i--) {
-            this.indices[i].eachLine(function(index1, index2) {
-                edges.insert(index1, index2);
-            });
+        var insertIndex = function(index1, index2) {
+            edges.insert(index1, index2);
         };
+        for (i = this.indices.length - 1; i >= 0; i--) {
+            this.indices[i].eachLine(insertIndex);
+        }
         
         // For each edge create a quad with the first and second copy.
         edges.eachLine(function(index1, index2) {
@@ -594,12 +600,13 @@ define(function(require) {
      * @return  {Shape}  The degenerate point shape.
      */
     ShapeBuilder.prototype.createDegeneratePoints = function() {
+        var i;
         var vertexData = this._validateVertices();
         this._validateIndices(vertexData.length);
 
         // Copy all the data over to the builder, twice.
         var builder = new ShapeBuilder();
-        for (var i = this.data.length - 1; i >= 0; i--) {
+        for (i = this.data.length - 1; i >= 0; i--) {
             var src = this.data[i].data;
             var srcLen = src.length;
             var dest = [];
@@ -607,27 +614,28 @@ define(function(require) {
                 var value = src[j];
                 dest[j] = value;
                 dest[j+srcLen] = value;
-            };
+            }
             builder.data[i].data = dest;
-        };
+        }
 
         // Set the weight data for the first copy to zero, the second copy to one.
         var count = this.pos.count();
         builder.wght.data = [];
-        for (var i = count - 1; i >= 0; i--) {
+        for (i = count - 1; i >= 0; i--) {
             builder.wght.add(0.0);
-        };
-        for (var i = count - 1; i >= 0; i--) {
+        }
+        for (i = count - 1; i >= 0; i--) {
             builder.wght.add(1.0);
-        };
+        }
         
         // Collect all points in the shape.
         var points = new Buffers.PointIndexSet();
-        for (var i = this.indices.length - 1; i >= 0; i--) {
-            this.indices[i].eachPoint(function(index) {
-                points.insert(index);
-            });
+        var insertIndex = function(index) {
+            points.insert(index);
         };
+        for (i = this.indices.length - 1; i >= 0; i--) {
+            this.indices[i].eachPoint(insertIndex);
+        }
         
         // Foreach edge create a quad with the first and second copy.
         points.eachPoint(function(index) {

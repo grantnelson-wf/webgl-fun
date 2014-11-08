@@ -87,7 +87,7 @@ define(function(require) {
         heading = Vector.normal(heading);
         var other = Vector.create(1.0, 0.0, 0.0);
         if (!Vector.eq(heading, other)) {
-            other = Vector.create(0.0, 0.0, 1.0)
+            other = Vector.create(0.0, 0.0, 1.0);
         }
         var cross = Vector.normal(Vector.cross(heading, other));
         other = Vector.normal(Vector.cross(cross, heading));

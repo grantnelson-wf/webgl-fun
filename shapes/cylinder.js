@@ -140,7 +140,7 @@ define(function(require) {
                 shape.cube.add(0, 1, 0);
             }
             if (vertexType&Const.BINM) {
-                shape.binm.add(0, 0, -1)
+                shape.binm.add(0, 0, -1);
             }
             var index = shape.pos.count();
             shape.triFans.start(index-1, index+this.sideCount-1);
@@ -167,7 +167,7 @@ define(function(require) {
                     shape.cube.add(cos*Math.SQRT2, Math.SQRT2, sin*Math.SQRT2);
                 }
                 if (vertexType&Const.BINM) {
-                    shape.binm.add(0, 0, -1)
+                    shape.binm.add(0, 0, -1);
                 }
                 shape.triFans.add(index+i);
             }
@@ -198,7 +198,7 @@ define(function(require) {
                 shape.cube.add(0, -1, 0);
             }
             if (vertexType&Const.BINM) {
-                shape.binm.add(0, 0, 1)
+                shape.binm.add(0, 0, 1);
             }
             var index = shape.pos.count();
             shape.triFans.start(index-1, index);
@@ -225,7 +225,7 @@ define(function(require) {
                     shape.cube.add(cos*Math.SQRT2, -Math.SQRT2, sin*Math.SQRT2);
                 }
                 if (vertexType&Const.BINM) {
-                    shape.binm.add(0, 0, 1)
+                    shape.binm.add(0, 0, 1);
                 }
                 shape.triFans.add(index+this.sideCount-1-i);
             }

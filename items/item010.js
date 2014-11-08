@@ -232,14 +232,15 @@ define(function(require) {
         }, false);
         
         // Build random lists.
+        var i;
         this.trees = [];
-        for (var i = 0; i < MaxTreeCount; i++) {
+        for (i = 0; i < MaxTreeCount; i++) {
             this.trees[i] = new Tree(Math.random()*20.0-10.0,
                 Math.random()*15.0-5.0, Math.random()*1.5+0.5);
         }
 
         this.fireflies = [];
-        for (var i = 0; i < MaxFireFlyCount; i++) {
+        for (i = 0; i < MaxFireFlyCount; i++) {
             this.fireflies[i] = new FireFly();
         }
 
@@ -270,10 +271,13 @@ define(function(require) {
         this.shader.setProjMat(this.projMover.matrix());
 
         // Update FireFlies
+        var i;
+        var fireFly;
+        var scalar;
         var curTime = (new Date()).getTime();
         var dt = (curTime - this.startTime);
         this.startTime = curTime;
-        for (var i = 0; i < this.fireFlyCount; i++) {
+        for (i = 0; i < this.fireFlyCount; i++) {
             this.fireflies[i].update(dt);
         }
         
@@ -284,17 +288,17 @@ define(function(require) {
         this.shader.setLightRange(-1.0);
         this.shader.setColor(0.0, 0.0, 0.0);
         this.shader.setLightPnt(0.0, 0.0, 0.0);
-        for (var i = 0; i < this.treeCount; i++) {
+        for (i = 0; i < this.treeCount; i++) {
             this._drawTree(null, 0.0, this.trees[i]);
         }
         this._drawGround(null);
 
         // Draw fireFlies.
         this.shader.setLightRange(-1.0);
-        for (var i = 0; i < this.fireFlyCount; i++) {
-            var fireFly = this.fireflies[i];
+        for (i = 0; i < this.fireFlyCount; i++) {
+            fireFly = this.fireflies[i];
             if (fireFly.lit > 0) {
-                var scalar = fireFly.litVal*this.brightness;
+                scalar = fireFly.litVal*this.brightness;
                 if (this.useColors) {
                     this.shader.setColor( fireFly.r*scalar, fireFly.g*scalar, fireFly.b*scalar);
                 } else {
@@ -307,11 +311,11 @@ define(function(require) {
         }     
 
         // Draw fireFly light.
-        for (var i = 0; i < this.fireFlyCount; i++) {
-            var fireFly = this.fireflies[i];
+        for (i = 0; i < this.fireFlyCount; i++) {
+            fireFly = this.fireflies[i];
             if (fireFly.lit > 0) {
                 this.shader.setLightRange(this.lightRadius);
-                var scalar = fireFly.litVal*this.brightness;
+                scalar = fireFly.litVal*this.brightness;
                 if (this.useColors) {
                     this.shader.setColor( fireFly.r*scalar, fireFly.g*scalar, fireFly.b*scalar);
                 } else {
@@ -360,7 +364,7 @@ define(function(require) {
             this.shader.setObjMat(tree.mat);
             this.tree.draw();
         }
-    }
+    };
 
     /**
      * Draws the ground lit by a firefly's light.
@@ -376,7 +380,7 @@ define(function(require) {
             this.shader.setObjMat(Matrix.identity());
             this.ground.draw();
         }
-    }
+    };
      
     return Item;
 });

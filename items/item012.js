@@ -158,15 +158,17 @@ define(function(require) {
      */
     Item.prototype._createAdjunctShape = function(shape) {
         // Collect all edges in the shape.
+        var i;
         var edges = new AdjSet();
-        for (var i = shape.pos.count() - 1; i >= 0; i--) {
+        for (i = shape.pos.count() - 1; i >= 0; i--) {
             edges.insertPoint(shape.pos.get(i), shape.norm.get(i));
+        }
+        var insertPos = function(i1, i2, i3) {
+            edges.insertTri(shape.pos.get(i1), shape.pos.get(i2), shape.pos.get(i3));
         };
-        for (var i = shape.indices.length - 1; i >= 0; i--) {
-            shape.indices[i].eachTri(function(i1, i2, i3) {
-                edges.insertTri(shape.pos.get(i1), shape.pos.get(i2), shape.pos.get(i3));
-            });
-        };
+        for (i = shape.indices.length - 1; i >= 0; i--) {
+            shape.indices[i].eachTri(insertPos);
+        }
         
         // Foreach edge create a quad with the first and second copy.
         var builder = new ShapeBuilder();
@@ -243,16 +245,17 @@ define(function(require) {
      * @return  {Boolean}  True if merged, false if not.
      */
     AdjEdge.prototype.merge = function(other) {
+        var i;
         if (this.index1 === other.index1) {
             if (this.index2 === other.index2) {
-                for (var i = 0; i < other.faces.length; i++) {
+                for (i = 0; i < other.faces.length; i++) {
                     this.faces.push(other.faces[i]);
                 }
                 return true;
             }
         } else if (this.index1 === other.index2) {
             if (this.index2 === other.index1) {
-                for (var i = 0; i < other.faces.length; i++) {
+                for (i = 0; i < other.faces.length; i++) {
                     this.faces.push(other.faces[i]);
                 }
                 return true;
@@ -277,12 +280,13 @@ define(function(require) {
      */
     AdjSet.prototype.insertPoint = function(pos, norm, epsilon) {
         norm = Vector.normal(norm);
+        var adj;
         var i = this._findPoint(pos, epsilon);
         if (i < 0) {
-            var adj = new AdjPoint(pos, norm);
+            adj = new AdjPoint(pos, norm);
             this._points.push(adj);
         } else {
-            var adj = this._points[i];
+            adj = this._points[i];
             adj.norm = Vector.add(adj.norm, norm);
             this._points[i] = adj;
         }
