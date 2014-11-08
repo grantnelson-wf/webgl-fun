@@ -21,6 +21,12 @@ define(function(require) {
         this.mouseYScalar = 0.005;
 
         /**
+         * The scalar to apply to the mouse wheel in the y axis.
+         * @type {Number}
+         */
+        this.wheelYScalar = 0.005;
+
+        /**
          * The target of the camera pre-rotation.
          * @type {Array}
          */
@@ -49,6 +55,18 @@ define(function(require) {
          * @type {Number}
          */
         this.minPitch = -Math.PI * 0.5;
+        
+        /**
+         * The maximum allowed scalar.
+         * @type {Number}
+         */
+        this.maxScalar = 10.0;
+        
+        /**
+         * The minimum allowed scalar.
+         * @type {Number}
+         */
+        this.minScalar = 0.1;
 
         /**
          * The graphical object being used.
@@ -67,6 +85,12 @@ define(function(require) {
          * @type {Number}
          */
         this._pitch = 0;
+        
+        /**
+         * The scalar for zooming the world.
+         * @type {Number}
+         */
+        this._scalar = 1.0;
         
         /**
          * Indicates a mouse button is pressed.
@@ -123,13 +147,17 @@ define(function(require) {
         document.onmousemove = function(event) {
             self._handleMouseMove(event);
         };
+        document.onwheel = function(event) {
+            self._handleMouseWheel(event);
+        };
     };
 
     /**
      * Updates the mover.
      */
     UserFocus.prototype.update = function() {
-        var mat = Matrix.rotateY(-this._yaw);
+        var mat = Matrix.scalar(this._scalar, this._scalar, this._scalar, 1.0);
+        mat = Matrix.mul(mat, Matrix.rotateY(-this._yaw));
         mat = Matrix.mul(mat, Matrix.rotateX(-this._pitch));
         mat = Matrix.mul(mat, Matrix.lookat(
             this.target[0],   this.target[1],   this.target[2],
@@ -152,8 +180,9 @@ define(function(require) {
      */
     UserFocus.prototype.stop = function() {
         this._gl.canvas.onmousedown = null;
-        document.onmouseup    = null;
-        document.onmousemove  = null;
+        document.onmouseup = null;
+        document.onmousemove = null;
+        document.onwheel = null;
         this._gl = null;
     };
     
@@ -195,6 +224,21 @@ define(function(require) {
             else if (this._pitch < this.minPitch) {
                 this._pitch = this.minPitch;
             }
+        }
+    };
+    
+    /**
+     * This handles the mouse wheel being moved.
+     * @param  {Object} event  The mouse wheel event.
+     */
+    UserFocus.prototype._handleMouseWheel = function(event) {
+        var delta = Number(event.deltaY)*this.wheelYScalar;
+        this._scalar += delta;
+        if (this._scalar > this.maxScalar) {
+            this._scalar = this.maxScalar;
+        }
+        else if (this._scalar < this.minScalar) {
+            this._scalar = this.minScalar;
         }
     };
 
