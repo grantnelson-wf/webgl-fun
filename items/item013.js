@@ -47,45 +47,45 @@ define(function(require) {
         // Setup controls.
         item = this;
         this.controls = new Controls();
-        this.controls.addButton("Menu", function() {
+        this.controls.addButton('Menu', function() {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addShapeSelect("Shape", function(shapeBuilder) {
+        this.controls.addShapeSelect('Shape', function(shapeBuilder) {
             item._createShapes(gl, shapeBuilder);
-        }, "Toroid");
-        this.controls.addBool("Transparent", function(value) {
+        }, 'Toroid');
+        this.controls.addBool('Transparent', function(value) {
             item.drawTransparent = value;
         }, true);
-        this.controls.addBool("Depth", function(value) {
+        this.controls.addBool('Depth', function(value) {
             if (value) {
                 item.shader.setUseDepth(1.0);
             } else {
                 item.shader.setUseDepth(0.0);
             }
         }, true);
-        this.controls.addBool("Solid", function(value) {
+        this.controls.addBool('Solid', function(value) {
             item.drawSolid = value;
         }, true);
-        this.controls.addBool("Color", function(value) {
+        this.controls.addBool('Color', function(value) {
             item.drawClr = value;
         }, false);
-        this.controls.addBool("Texture", function(value) {
+        this.controls.addBool('Texture', function(value) {
             item.drawTxt = value;
         }, false);
-        this.controls.addBool("Wireframe", function(value) {
+        this.controls.addBool('Wireframe', function(value) {
             item.drawFrame = value;
         }, false);
-        this.controls.addBool("Points", function(value) {
+        this.controls.addBool('Points', function(value) {
             item.drawPnts = value;
         }, false);
-        this.controls.addBool("Normals", function(value) {
+        this.controls.addBool('Normals', function(value) {
             item.drawNorm = value;
         }, false);
-        this.controls.addBool("Bi-Normals", function(value) {
+        this.controls.addBool('Bi-Normals', function(value) {
             item.drawBinm = value;
         }, false);
-        this.controls.addBool("Cube", function(value) {
+        this.controls.addBool('Cube', function(value) {
             item.drawCube = value;
         }, false);
 

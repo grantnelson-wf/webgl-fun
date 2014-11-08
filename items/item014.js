@@ -41,34 +41,24 @@ define(function(require) {
         // Setup controls.
         item = this;
         this.controls = new Controls();
-        this.controls.addButton("Menu", function() {
+        this.controls.addButton('Menu', function() {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addShapeSelect("Shape", function(shapeBuilder){
+        this.controls.addShapeSelect('Shape', function(shapeBuilder){
             item.shape = shapeBuilder.build(gl, item.shader.requiredType);
             item.shape.posAttr.set(item.shader.posAttrLoc);
             item.shape.txtAttr.set(item.shader.txtAttrLoc);
             item.shape.normAttr.set(item.shader.normAttrLoc);
-        }, "Toroid");
-        this.controls.addDic("Texture", function(path) {
+        }, 'Toroid');
+        this.controls.add2DTxtSelect('Texture', function(path) {
             item.txt2D = new Txt2D(gl);
             item.txt2D.index = 0;
             item.txt2D.loadFromFile(path);
-        }, 'Fire', {
-            'Bark':    './data/textures/bark.jpg',
-            'Brick':   './data/textures/brick.jpg',
-            'Fire':    './data/textures/fire.jpg',
-            'Grass':   './data/textures/grass.jpg',
-            'Metal':   './data/textures/metal.jpg',
-            'Moon':    './data/textures/moon.jpg',
-            'Paper':   './data/textures/paper.jpg',
-            'Scratch': './data/textures/scratch.jpg',
-            'Wood':    './data/textures/wood.jpg'
-        });
-        this.controls.addFloat("Flatten",
+        }, 'Fire');
+        this.controls.addFloat('Flatten',
             this.shader.setFlatten, 0.0, 1.0, 0.0);
-        this.controls.addFloat("Magnifier",
+        this.controls.addFloat('Magnifier',
             this.shader.setMagnifier, 0.0, 5.0, 2.5);
         
         // Initialize movers.

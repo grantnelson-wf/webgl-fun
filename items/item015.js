@@ -51,24 +51,16 @@ define(function(require) {
         // Setup controls.
         item = this;
         this.controls = new Controls();
-        this.controls.addButton("Menu", function() {
+        this.controls.addButton('Menu', function() {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addDic("Height Map", function(path) {
+        this.controls.addHeightMapSelect('Height Map', function(path) {
             item.txtHeight = new Txt2D(gl);
             item.txtHeight.index = 0;
             item.txtHeight.loadFromFile(path);
-        }, 'Mountains', {
-            'Edge':      './data/highmaps/edge.jpg',
-            'Floor':     './data/highmaps/floor.jpg',
-            'Mountains': './data/highmaps/mountains.jpg',
-            'Peak':      './data/highmaps/peak.jpg',
-            'World':     './data/highmaps/world.jpg',
-            'Bruce':     './data/highmaps/bruce.jpg',
-            'Skull':     './data/highmaps/skull.jpg',
-        });
-        this.controls.addFloat("Max Height", this.shader.setMaxHeight, 0.0, 1.0, 0.4);
+        }, 'Mountains');
+        this.controls.addFloat('Max Height', this.shader.setMaxHeight, 0.0, 1.0, 0.4);
         
         
         // Initialize movers.

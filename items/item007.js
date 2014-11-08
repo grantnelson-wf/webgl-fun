@@ -62,26 +62,21 @@ define(function(require) {
         // Setup controls.
         item = this;
         this.controls = new Controls();
-        this.controls.addButton("Menu", function() {
+        this.controls.addButton('Menu', function() {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addShapeSelect("Shape", function(shapeBuilder){
+        this.controls.addShapeSelect('Shape', function(shapeBuilder){
             item.objShape = shapeBuilder.build(gl, item.objShader.requiredType);
             item.objShape.posAttr.set(item.objShader.posAttrLoc);
             item.objShape.normAttr.set(item.objShader.normAttrLoc);
-        }, "Sphere");
-        this.controls.addFloat("Ref Weight", this.objShader.setReflWeight, 0.0, 1.0, 0.9);
-        this.controls.addDic("Background", function(path) {
+        }, 'Sphere');
+        this.controls.addFloat('Ref Weight', this.objShader.setReflWeight, 0.0, 1.0, 0.9);
+        this.controls.addCubeTxtSelect('Background', function(path) {
             item.txtCube = new TxtCube(gl);
             item.txtCube.index = 0;
             item.txtCube.loadFromPath(path);
-        }, 'Glacier', {
-            'Glacier': './data/cubemaps/glacier/',
-            'Beach':   './data/cubemaps/beach/',
-            'Forest':  './data/cubemaps/forest/',
-            'Chapel':  './data/cubemaps/chapel/'
-        });
+        }, 'Glacier');
 
         // Initialize movement.
         this.projMover = new ProjMover();

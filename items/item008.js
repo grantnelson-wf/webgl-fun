@@ -65,33 +65,28 @@ define(function(require) {
         item = this;
         this.dentDelta = 0.01;
         this.controls = new Controls();
-        this.controls.addButton("Menu", function() {
+        this.controls.addButton('Menu', function() {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addShapeSelect("Shape", function(shapeBuilder){
+        this.controls.addShapeSelect('Shape', function(shapeBuilder){
             item.objShape = shapeBuilder.build(gl, item.objShader.requiredType);
             item.objShape.posAttr.set(item.objShader.posAttrLoc);
             item.objShape.normAttr.set(item.objShader.normAttrLoc);
-        }, "Sphere");
-        this.controls.addFloat("Ref Weight", this.objShader.setReflWeight, 0.0, 1.0, 0.9);
-        this.controls.addFloat("Dent Speed", function(value) {
+        }, 'Sphere');
+        this.controls.addFloat('Ref Weight', this.objShader.setReflWeight, 0.0, 1.0, 0.9);
+        this.controls.addFloat('Dent Speed', function(value) {
             item.dentDelta = value;
         },  0.0, 5.0, 0.4);
-        this.controls.addFloat("Dent Pos Offset",  this.objShader.setDentPosOffset,  0.0, 0.5, 0.01);
-        this.controls.addFloat("Dent Norm Offset", this.objShader.setDentNormOffset, 0.0, 0.5, 0.05);
-        this.controls.addFloat("Reflections",      this.objShader.setReflectScalar,  0.0, 1.0, 0.5);
-        this.controls.addFloat("Refractions",      this.objShader.setRefractScalar,  0.0, 1.0, 0.5);
-        this.controls.addDic("Background", function(path) {
+        this.controls.addFloat('Dent Pos Offset',  this.objShader.setDentPosOffset,  0.0, 0.5, 0.01);
+        this.controls.addFloat('Dent Norm Offset', this.objShader.setDentNormOffset, 0.0, 0.5, 0.05);
+        this.controls.addFloat('Reflections',      this.objShader.setReflectScalar,  0.0, 1.0, 0.5);
+        this.controls.addFloat('Refractions',      this.objShader.setRefractScalar,  0.0, 1.0, 0.5);
+        this.controls.addCubeTxtSelect('Background', function(path) {
             item.txtCube = new TxtCube(gl);
             item.txtCube.index = 0;
             item.txtCube.loadFromPath(path);
-        }, 'Glacier', {
-            'Glacier': './data/cubemaps/glacier/',
-            'Beach':   './data/cubemaps/beach/',
-            'Forest':  './data/cubemaps/forest/',
-            'Chapel':  './data/cubemaps/chapel/'
-        });
+        }, 'Glacier');
 
         //=================================================
 

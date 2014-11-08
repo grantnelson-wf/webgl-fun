@@ -31,7 +31,7 @@ define(function(require) {
      * Loads files from the given path.
      * @note  The images will load asynchronously.
      * @param  {String} path  The path to the files to load.
-     *                        The files must be named: "posx.jpg", "negx.jpg", "posy.jpg", etc.
+     *                        The files must be named: 'posx.jpg', 'negx.jpg', 'posy.jpg', etc.
      * @param  {Boolean} flipY  Indicates if the Y asix should be flipped.
      */
     TextureCube.prototype.loadFromPath = function(path, flipY) {

@@ -22,7 +22,7 @@ define(function(require) {
      * The name for this item.
      * @type {String}
      */
-    Item.prototype.name = 'Sketch';
+    Item.prototype.name = 'Cartoon';
     
     /**
      * Starts this item for rendering.

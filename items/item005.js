@@ -57,26 +57,21 @@ define(function(require) {
         // Setup controls.
         item = this;
         this.controls = new Controls();
-        this.controls.addButton("Menu", function() {
+        this.controls.addButton('Menu', function() {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addFloat("Field of view", function(value) {
+        this.controls.addFloat('Field of view', function(value) {
             item.projMover.fovAngle = Math.PI*value/180.0;
         },  30.0, 150.0, 90.0);
-        this.controls.addFloat("Size of box", function(value) {
+        this.controls.addFloat('Size of box', function(value) {
             item.scale = value;
         },  1.0, 100.0, 40.0);
-        this.controls.addDic("Background", function(path) {
+        this.controls.addCubeTxtSelect('Background', function(path) {
             item.txtCube = new TxtCube(gl);
             item.txtCube.index = 0;
             item.txtCube.loadFromPath(path);
-        }, 'Glacier', {
-            'Glacier': './data/cubemaps/glacier/',
-            'Beach':   './data/cubemaps/beach/',
-            'Forest':  './data/cubemaps/forest/',
-            'Chapel':  './data/cubemaps/chapel/'
-        });
+        }, 'Glacier');
         return true;
     };
     

@@ -211,23 +211,23 @@ define(function(require) {
         // Setup controls.
         item = this;
         this.controls = new Controls();
-        this.controls.addButton("Menu", function() {
+        this.controls.addButton('Menu', function() {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addInt("Tree Count", function(value) {
+        this.controls.addInt('Tree Count', function(value) {
             item.treeCount = value;
         }, 0, MaxTreeCount, 10);
-        this.controls.addInt("FireFly Count", function(value) {
+        this.controls.addInt('FireFly Count', function(value) {
             item.fireFlyCount = value;
         }, 0, MaxFireFlyCount, 30);
-        this.controls.addFloat("Light Radius", function(value) {
+        this.controls.addFloat('Light Radius', function(value) {
             item.lightRadius = value;
         }, 0.1, MaxLightRadius, 2.5);
-        this.controls.addFloat("Brightness", function(value) {
+        this.controls.addFloat('Brightness', function(value) {
             item.brightness = value;
         }, 0.0, 1.0, 0.7);
-        this.controls.addBool("Colors", function(value) {
+        this.controls.addBool('Colors', function(value) {
             item.useColors = value;
         }, false);
         

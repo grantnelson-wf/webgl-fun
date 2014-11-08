@@ -39,19 +39,19 @@ define(function(require) {
         // Setup controls.
         item = this;
         this.controls = new Controls();
-        this.controls.addButton("Menu", function() {
+        this.controls.addButton('Menu', function() {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addShapeSelect("Shape", function(shapeBuilder){
+        this.controls.addShapeSelect('Shape', function(shapeBuilder){
             item.shape = shapeBuilder.build(gl, item.shader.requiredType);
             item.shape.posAttr.set(item.shader.posAttrLoc);
-        }, "Toroid");
-        this.controls.addFloat("Start", this.shader.setFogStart, 0.0, 4.0, 1.0);
-        this.controls.addFloat("Stop",  this.shader.setFogStop,  0.0, 4.0, 2.5);
-        this.controls.addRGB("Object", this.shader.setObjClr, 1.0, 1.0, 1.0);
-        this.controls.addRGB("Fog",    this.shader.setFogClr, 0.0, 0.0, 0.0);
-        this.controls.addRGB("Background", function(red, green, blue) {
+        }, 'Toroid');
+        this.controls.addFloat('Start', this.shader.setFogStart, 0.0, 4.0, 1.0);
+        this.controls.addFloat('Stop',  this.shader.setFogStop,  0.0, 4.0, 2.5);
+        this.controls.addRGB('Object', this.shader.setObjClr, 1.0, 1.0, 1.0);
+        this.controls.addRGB('Fog',    this.shader.setFogClr, 0.0, 0.0, 0.0);
+        this.controls.addRGB('Background', function(red, green, blue) {
             gl.clearColor(red, green, blue, 1.0);
         }, 0.0, 0.0, 0.0);
 

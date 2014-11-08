@@ -43,42 +43,33 @@ define(function(require) {
         // Setup controls.
         item = this;
         this.controls = new Controls();
-        this.controls.addButton("Menu", function() {
+        this.controls.addButton('Menu', function() {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addFloat("Width", function(value) {
+        this.controls.addFloat('Width', function(value) {
             item.width = value;
         }, 0.25, 4.0, 1.0);
-        this.controls.addFloat("Height", function(value) {
+        this.controls.addFloat('Height', function(value) {
             item.height = value;
         }, 0.25, 4.0, 2.0);
-        this.controls.addRGB("Left Color", function(r, g, b) {
+        this.controls.addRGB('Left Color', function(r, g, b) {
             item.leftColor = [r, g, b];
         }, 0.0, 1.0, 1.0);
-        this.controls.addFloat("Left Offset", function(value) {
+        this.controls.addFloat('Left Offset', function(value) {
             item.leftOffset = value;
         }, -0.25, 0.25, 0.031);
-        this.controls.addRGB("Right Color", function(r, g, b) {
+        this.controls.addRGB('Right Color', function(r, g, b) {
             item.rightColor = [r, g, b];
         }, 1.0, 0.0, 0.0);
-        this.controls.addFloat("Right Offset", function(value) {
+        this.controls.addFloat('Right Offset', function(value) {
             item.rightOffset = value;
         }, -0.25, 0.25, 0.001);
-        this.controls.addDic("Texture", function(path) {
+        this.controls.addStereoSelect('Texture', function(path) {
             item.txt2D = new Txt2D(gl);
             item.txt2D.index = 0;
             item.txt2D.loadFromFile(path);
-        }, 'Puppy', {
-            'House':    './data/stereo/house.jpg',
-            'Jupiter':  './data/stereo/jupiter.jpg',
-            'Legos':    './data/stereo/legos.jpg',
-            'Moon':     './data/stereo/moon.jpg',
-            'Portal 1': './data/stereo/portal1.jpg',
-            'Portal 2': './data/stereo/portal2.jpg',
-            'Puppy':    './data/stereo/puppy.jpg',
-            'River':    './data/stereo/river.jpg'
-        });
+        }, 'Puppy');
         
         var shapeBuilder = new ShapeBuilder();
         shapeBuilder.pos.add(-1.0, -1.0, 0.5);

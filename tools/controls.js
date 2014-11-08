@@ -29,7 +29,7 @@ define(function(require) {
     Controls.prototype.setFps = function(fps) {
         this.FPS = fps;
         if (!this.ctrlFps) {
-            this.ctrlFps = this._gui.add(this, "FPS", 0, 100).listen();
+            this.ctrlFps = this._gui.add(this, 'FPS', 0, 100).listen();
         }
     };
 
@@ -67,6 +67,109 @@ define(function(require) {
         };
         ctrl.onChange(selectShape);
         selectShape(initShape);
+    };
+    
+    /**
+     * Adds a drop-down control for a 2D texture.
+     * @param  {String}   name      The name of the selection to store.
+     * @param  {Function} callback  The method to call on change.
+     *                              It will have one parameter, the new selected image path.
+     * @param  {String}   init      The initial image to select.
+     */
+    Controls.prototype.add2DTxtSelect = function(name, callback, init) {
+        this.addDic(name, callback, init, {
+            'Bark':        './data/textures/bark.jpg',
+            'Brick':       './data/textures/brick.jpg',
+            'Dots':        './data/textures/dots.jpg',
+            'Fine Sketch': './data/textures/fineSketch.jpg',
+            'Fire':        './data/textures/fire.jpg',
+            'Grass':       './data/textures/grass.jpg',
+            'Metal':       './data/textures/metal.jpg',
+            'Moon':        './data/textures/moon.jpg',
+            'Paper':       './data/textures/paper.jpg',
+            'Scratch':     './data/textures/scratch.jpg',
+            'Sketch':      './data/textures/sketch.jpg',
+            'Wood':        './data/textures/wood.jpg'
+        });
+    };
+    
+    /**
+     * Adds a drop-down control for a cube texture.
+     * @param  {String}   name      The name of the selection to store.
+     * @param  {Function} callback  The method to call on change.
+     *                              It will have one parameter, the new selected image path.
+     * @param  {String}   init      The initial image to select.
+     */
+    Controls.prototype.addCubeTxtSelect = function(name, callback, init) {
+        this.addDic(name, callback, init, {
+            'Beach':      './data/cubemaps/beach/',
+            'Chapel':     './data/cubemaps/chapel/',
+            'Forest':     './data/cubemaps/forest/',
+            'Glacier':    './data/cubemaps/glacier/',
+            'Meadow':     './data/cubemaps/meadow/',
+            'Night Park': './data/cubemaps/nightPark/',
+        });
+    };
+    
+    /**
+     * Adds a drop-down control for a bump map image.
+     * @param  {String}   name      The name of the selection to store.
+     * @param  {Function} callback  The method to call on change.
+     *                              It will have one parameter, the new selected image path.
+     * @param  {String}   init      The initial image to select.
+     */
+    Controls.prototype.addBumpMapSelect = function(name, callback, init) {
+        this.addDic(name, callback, init, {
+            'Bark':        './data/bumpmaps/bark.jpg',
+            'Bump':        './data/bumpmaps/bump.jpg',
+            'Cloth':       './data/bumpmaps/cloth.jpg',
+            'Concrete':    './data/bumpmaps/concrete.jpg',
+            'Half-Life 2': './data/bumpmaps/halflife2.jpg',
+            'Mesh':        './data/bumpmaps/mesh.jpg',
+            'Scales':      './data/bumpmaps/scales.jpg',
+            'Shapes':      './data/bumpmaps/shapes.jpg',
+            'Wood':        './data/bumpmaps/wood.jpg',
+            'Workiva':     './data/bumpmaps/workiva.jpg'
+        });
+    };
+    
+    /**
+     * Adds a drop-down control for a stereo image.
+     * @param  {String}   name      The name of the selection to store.
+     * @param  {Function} callback  The method to call on change.
+     *                              It will have one parameter, the new selected image path.
+     * @param  {String}   init      The initial image to select.
+     */
+    Controls.prototype.addStereoSelect = function(name, callback, init) {
+        this.addDic(name, callback, init, {
+            'House':    './data/stereo/house.jpg',
+            'Jupiter':  './data/stereo/jupiter.jpg',
+            'Legos':    './data/stereo/legos.jpg',
+            'Moon':     './data/stereo/moon.jpg',
+            'Portal 1': './data/stereo/portal1.jpg',
+            'Portal 2': './data/stereo/portal2.jpg',
+            'Puppy':    './data/stereo/puppy.jpg',
+            'River':    './data/stereo/river.jpg'
+        });
+    };
+    
+    /**
+     * Adds a drop-down control for a height map.
+     * @param  {String}   name      The name of the selection to store.
+     * @param  {Function} callback  The method to call on change.
+     *                              It will have one parameter, the new selected image path.
+     * @param  {String}   init      The initial image to select.
+     */
+    Controls.prototype.addHeightMapSelect = function(name, callback, init) {
+        this.addDic(name, callback, init, {
+            'Bruce':     './data/highmaps/bruce.jpg',
+            'Edge':      './data/highmaps/edge.jpg',
+            'Floor':     './data/highmaps/floor.jpg',
+            'Mountains': './data/highmaps/mountains.jpg',
+            'Peak':      './data/highmaps/peak.jpg',
+            'World':     './data/highmaps/world.jpg',
+            'Skull':     './data/highmaps/skull.jpg',
+        });
     };
 
     /**

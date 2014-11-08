@@ -39,15 +39,15 @@ define(function(require) {
         // Setup controls.
         item = this;
         this.controls = new Controls();
-        this.controls.addButton("Menu", function() {
+        this.controls.addButton('Menu', function() {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addShapeSelect("Shape", function(shapeBuilder){
+        this.controls.addShapeSelect('Shape', function(shapeBuilder){
             item.shape = shapeBuilder.build(gl, item.shader.requiredType);
             item.shape.posAttr.set(item.shader.posAttrLoc);
             item.shape.clr3Attr.set(item.shader.clr3AttrLoc);
-        }, "Toroid");
+        }, 'Toroid');
         
         // Initialize movers.
         this.projMover = new ProjMover();

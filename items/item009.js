@@ -65,42 +65,27 @@ define(function(require) {
         // Setup controls.
         item = this;
         this.controls = new Controls();
-        this.controls.addButton("Menu", function() {
+        this.controls.addButton('Menu', function() {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
-        this.controls.addShapeSelect("Shape", function(shapeBuilder) {
+        this.controls.addShapeSelect('Shape', function(shapeBuilder) {
             item.objShape = shapeBuilder.build(gl, item.objShader.requiredType);
             item.objShape.posAttr.set(item.objShader.posAttrLoc);
             item.objShape.normAttr.set(item.objShader.normAttrLoc);
             item.objShape.binmAttr.set(item.objShader.binmAttrLoc);
             item.objShape.txtAttr.set(item.objShader.txtAttrLoc);
-        }, "Cube");
-        this.controls.addDic("Background", function(path) {
+        }, 'Cube');
+        this.controls.addCubeTxtSelect('Background', function(path) {
             item.txtCube = new TxtCube(gl);
             item.txtCube.index = 0;
             item.txtCube.loadFromPath(path);
-        }, 'Chapel', {
-            'Glacier': './data/cubemaps/glacier/',
-            'Beach':   './data/cubemaps/beach/',
-            'Forest':  './data/cubemaps/forest/',
-            'Chapel':  './data/cubemaps/chapel/'
-        });
-        this.controls.addDic("BumpMap", function(path) {
+        }, 'Chapel');
+        this.controls.addBumpMapSelect('BumpMap', function(path) {
             item.txtBump = new Txt2D(gl);
             item.txtBump.index = 1;
             item.txtBump.loadFromFile(path);
-        }, 'Bump', {
-            'Bark':     './data/bumpmaps/bark.jpg',
-            'Bump':     './data/bumpmaps/bump.jpg',
-            'Cloth':    './data/bumpmaps/cloth.jpg',
-            'Concrete': './data/bumpmaps/concrete.jpg',
-            'Mesh':     './data/bumpmaps/mesh.jpg',
-            'Scales':   './data/bumpmaps/scales.jpg',
-            'Shapes':   './data/bumpmaps/shapes.jpg',
-            'Wood':     './data/bumpmaps/wood.jpg',
-            'Workiva':  './data/bumpmaps/workiva.jpg'
-        });
+        }, 'Bump');
 
         // Initialize movement.
         this.projMover = new ProjMover();

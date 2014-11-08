@@ -1,6 +1,6 @@
 define(function(require) {
 
-    var Vector = require("tools/vector");
+    var Vector = require('tools/vector');
 
     /**
      * Tools for creating and manipulating 4x4 matrices.
@@ -300,11 +300,11 @@ define(function(require) {
          * @returns  {String}  The string for the matrix.
          */
         toString: function(mat, indent) {
-            indent = indent || "";
-            return     "["+mat[ 0]+", "+mat[ 1]+", "+mat[ 2]+", "+mat[ 3]+",\n"+
-                indent+" "+mat[ 4]+", "+mat[ 5]+", "+mat[ 6]+", "+mat[ 7]+",\n"+
-                indent+" "+mat[ 8]+", "+mat[ 9]+", "+mat[10]+", "+mat[11]+",\n"+
-                indent+" "+mat[12]+", "+mat[13]+", "+mat[14]+", "+mat[15]+"]";
+            indent = indent || '';
+            return     '['+mat[ 0]+', '+mat[ 1]+', '+mat[ 2]+', '+mat[ 3]+',\n'+
+                indent+' '+mat[ 4]+', '+mat[ 5]+', '+mat[ 6]+', '+mat[ 7]+',\n'+
+                indent+' '+mat[ 8]+', '+mat[ 9]+', '+mat[10]+', '+mat[11]+',\n'+
+                indent+' '+mat[12]+', '+mat[13]+', '+mat[14]+', '+mat[15]+']';
         }
 
     };
