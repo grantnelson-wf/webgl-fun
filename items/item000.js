@@ -23,7 +23,8 @@ define(function(require) {
     var Item013 = require('items/item013');
     var Item014 = require('items/item014');
     var Item015 = require('items/item015');
-    
+    var Item016 = require('items/item016');
+
     /**
      * Creates an item for rendering.
      */
@@ -59,7 +60,7 @@ define(function(require) {
         gl.depthFunc(gl.LESS);
         gl.clearColor(1.0, 1.0, 1.0, 1.0);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-        
+
         // Build shape
         var shapeBuilder = new ShapeBuilder();
         this.shape = shapeBuilder.build(gl, this.shader.requiredType);
@@ -82,7 +83,8 @@ define(function(require) {
             new Item012(),
             new Item013(),
             new Item014(),
-            new Item015() ];
+            new Item015(),
+            new Item016() ];
 
         // Setup controls.
         this.controls = new Controls();
@@ -117,7 +119,7 @@ define(function(require) {
     Item.prototype.update = function(gl) {
         this.projMover.update();
         this.objMover.update();
-        
+
         // Clear color buffer.
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
@@ -145,7 +147,7 @@ define(function(require) {
         this.shape.draw();
         return true;
     };
-    
+
     /**
      * Stops this object and cleans up.
      * @param  {WebGLRenderingContext} gl  The graphical object.
@@ -155,6 +157,6 @@ define(function(require) {
         this.objMover.stop(gl);
         this.controls.destroy();
     };
-     
+
     return Item;
 });

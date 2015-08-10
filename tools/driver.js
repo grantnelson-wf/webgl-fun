@@ -4,26 +4,26 @@ define(function(require) {
      * Creates the graphical driver.
      */
     function Driver() {
-    
+
         /// The canvas element.
         this.canvas = null;
-        
+
         /// The graphical object.
         this.gl = null;
-        
+
         /// The item being run.
         this.item = null;
 
         /// The set menu item.
         this.menuItem = null;
-        
+
         /// The update count.
         this.updateCount = 0;
-        
+
         /// The start time in milliseconds.
         this.startTime = (new Date()).getTime();
     }
-    
+
     /**
      * Sets up the driver.
      * @param  {String} canvasId  The element id for the canvas to draw on.
@@ -52,7 +52,7 @@ define(function(require) {
         };
         window.addEventListener('resize', innerResize);
         innerResize();
-        
+
         // Start update loop
         this.update();
     };
@@ -67,6 +67,8 @@ define(function(require) {
             this.canvas.width  = width;
             this.canvas.height = height;
             this.gl.viewport(0, 0, width, height);
+            this.gl.windowWidth = width;
+            this.gl.windowHeight = height;
         }
     };
 
@@ -84,7 +86,7 @@ define(function(require) {
     Driver.prototype.gotoMenu = function() {
         this.run(this.menuItem);
     };
-    
+
     /**
      * This starts running an item. Any previous item is stopped.
      * @param  {Object} item  The item to start running.
@@ -142,6 +144,6 @@ define(function(require) {
         };
         requestAnimationFrame(innerUpdate);
     };
- 
+
     return Driver;
 });

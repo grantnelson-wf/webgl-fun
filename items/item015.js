@@ -8,7 +8,7 @@ define(function(require) {
     var Txt2D = require('tools/texture2d');
     var Controls = require('tools/controls');
     var GridBuilder = require('shapes/grid');
-    
+
     /**
      * Creates an item for rendering.
      */
@@ -21,7 +21,7 @@ define(function(require) {
      * @type {String}
      */
     Item.prototype.name = 'Height Map';
-    
+
     /**
      * Starts this item for rendering.
      * @param  {WebGLRenderingContext} gl  The graphical object.
@@ -38,16 +38,7 @@ define(function(require) {
         this.shader.use();
         this.shader.setTxtSampler(0);
         this.shader.setObjMat(Matrix.identity());
-        
-        // Create Shape.
-        var shapeBuilder = new GridBuilder();
-        shapeBuilder.widthDiv = 200;
-        shapeBuilder.depthDiv = 200;
-        this.shape = shapeBuilder.build(gl, this.shader.requiredType);
-        this.shape.posAttr.set(this.shader.posAttrLoc);
-        this.shape.txtAttr.set(this.shader.txtAttrLoc);
-        this.shape.normAttr.set(this.shader.normAttrLoc);
-        
+
         // Setup controls.
         item = this;
         this.controls = new Controls();
@@ -55,14 +46,23 @@ define(function(require) {
             driver.gotoMenu();
         });
         this.controls.setFps(0.0);
+        this.controls.addInt('Map Size', function(size) {
+            var shapeBuilder = new GridBuilder();
+            shapeBuilder.widthDiv = size;
+            shapeBuilder.depthDiv = size;
+            item.shape = shapeBuilder.build(gl, item.shader.requiredType);
+            item.shape.posAttr.set(item.shader.posAttrLoc);
+            item.shape.txtAttr.set(item.shader.txtAttrLoc);
+            item.shape.normAttr.set(item.shader.normAttrLoc);
+        }, 2, 255, 200);
         this.controls.addHeightMapSelect('Height Map', function(path) {
             item.txtHeight = new Txt2D(gl);
             item.txtHeight.index = 0;
             item.txtHeight.loadFromFile(path);
         }, 'Mountains');
         this.controls.addFloat('Max Height', this.shader.setMaxHeight, 0.0, 1.0, 0.4);
-        
-        
+
+
         // Initialize movers.
         this.projMover = new ProjMover();
         this.viewMover = new ViewMover();
@@ -70,7 +70,7 @@ define(function(require) {
         this.viewMover.start(gl);
         return true;
     };
-    
+
     /**
      * Updates the graphical scene.
      * @param  {WebGLRenderingContext} gl  The graphical object
@@ -82,7 +82,7 @@ define(function(require) {
         this.viewMover.update();
         this.shader.setProjMat(this.projMover.matrix());
         this.shader.setViewMat(this.viewMover.matrix());
-        
+
         // Clear color buffer.
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
@@ -93,7 +93,7 @@ define(function(require) {
         this.shape.draw();
         return true;
     };
-    
+
     /**
      * Stops this object and cleans up.
      * @param  {WebGLRenderingContext} gl  The graphical object.
@@ -103,6 +103,6 @@ define(function(require) {
         this.viewMover.stop(gl);
         this.controls.destroy();
     };
-     
+
     return Item;
 });

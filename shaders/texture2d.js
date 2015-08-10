@@ -2,7 +2,7 @@ define(function(require) {
 
     var Const = require('tools/const');
     var ShaderBuilder = require('shaders/shader');
-    
+
     /**
      * Creates a texture shader.
      */
@@ -15,13 +15,13 @@ define(function(require) {
      * @type {String}
      */
     TextureBuilder.prototype.name = 'Texture';
-    
+
     /**
      * The required vertex information.
      * @type {Number}
      */
     TextureBuilder.prototype.requiredTypes = Const.POS|Const.TXT;
-    
+
     /**
      * The vertex shader program.
      * @type {String}
@@ -57,7 +57,7 @@ define(function(require) {
         '{                                              \n'+
         '   gl_FragColor = texture2D(txtSampler, vTxt); \n'+
         '}                                              \n';
-    
+
     /**
      * Initializes the shader.
      * @param  {WebGLRenderingContext} gl  The graphical object.
@@ -69,6 +69,6 @@ define(function(require) {
             this.name, this.requiredTypes);
         return builder.build(gl);
     };
-    
+
     return TextureBuilder;
 });
