@@ -114,7 +114,7 @@ define(function(require) {
         }, 0.0, 0.1, 0.01);
         this.controls.addFloat('Speed', function(speed) {
             item.scrollSpeed = speed;
-        }, 0.0, 1.0, 0.1);
+        }, -0.5, 0.5, 0.1);
         this.controls.addShapeSelect('Shape', function(shapeBuilder) {
             item.objShape = shapeBuilder.build(gl, item.objShader.requiredType);
             item.objShape.posAttr.set(item.objShader.posAttrLoc);
