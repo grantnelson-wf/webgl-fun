@@ -2,7 +2,7 @@ define(function(require) {
 
     var Const = require('tools/const');
     var ShaderBuilder = require('shaders/shader');
-    
+
     /**
      * Creates a reflection shader.
      * Makes things look like shiny metal.
@@ -16,13 +16,13 @@ define(function(require) {
      * @type {String}
      */
     MetalBuilder.prototype.name = 'Metal';
-    
+
     /**
      * The required vertex information.
      * @type {Number}
      */
     MetalBuilder.prototype.requiredTypes = Const.POS|Const.NORM|Const.BINM|Const.TXT;
-    
+
     /**
      * The vertex shader program.
      * @type {String}
@@ -78,7 +78,7 @@ define(function(require) {
         '   mat3 m = mat3(c.x, c.y, c.z,                   \n'+
         '                 n.x, n.y, n.z,                   \n'+
         '                 b.x, b.y, b.z);                  \n'+
-        '   vec3 bump = texture2D(bumpSampler, vTxt).rbg;  \n'+
+        '   vec3 bump = texture2D(bumpSampler, vTxt).rgb;  \n'+
         '   bump = m * normalize(2.0*bump - 1.0);          \n'+
         '                                                  \n'+
         '   vec3 refl = reflect(normalize(vView), bump);   \n'+
@@ -86,7 +86,7 @@ define(function(require) {
         '                                                  \n'+
         '   gl_FragColor = textureCube(cubeSampler, refl); \n'+
         '}                                                 \n';
-    
+
     /**
      * Initializes the shader.
      * @param  {WebGLRenderingContext} gl  The graphical object.
@@ -98,6 +98,6 @@ define(function(require) {
             this.name, this.requiredTypes);
         return builder.build(gl);
     };
-    
+
     return MetalBuilder;
 });

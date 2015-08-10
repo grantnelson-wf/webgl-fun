@@ -78,15 +78,21 @@ define(function(require) {
      * @note  The image will load asynchronously.
      * @param  {String} path  The path to the image to load.
      * @param  {Boolean} flipY  Indicates if the Y asix should be flipped.
+     * @param  {Boolean} wrapEdges  Indicates if the edges should wrap or not.
      */
-    Texture2D.prototype.loadFromFile = function(path, flipY) {
+    Texture2D.prototype.loadFromFile = function(path, flipY, wrapEdges) {
         var self = this;
         var gl = self.gl;
 
         self.texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, self.texture);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        if (wrapEdges) {
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        } else {
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        }
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.bindTexture(gl.TEXTURE_2D, null);

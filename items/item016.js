@@ -131,7 +131,6 @@ define(function(require) {
         gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 
         // Bind texture.
-        this.foreShader.setTxtSampler(0);
         this.backTarget.bind();
 
         // Draw shape.
